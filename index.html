@@ -53,28 +53,19 @@
         
         /* --- MENU KEBAB UMUM --- */
         .menu-btn { background: none; border: none; color: var(--text-main); font-size: 24px; font-weight: bold; cursor: pointer; padding: 5px 10px; border-radius: 50%; }
-        .dropdown {
-            position: absolute; top: 40px; right: 0; background: var(--bg-panel);
-            border: 1px solid rgba(134, 150, 160, 0.2); border-radius: 8px; box-shadow: 0 5px 15px var(--shadow);
-            display: none; flex-direction: column; min-width: 180px; overflow: hidden; z-index: 1000;
-        }
+        .dropdown { position: absolute; top: 40px; right: 0; background: var(--bg-panel); border: 1px solid rgba(134, 150, 160, 0.2); border-radius: 8px; box-shadow: 0 5px 15px var(--shadow); display: none; flex-direction: column; min-width: 180px; overflow: hidden; z-index: 1000; }
         .dropdown.show { display: flex; }
         .dropdown button { background: transparent; border: none; color: var(--text-main); padding: 12px 15px; text-align: left; cursor: pointer; font-size: 14px; width: 100%; transition: background 0.2s; }
         .dropdown button:hover { background: var(--dropdown-hover); }
 
-        /* --- MODAL AKUN POP-UP --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay);
-            display: none; align-items: center; justify-content: center; z-index: 2000; opacity: 0; transition: opacity 0.2s;
-        }
+        /* --- MODAL (OVERLAY) --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); display: none; align-items: center; justify-content: center; z-index: 2000; opacity: 0; transition: opacity 0.2s; }
         .modal-overlay.show { display: flex; opacity: 1; }
-        .modal-content {
-            background: var(--bg-panel); padding: 25px; border-radius: 12px; width: 90%; max-width: 320px;
-            box-shadow: 0 10px 30px var(--shadow); text-align: center; transform: scale(0.9); transition: transform 0.2s;
-        }
+        .modal-content { background: var(--bg-panel); padding: 25px; border-radius: 12px; width: 90%; max-width: 320px; box-shadow: 0 10px 30px var(--shadow); text-align: center; transform: scale(0.9); transition: transform 0.2s; }
         .modal-overlay.show .modal-content { transform: scale(1); }
         .modal-content h3 { margin-bottom: 20px; font-size: 18px; color: var(--text-main); }
         
+        /* MODAL AKUN */
         .avatar-edit-container { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 20px; }
         .avatar-preview-large { width: 100px; height: 100px; border-radius: 50%; background: var(--avatar-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 5px var(--shadow); }
         .avatar-preview-large img { width: 100%; height: 100%; object-fit: cover; }
@@ -82,85 +73,94 @@
         body.light-theme .avatar-preview-large svg { fill: #fff; }
         .edit-avatar-btn { background: var(--input-bg); color: var(--text-main); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s;}
         .edit-avatar-btn:hover { background: rgba(134,150,160,0.2); }
-
         .modal-input-group { text-align: left; margin-bottom: 20px; }
         .modal-input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; font-weight: bold; }
         .modal-input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid transparent; background: var(--input-bg); color: var(--text-main); font-size: 15px; outline: none; }
-        .modal-input-group input:focus { border-color: var(--accent); }
-
         .modal-actions { display: flex; gap: 10px; }
         .modal-actions button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s;}
         #close-modal-btn { background: var(--input-bg); color: var(--text-main); }
-        #close-modal-btn:hover { opacity: 0.8; }
         #save-account-btn { background: var(--accent); color: #fff; }
-        #save-account-btn:hover { background: var(--accent-hover); }
+
+        /* MENU TEKAN LAMA (LONG PRESS) BUBBLE */
+        .msg-menu-content { background: var(--bg-panel); border-radius: 12px; width: 90%; max-width: 300px; overflow: hidden; display: flex; flex-direction: column; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); transition: 0.2s; }
+        .modal-overlay.show .msg-menu-content { transform: translateX(-50%) translateY(0); }
+        .msg-menu-content button { background: transparent; border: none; border-bottom: 1px solid rgba(134,150,160,0.1); color: var(--text-main); padding: 15px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .msg-menu-content button:last-child { border-bottom: none; color: var(--danger); }
+        .msg-menu-content button:hover { background: var(--dropdown-hover); }
 
         /* --- HALAMAN LOGIN --- */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; position: relative; }
         .top-right-menu { position: absolute; top: 15px; right: 15px; z-index: 1000; }
-        
         .login-card { background: var(--bg-panel); padding: 30px 20px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px var(--shadow); }
         .login-card h1 { font-size: 22px; margin-bottom: 25px; color: var(--text-main); }
-        
         .my-id-box { background: var(--bg-deep); padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid rgba(134, 150, 160, 0.2); }
         .my-id-box p { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
         .id-badge { color: var(--accent); font-weight: bold; font-family: monospace; font-size: 18px; cursor: pointer; display: inline-block; padding: 5px 10px; border-radius: 6px; transition: background 0.2s; }
         .id-badge:hover { background: rgba(0, 168, 132, 0.1); }
-        .id-badge:active { background: rgba(0, 168, 132, 0.3); }
-        
         .input-group { text-align: left; margin-bottom: 15px; }
         .input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; padding-left: 5px; font-weight: bold; }
         .login-card input { width: 100%; padding: 15px; border-radius: 8px; border: none; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; text-align: center; }
         .login-card button#connect-btn { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; font-size: 16px; background: var(--accent); color: #ffffff; cursor: pointer; transition: 0.2s; margin-top: 10px;}
-        .login-card button#connect-btn:hover { background: var(--accent-hover); }
-        
-        #install-btn { background: #53bdeb; color: #ffffff; margin-top: 15px; display: none; width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
-        #install-btn:hover { background: #3fa1c9; }
         .status-text { margin-top: 15px; font-size: 12px; color: var(--text-dim); }
 
         /* --- HALAMAN CHAT --- */
         #chat-screen { display: none; flex-direction: column; height: 100%; position: relative; }
         
         header { flex-shrink: 0; background-color: var(--bg-panel); padding: 10px 15px; border-bottom: 1px solid rgba(134,150,160,0.1); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-        
         .header-left { display: flex; align-items: center; gap: 12px; }
         .avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--avatar-bg); display: flex; align-items: center; justify-content: center; color: var(--avatar-color); overflow: hidden; }
         .avatar img { width: 100%; height: 100%; object-fit: cover; }
         .avatar svg { width: 60%; height: 60%; fill: #ffffff; margin-top: 5px; }
         body.light-theme .avatar svg { fill: #ffffff; }
-
         .header-info { display: flex; flex-direction: column; }
         .header-title { font-weight: bold; font-size: 16px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;}
         .header-status { font-size: 12px; color: var(--accent); }
-        
         .header-actions { display: flex; align-items: center; gap: 5px; position: relative; }
         #disconnect-btn { background: var(--danger); color: white; padding: 6px 10px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 13px;}
 
-        #chat-window {
-            flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background-color: var(--bg-deep);
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: 400px;
-        }
+        #chat-window { flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background-color: var(--bg-deep); background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: 400px; }
         body:not(.light-theme) #chat-window { background-blend-mode: multiply; }
         body.light-theme #chat-window { opacity: 0.95; }
 
-        .msg { display: flex; flex-direction: column; max-width: 85%; padding: 8px 12px; border-radius: 10px; font-size: 15px; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        /* BUBBLE CHAT TERBARU (Sejajar) */
+        .msg { 
+            display: inline-block; max-width: 85%; padding: 6px 10px 8px 10px; border-radius: 10px; 
+            font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.3); position: relative;
+            -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; /* Mencegah selection untuk longpress */
+        }
+        .msg::after { content: ""; display: table; clear: both; } /* Clearfix hack untuk float */
         .msg.sent { align-self: flex-end; background: var(--bubble-me); border-top-right-radius: 2px; }
         .msg.received { align-self: flex-start; background: var(--bubble-peer); border-top-left-radius: 2px; }
         .msg.system { align-self: center; background: rgba(0,0,0,0.4); color: #fff; font-size: 11px; padding: 4px 12px; border-radius: 6px; text-align: center; }
         body.light-theme .msg.system { background: rgba(0,0,0,0.1); color: var(--text-dim); }
 
+        .msg-content { display: inline; white-space: pre-wrap; word-wrap: break-word; }
+        
         .msg img { max-width: 100%; max-height: 300px; border-radius: 6px; display: block; margin-top: 5px; }
         .file-link { color: #53bdeb; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
-        .file-link:hover { text-decoration: underline; }
 
-        .msg-meta { display: flex; justify-content: flex-end; align-items: center; gap: 4px; font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+        /* Waktu & Tanda Centang Inline */
+        .msg-meta { float: right; display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: rgba(255,255,255,0.6); margin: 6px -2px -4px 10px; line-height: 1; }
         body.light-theme .msg.received .msg-meta, body.light-theme .msg.sent .msg-meta { color: rgba(0,0,0,0.5); }
         .tick { color: var(--tick-color); font-size: 12px; font-weight: bold; }
         .tick.read { color: var(--tick-read); }
 
+        /* Reply Snippet (Kutipan balasan di dalam pesan) */
+        .replied-snippet { background: rgba(0,0,0,0.1); border-left: 4px solid var(--accent); border-radius: 6px; padding: 5px 8px; margin-bottom: 6px; font-size: 13px; color: var(--text-dim); }
+        body.light-theme .replied-snippet { background: rgba(0,0,0,0.05); }
+        .replied-snippet strong { color: var(--accent); display: block; margin-bottom: 2px; font-size: 12px; }
+
         #typing-indicator { display: none; font-size: 12px; color: var(--accent); font-style: italic; padding: 5px 15px; background: var(--bg-deep); }
 
         footer { flex-shrink: 0; background: var(--bg-panel); padding: 10px; display: flex; gap: 8px; align-items: center; padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative; z-index: 10; }
+        
+        /* Container Preview Balasan */
+        #reply-preview-container { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background: var(--bg-panel); border-top: 1px solid rgba(134,150,160,0.1); padding: 10px 15px; z-index: 5; }
+        .reply-box { background: var(--bg-deep); border-left: 4px solid var(--accent); border-radius: 6px; padding: 8px 12px; position: relative; font-size: 13px; }
+        .reply-name { font-weight: bold; color: var(--accent); display: block; margin-bottom: 3px; }
+        .reply-text { color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%; }
+        .cancel-reply { position: absolute; right: 12px; top: 12px; color: var(--text-dim); cursor: pointer; background: none; border: none; font-size: 18px; }
+
         .input-wrapper { flex: 1; background: var(--input-bg); border-radius: 24px; display: flex; align-items: center; padding: 0 12px; }
         #message-input { flex: 1; background: transparent; border: none; color: var(--text-main); padding: 12px 5px; font-size: 16px; outline: none; }
         .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-dim); transition: 0.2s; }
@@ -174,25 +174,30 @@
     <div id="account-modal" class="modal-overlay">
         <div class="modal-content">
             <h3>Pengaturan Akun</h3>
-            
             <div class="avatar-edit-container">
                 <div class="avatar-preview-large" id="modal-avatar-preview">
-                    <!-- Default SVG icon -->
                     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
                 </div>
                 <input type="file" id="avatar-input" accept="image/*" style="display: none;">
                 <button class="edit-avatar-btn" onclick="document.getElementById('avatar-input').click()">Ubah Foto</button>
             </div>
-
             <div class="modal-input-group">
                 <label for="modal-name-input">NAMA TAMPILAN</label>
                 <input type="text" id="modal-name-input" placeholder="Masukkan nama Anda..." autocomplete="off">
             </div>
-
             <div class="modal-actions">
                 <button id="close-modal-btn">Batal</button>
                 <button id="save-account-btn">Simpan</button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL MENU TEKAN LAMA PESAN -->
+    <div id="msg-action-overlay" class="modal-overlay">
+        <div class="msg-menu-content">
+            <button id="msg-reply-btn">Balas</button>
+            <button id="msg-copy-btn">Salin</button>
+            <button id="msg-delete-btn">Hapus di saya</button>
         </div>
     </div>
 
@@ -206,23 +211,18 @@
                 <button id="cache-btn">Hapus Cache</button>
             </div>
         </div>
-
         <div class="login-card">
             <h1>P2P SECURE CHAT</h1>
-            
             <div class="my-id-box">
                 <p>ID Jaringan Anda (Klik untuk menyalin):</p>
                 <span id="my-id" class="id-badge" title="Klik untuk Copy">Connecting...</span>
             </div>
-            
             <div class="input-group">
                 <label for="remote-id">MULAI CHAT BARU</label>
                 <input type="text" id="remote-id" placeholder="Tempel ID Teman di sini">
             </div>
-            
             <button id="connect-btn" onclick="connectToPeer()">Mulai Chat</button>
             <div id="login-status" class="status-text">Menunggu jaringan...</div>
-            <button id="install-btn">📱 Instal Aplikasi ke HP</button>
         </div>
     </div>
 
@@ -230,7 +230,6 @@
     <div id="chat-screen">
         <header>
             <div class="header-left">
-                <!-- Foto Profil Teman -->
                 <div class="avatar" id="chat-header-avatar">
                     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
                 </div>
@@ -239,7 +238,6 @@
                     <span class="header-status">Terhubung</span>
                 </div>
             </div>
-
             <div class="header-actions">
                 <button id="disconnect-btn" onclick="disconnectPeer()">Putus</button>
                 <div style="position: relative;">
@@ -262,9 +260,17 @@
         <div id="typing-indicator"><span id="typer-name">Teman</span> sedang mengetik...</div>
 
         <footer>
+            <!-- Kotak Preview Reply -->
+            <div id="reply-preview-container">
+                <div class="reply-box">
+                    <button class="cancel-reply" onclick="cancelReply()">✕</button>
+                    <span class="reply-name" id="reply-preview-name">Name</span>
+                    <div class="reply-text" id="reply-preview-text">Message</div>
+                </div>
+            </div>
+
             <input type="file" id="file-input" style="display: none;">
             <button class="icon-btn" onclick="document.getElementById('file-input').click()">📎</button>
-            
             <div class="input-wrapper">
                 <input type="text" id="message-input" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
             </div>
@@ -280,39 +286,23 @@
         const defaultSvgAvatar = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>`;
 
         let myName = localStorage.getItem('my-chat-name') || '';
-        let myAvatarBase64 = localStorage.getItem('my-chat-avatar') || ''; // Gambar profil kita
+        let myAvatarBase64 = localStorage.getItem('my-chat-avatar') || '';
 
-        // Render preview di Modal saat dibuka
         function openAccountModal() {
             modalNameInput.value = myName;
-            if (myAvatarBase64) {
-                modalAvatarPreview.innerHTML = `<img src="${myAvatarBase64}" alt="Avatar">`;
-            } else {
-                modalAvatarPreview.innerHTML = defaultSvgAvatar;
-            }
+            modalAvatarPreview.innerHTML = myAvatarBase64 ? `<img src="${myAvatarBase64}" alt="Avatar">` : defaultSvgAvatar;
             accountModal.classList.add('show');
-            dropdownMenu.classList.remove('show');
-            dropdownMenuChat.classList.remove('show');
+            document.getElementById('dropdown-menu').classList.remove('show');
+            document.getElementById('dropdown-menu-chat').classList.remove('show');
         }
 
-        // Event listener untuk tombol Akun (di Login & Chat)
-        document.querySelectorAll('.account-btn').forEach(btn => {
-            btn.addEventListener('click', openAccountModal);
-        });
+        document.querySelectorAll('.account-btn').forEach(btn => btn.addEventListener('click', openAccountModal));
+        document.getElementById('close-modal-btn').addEventListener('click', () => accountModal.classList.remove('show'));
 
-        // Tutup Modal
-        document.getElementById('close-modal-btn').addEventListener('click', () => { accountModal.classList.remove('show'); });
-
-        // Ganti Foto Profil (Konversi gambar ke Base64)
         document.getElementById('avatar-input').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
-            // Batasi ukuran foto profil (Maks 2MB)
-            if (file.size > 2 * 1024 * 1024) {
-                alert("Ukuran foto profil terlalu besar! Maksimal 2MB.");
-                return;
-            }
-            
+            if (file.size > 2 * 1024 * 1024) return alert("Ukuran foto profil terlalu besar! Maksimal 2MB.");
             const reader = new FileReader();
             reader.onload = function(evt) {
                 myAvatarBase64 = evt.target.result;
@@ -321,34 +311,22 @@
             reader.readAsDataURL(file);
         });
 
-        // Simpan Pengaturan Akun
         document.getElementById('save-account-btn').addEventListener('click', () => {
             myName = modalNameInput.value.trim();
             localStorage.setItem('my-chat-name', myName);
             localStorage.setItem('my-chat-avatar', myAvatarBase64);
-            
             accountModal.classList.remove('show');
-
-            // Jika sedang terhubung, langsung update profil ke teman
-            if (conn && conn.open) {
-                conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 });
-            }
+            if (conn && conn.open) conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 });
         });
-
 
         // --- LOGIKA MENU LAINNYA, TEMA & NOTIFIKASI ---
         let isMuted = false;
-        const menuToggleBtn = document.getElementById('menu-toggle-btn');
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        const menuToggleChatBtn = document.getElementById('menu-toggle-chat-btn');
-        const dropdownMenuChat = document.getElementById('dropdown-menu-chat');
-
-        menuToggleBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('show'); });
-        menuToggleChatBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenuChat.classList.toggle('show'); });
+        document.getElementById('menu-toggle-btn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('dropdown-menu').classList.toggle('show'); });
+        document.getElementById('menu-toggle-chat-btn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('dropdown-menu-chat').classList.toggle('show'); });
         document.addEventListener('click', (e) => { 
             if (!accountModal.contains(e.target) && !e.target.classList.contains('account-btn')) {
-                dropdownMenu.classList.remove('show'); 
-                dropdownMenuChat.classList.remove('show'); 
+                document.getElementById('dropdown-menu').classList.remove('show'); 
+                document.getElementById('dropdown-menu-chat').classList.remove('show'); 
             }
         });
 
@@ -356,7 +334,7 @@
         function toggleTheme() {
             document.body.classList.toggle('light-theme');
             localStorage.setItem('app-theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
-            dropdownMenu.classList.remove('show'); dropdownMenuChat.classList.remove('show');
+            document.getElementById('dropdown-menu').classList.remove('show'); document.getElementById('dropdown-menu-chat').classList.remove('show');
         }
         document.getElementById('theme-btn').addEventListener('click', toggleTheme);
         document.getElementById('theme-chat-btn').addEventListener('click', toggleTheme);
@@ -371,203 +349,193 @@
         });
 
         document.getElementById('mute-btn').addEventListener('click', () => {
-            isMuted = !isMuted; document.getElementById('mute-btn').innerText = isMuted ? "Aktifkan Notifikasi" : "Bisukan Notifikasi"; dropdownMenuChat.classList.remove('show');
+            isMuted = !isMuted; document.getElementById('mute-btn').innerText = isMuted ? "Aktifkan Notifikasi" : "Bisukan Notifikasi"; document.getElementById('dropdown-menu-chat').classList.remove('show');
         });
 
         document.getElementById('search-btn').addEventListener('click', () => {
-            dropdownMenuChat.classList.remove('show');
+            document.getElementById('dropdown-menu-chat').classList.remove('show');
             const keyword = prompt("Masukkan kata kunci pencarian:"); if (keyword) window.find(keyword);
         });
 
         document.getElementById('clear-chat-btn').addEventListener('click', () => {
             if (confirm("Bersihkan layar percakapan?")) { document.getElementById('chat-window').innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>'; }
-            dropdownMenuChat.classList.remove('show');
+            document.getElementById('dropdown-menu-chat').classList.remove('show');
         });
 
+        // --- LONG PRESS & REPLY LOGIC ---
+        const msgActionOverlay = document.getElementById('msg-action-overlay');
+        let activeReply = null; 
+        let selectedMsgDiv = null;
+        let selectedMsgObj = null;
+
+        function setupLongPress(element, msgObj) {
+            let pressTimer;
+            let isTouching = false;
+
+            const start = (e) => {
+                if (e.type === 'touchstart') isTouching = true;
+                if (e.type === 'mousedown' && isTouching) return; 
+                pressTimer = setTimeout(() => openMsgMenu(element, msgObj), 600);
+            };
+            const end = () => clearTimeout(pressTimer);
+
+            element.addEventListener('touchstart', start, {passive: true});
+            element.addEventListener('touchend', end);
+            element.addEventListener('touchmove', end);
+            element.addEventListener('mousedown', start);
+            element.addEventListener('mouseup', end);
+            element.addEventListener('mouseleave', end);
+            // Handle PC Right Click
+            element.addEventListener('contextmenu', (e) => { e.preventDefault(); openMsgMenu(element, msgObj); });
+        }
+
+        function openMsgMenu(element, obj) {
+            selectedMsgDiv = element;
+            selectedMsgObj = obj;
+            if (navigator.vibrate) navigator.vibrate(50); // Haptic feedback
+            msgActionOverlay.classList.add('show');
+        }
+
+        msgActionOverlay.addEventListener('click', function(e) { if(e.target === this) this.classList.remove('show'); });
+
+        document.getElementById('msg-reply-btn').addEventListener('click', () => {
+            activeReply = selectedMsgObj;
+            document.getElementById('reply-preview-name').innerText = activeReply.sender;
+            document.getElementById('reply-preview-text').innerText = activeReply.text;
+            document.getElementById('reply-preview-container').style.display = 'block';
+            document.getElementById('message-input').focus();
+            msgActionOverlay.classList.remove('show');
+        });
+
+        document.getElementById('msg-copy-btn').addEventListener('click', () => {
+            navigator.clipboard.writeText(selectedMsgObj.text).catch(e => console.log('Gagal salin', e));
+            msgActionOverlay.classList.remove('show');
+        });
+
+        document.getElementById('msg-delete-btn').addEventListener('click', () => {
+            if (selectedMsgDiv) selectedMsgDiv.remove();
+            msgActionOverlay.classList.remove('show');
+        });
+
+        function cancelReply() {
+            activeReply = null;
+            document.getElementById('reply-preview-container').style.display = 'none';
+        }
 
         // --- CORE WEBRTC LOGIC ---
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
         function playNotification() { if (!isMuted) notificationSound.play().catch(() => {}); }
 
-        const peer = new Peer({
-            config: {
-                'iceServers': [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-                    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
-                ]
-            }
-        });
-
+        const peer = new Peer({ config: { 'iceServers': [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' }, { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }] } });
         let conn, typingTimeout;
-        const myIdBadge = document.getElementById('my-id');
-        const loginStatus = document.getElementById('login-status');
-        const connectBtn = document.getElementById('connect-btn');
         const chatWindow = document.getElementById('chat-window');
         const messageInput = document.getElementById('message-input');
-        
-        // Element Header Teman
         const chatTitle = document.getElementById('chat-title');
         const typerNameSpan = document.getElementById('typer-name');
         const chatHeaderAvatar = document.getElementById('chat-header-avatar');
         let remoteName = "Teman";
 
-        peer.on('open', id => {
-            myIdBadge.innerText = id;
-            loginStatus.innerText = "Sistem siap. Silakan masukkan ID teman.";
-            loginStatus.style.color = "var(--accent)";
-        });
-
-        myIdBadge.addEventListener('click', () => {
-            const currentId = myIdBadge.innerText;
-            if (currentId === 'Connecting...' || currentId === 'Tersalin!') return;
-            navigator.clipboard.writeText(currentId).then(() => {
-                myIdBadge.innerText = 'Tersalin!'; myIdBadge.style.color = '#53bdeb';
-                setTimeout(() => { myIdBadge.innerText = peer.id; myIdBadge.style.color = 'var(--accent)'; }, 2000);
-            });
-        });
-
-        peer.on('error', (err) => {
-            loginStatus.innerText = '⚠ ERROR: ' + err.type; loginStatus.style.color = "var(--danger)";
-            if(err.type === 'peer-unavailable') { alert('ID Teman tidak ditemukan atau sedang offline.'); connectBtn.innerText = "Mulai Chat"; connectBtn.disabled = false; }
-        });
-
+        peer.on('open', id => { document.getElementById('my-id').innerText = id; document.getElementById('login-status').innerText = "Sistem siap. Silakan masukkan ID teman."; document.getElementById('login-status').style.color = "var(--accent)"; });
+        document.getElementById('my-id').addEventListener('click', function() { if (this.innerText === 'Connecting...' || this.innerText === 'Tersalin!') return; navigator.clipboard.writeText(this.innerText).then(() => { this.innerText = 'Tersalin!'; this.style.color = '#53bdeb'; setTimeout(() => { this.innerText = peer.id; this.style.color = 'var(--accent)'; }, 2000); }); });
+        peer.on('error', (err) => { document.getElementById('login-status').innerText = '⚠ ERROR: ' + err.type; document.getElementById('login-status').style.color = "var(--danger)"; if(err.type === 'peer-unavailable') { alert('ID Teman tidak ditemukan/offline.'); document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false; } });
         peer.on('connection', connection => { if(conn) conn.close(); conn = connection; setupConn(); });
 
         function connectToPeer() {
             const rId = document.getElementById('remote-id').value.trim();
-            if(!rId) return alert("Masukkan ID teman terlebih dahulu!");
-            if(rId === peer.id) return alert("Tidak bisa chat dengan diri sendiri!");
-            
-            connectBtn.innerText = "Menghubungkan..."; connectBtn.disabled = true;
-            conn = peer.connect(rId, { reliable: true });
-            setupConn();
+            if(!rId || rId === peer.id) return alert(!rId ? "Masukkan ID teman!" : "Tidak bisa chat dengan diri sendiri!");
+            document.getElementById('connect-btn').innerText = "Menghubungkan..."; document.getElementById('connect-btn').disabled = true;
+            conn = peer.connect(rId, { reliable: true }); setupConn();
         }
 
         function setupConn() {
             conn.on('open', () => {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('chat-screen').style.display = 'flex';
-                connectBtn.innerText = "Mulai Chat"; connectBtn.disabled = false;
-                chatWindow.innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil.</div>';
-                updateHeight();
-
-                // Kirim profil kita ke teman (Nama & Foto)
+                document.getElementById('login-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex'; document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false;
+                chatWindow.innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil.</div>'; updateHeight();
                 conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 });
             });
             
             conn.on('data', data => {
                 if (data && data.type === 'profile') {
-                    // Update tampilan Nama & Foto Profil teman yang terhubung
-                    remoteName = data.name || "Teman";
-                    chatTitle.innerText = remoteName;
-                    typerNameSpan.innerText = remoteName;
-                    
-                    if(data.avatar) {
-                        chatHeaderAvatar.innerHTML = `<img src="${data.avatar}" alt="Avatar">`;
-                    } else {
-                        chatHeaderAvatar.innerHTML = defaultSvgAvatar;
-                    }
+                    remoteName = data.name || "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName;
+                    chatHeaderAvatar.innerHTML = data.avatar ? `<img src="${data.avatar}" alt="Avatar">` : defaultSvgAvatar;
                 } else if (data && data.type === 'ack') {
                     const msgElement = document.getElementById(data.msgId);
-                    if (msgElement) {
-                        const tick = msgElement.querySelector('.tick');
-                        if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); }
-                    }
+                    if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } }
                 } else if (data && data.type === 'file') {
-                    conn.send({ type: 'ack', msgId: data.id }); 
-                    playNotification(); hideTyping();
-                    appendFile('received', data.filename, data.filetype, data.filedata, data.id);
+                    conn.send({ type: 'ack', msgId: data.id }); playNotification(); hideTyping(); appendFile('received', data.filename, data.filetype, data.filedata, data.id);
                 } else if (data && data.type === 'text') {
-                    conn.send({ type: 'ack', msgId: data.id }); 
-                    playNotification(); hideTyping();
-                    appendMessage('received', data.text, data.id);
+                    conn.send({ type: 'ack', msgId: data.id }); playNotification(); hideTyping(); appendMessage('received', data, data.id);
                 } else if (data && data.type === 'typing') {
                     data.isTyping ? showTyping() : hideTyping();
-                } else if (typeof data === 'string') {
-                    playNotification(); hideTyping(); appendMessage('received', data);
-                }
+                } else if (typeof data === 'string') { playNotification(); hideTyping(); appendMessage('received', {text: data}); }
             });
             conn.on('close', resetUI);
         }
 
         function showTyping() { document.getElementById('typing-indicator').style.display = 'block'; chatWindow.scrollTop = chatWindow.scrollHeight; }
         function hideTyping() { document.getElementById('typing-indicator').style.display = 'none'; }
-        
         function disconnectPeer() { if(conn) conn.close(); resetUI(); }
         function resetUI() {
-            conn = null; document.getElementById('chat-screen').style.display = 'none';
-            document.getElementById('login-screen').style.display = 'flex';
-            document.getElementById('remote-id').value = '';
-            loginStatus.innerText = "Koneksi terakhir diputus."; loginStatus.style.color = "var(--text-dim)";
-            
-            // Reset tampilan teman ke default
-            remoteName = "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName;
-            chatHeaderAvatar.innerHTML = defaultSvgAvatar;
-            hideTyping();
+            conn = null; document.getElementById('chat-screen').style.display = 'none'; document.getElementById('login-screen').style.display = 'flex'; document.getElementById('remote-id').value = '';
+            document.getElementById('login-status').innerText = "Koneksi terakhir diputus."; document.getElementById('login-status').style.color = "var(--text-dim)";
+            remoteName = "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = defaultSvgAvatar; hideTyping(); cancelReply();
         }
 
-        messageInput.addEventListener('input', () => {
-            if (conn && conn.open) {
-                conn.send({ type: 'typing', isTyping: true });
-                clearTimeout(typingTimeout);
-                typingTimeout = setTimeout(() => { conn.send({ type: 'typing', isTyping: false }); }, 1500);
-            }
-        });
+        messageInput.addEventListener('input', () => { if (conn && conn.open) { conn.send({ type: 'typing', isTyping: true }); clearTimeout(typingTimeout); typingTimeout = setTimeout(() => { conn.send({ type: 'typing', isTyping: false }); }, 1500); } });
 
         function sendMessage() {
             const msg = messageInput.value.trim();
             if(msg && conn && conn.open) {
                 const msgId = 'msg-' + Date.now();
-                conn.send({ type: 'text', id: msgId, text: msg }); 
-                
-                conn.send({ type: 'typing', isTyping: false });
-                clearTimeout(typingTimeout);
-
-                appendMessage('sent', msg, msgId);
-                messageInput.value = ''; messageInput.focus();
+                const msgData = { type: 'text', id: msgId, text: msg, replyTo: activeReply ? { sender: activeReply.sender, text: activeReply.text } : null };
+                conn.send(msgData); conn.send({ type: 'typing', isTyping: false }); clearTimeout(typingTimeout);
+                appendMessage('sent', msgData, msgId); messageInput.value = ''; messageInput.focus(); cancelReply();
             }
         }
 
         document.getElementById('file-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file || !conn || !conn.open) return;
+            const file = e.target.files[0]; if (!file || !conn || !conn.open) return;
             if (file.size > 15 * 1024 * 1024) { alert("Maksimal 15MB."); e.target.value = ''; return; }
-
-            const msgId = 'file-' + Date.now();
-            appendMessage('system', 'Mengirim file: ' + file.name + '...');
-
+            const msgId = 'file-' + Date.now(); appendMessage('system', {text: 'Mengirim file: ' + file.name + '...'});
             const reader = new FileReader();
-            reader.onload = function(evt) {
-                const fileData = evt.target.result;
-                conn.send({ type: 'file', id: msgId, filename: file.name, filetype: file.type, filedata: fileData });
-                appendFile('sent', file.name, file.type, fileData, msgId);
-            };
-            reader.readAsArrayBuffer(file);
-            e.target.value = '';
+            reader.onload = function(evt) { const fileData = evt.target.result; conn.send({ type: 'file', id: msgId, filename: file.name, filetype: file.type, filedata: fileData }); appendFile('sent', file.name, file.type, fileData, msgId); };
+            reader.readAsArrayBuffer(file); e.target.value = '';
         });
 
-        function appendMessage(type, text, id = null) {
-            const div = document.createElement('div');
-            div.className = `msg ${type}`;
-            if (id) div.id = id;
+        // --- RENDER PESAN ---
+        function appendMessage(type, dataObj, id = null) {
+            const text = dataObj.text || "";
+            const replyTo = dataObj.replyTo || null;
+            const div = document.createElement('div'); div.className = `msg ${type}`; if (id) div.id = id;
 
-            const content = document.createElement('div'); content.innerText = text; div.appendChild(content);
-            if (type !== 'system') appendMeta(div, type);
+            // Jika membalas pesan
+            if (replyTo && type !== 'system') {
+                const replyDiv = document.createElement('div'); replyDiv.className = 'replied-snippet';
+                replyDiv.innerHTML = `<strong>${replyTo.sender}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${replyTo.text}</span>`;
+                div.appendChild(replyDiv);
+            }
+
+            const content = document.createElement('div'); content.className = 'msg-content'; content.innerText = text; div.appendChild(content);
+            if (type !== 'system') {
+                appendMeta(div, type); 
+                setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || 'Anda') : remoteName }); 
+            }
             chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
         function appendFile(senderType, filename, filetype, fileData, id = null) {
             const div = document.createElement('div'); div.className = `msg ${senderType}`; if (id) div.id = id;
             const blob = new Blob([fileData], { type: filetype }); const url = URL.createObjectURL(blob);
-            const content = document.createElement('div');
+            const content = document.createElement('div'); content.className = 'msg-content';
             
             if (filetype.startsWith('image/')) {
                 const img = document.createElement('img'); img.src = url; img.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; }; content.appendChild(img);
             } else {
                 const a = document.createElement('a'); a.href = url; a.download = filename; a.className = 'file-link'; a.innerHTML = `📄 ${filename}`; content.appendChild(a);
             }
-            div.appendChild(content); appendMeta(div, senderType);
+            div.appendChild(content);
+            appendMeta(div, senderType);
+            setupLongPress(div, { text: `📄 ${filename}`, sender: senderType === 'sent' ? (myName || 'Anda') : remoteName });
             chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
@@ -575,10 +543,7 @@
             const meta = document.createElement('div'); meta.className = 'msg-meta';
             const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             const timeSpan = document.createElement('span'); timeSpan.innerText = timeStr; meta.appendChild(timeSpan);
-
-            if (type === 'sent') {
-                const tickSpan = document.createElement('span'); tickSpan.className = 'tick'; tickSpan.innerText = '✓'; meta.appendChild(tickSpan);
-            }
+            if (type === 'sent') { const tickSpan = document.createElement('span'); tickSpan.className = 'tick'; tickSpan.innerText = '✓'; meta.appendChild(tickSpan); }
             parentDiv.appendChild(meta);
         }
 
