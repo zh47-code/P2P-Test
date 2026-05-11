@@ -424,11 +424,29 @@
             document.getElementById('reply-preview-container').style.display = 'none';
         }
 
-        // --- CORE WEBRTC LOGIC ---
+        // --- CORE WEBRTC LOGIC (DENGAN SERVER EXPRESS TURN BARU) ---
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
         function playNotification() { if (!isMuted) notificationSound.play().catch(() => {}); }
 
-        const peer = new Peer({ config: { 'iceServers': [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'turn:free.expressturn.com:3478', username: '000000002093856914', credential: 'p8zevhLmnoN+lQ2dsg1HpaHRZ5w=' }, { urls: 'turn:free.expressturn.com:443?transport=tcp', username: '000000002093856914', credential: 'p8zevhLmnoN+lQ2dsg1HpaHRZ5w=' }] } });
+        const peer = new Peer({ 
+            config: { 
+                'iceServers': [
+                    { urls: 'stun:stun.l.google.com:19302' }, 
+                    { 
+                        urls: 'turn:free.expressturn.com:3478', 
+                        username: '000000002093856914',
+                        credential: 'p8zevhLmnoN+lQ2dsg1HpaHRZ5w='
+                    },
+                    { 
+                        urls: 'turn:free.expressturn.com:3478?transport=tcp', 
+                        username: '000000002093856914',
+                        credential: 'p8zevhLmnoN+lQ2dsg1HpaHRZ5w='
+                    }
+                ] 
+            },
+            debug: 3 // Memudahkan melihat log koneksi ICE di Console
+        });
+        
         let conn, typingTimeout;
         const chatWindow = document.getElementById('chat-window');
         const messageInput = document.getElementById('message-input');
@@ -442,11 +460,12 @@
         peer.on('error', (err) => { document.getElementById('login-status').innerText = '⚠ ERROR: ' + err.type; document.getElementById('login-status').style.color = "var(--danger)"; if(err.type === 'peer-unavailable') { alert('ID Teman tidak ditemukan/offline.'); document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false; } });
         peer.on('connection', connection => { if(conn) conn.close(); conn = connection; setupConn(); });
 
+        // Fungsi koneksi diperbarui, menghapus {reliable: true}
         function connectToPeer() {
             const rId = document.getElementById('remote-id').value.trim();
             if(!rId || rId === peer.id) return alert(!rId ? "Masukkan ID teman!" : "Tidak bisa chat dengan diri sendiri!");
             document.getElementById('connect-btn').innerText = "Menghubungkan..."; document.getElementById('connect-btn').disabled = true;
-            conn = peer.connect(rId, { reliable: true }); setupConn();
+            conn = peer.connect(rId); setupConn();
         }
 
         function setupConn() {
