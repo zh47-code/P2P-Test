@@ -268,10 +268,8 @@
                 </div>
             </div>
 
-            <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;">
             <input type="file" id="file-input" style="display: none;">
             
-            <button class="icon-btn" onclick="document.getElementById('camera-input').click()" title="Kamera">📷</button>
             <button class="icon-btn" onclick="document.getElementById('file-input').click()" title="Lampirkan File">📎</button>
             
             <div class="input-wrapper">
@@ -514,7 +512,7 @@
             }
         }
 
-        // --- FILE & CAMERA UPLOAD ---
+        // --- FILE UPLOAD ---
         function processFile(file) {
             if (!file || !conn || !conn.open) return;
             if (file.size > 15 * 1024 * 1024) { alert("Maksimal 15MB."); return; }
@@ -530,7 +528,6 @@
         }
 
         document.getElementById('file-input').addEventListener('change', (e) => { processFile(e.target.files[0]); e.target.value = ''; });
-        document.getElementById('camera-input').addEventListener('change', (e) => { processFile(e.target.files[0]); e.target.value = ''; });
 
         // --- RENDER PESAN ---
         function appendMessage(type, dataObj, id = null) {
