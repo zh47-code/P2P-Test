@@ -48,6 +48,11 @@
         .msg.received { align-self: flex-start; background: var(--bubble-peer); border-top-left-radius: 2px; }
         .msg.system { align-self: center; background: rgba(0,0,0,0.4); color: var(--text-dim); font-size: 11px; padding: 4px 12px; border-radius: 6px; text-align: center; }
 
+        /* Style khusus untuk file & gambar */
+        .msg img { max-width: 100%; max-height: 300px; border-radius: 6px; display: block; margin-top: 5px; }
+        .file-link { color: #53bdeb; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .file-link:hover { text-decoration: underline; }
+
         footer {
             flex-shrink: 0; background: var(--bg-panel); padding: 10px; display: flex; gap: 8px; align-items: center;
             padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative;
@@ -62,7 +67,8 @@
         .emoji-item { cursor: pointer; font-size: 22px; display: flex; justify-content: center; }
         .input-wrapper { flex: 1; background: var(--input-bg); border-radius: 24px; display: flex; align-items: center; padding: 0 12px; }
         #message-input { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; font-size: 16px; outline: none; }
-        .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-dim); }
+        .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-dim); transition: 0.2s; }
+        .icon-btn:hover { color: var(--accent); }
         #send-btn { width: 46px; height: 46px; background: var(--accent); border: none; border-radius: 50%; color: #0b141a; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     </style>
 </head>
@@ -81,7 +87,7 @@
     </header>
 
     <div id="chat-window">
-        <div class="msg system">Gunakan ID di atas untuk koneksi privat. Jika di HP gagal, pastikan TIDAK menggunakan mode Penyamaran (Incognito).</div>
+        <div class="msg system">Gunakan ID di atas untuk koneksi privat. File maksimal 15MB agar koneksi stabil.</div>
     </div>
 
     <div id="emoji-picker">
@@ -99,6 +105,10 @@
 
     <footer>
         <button class="icon-btn" onclick="toggleEmoji()">😊</button>
+        <!-- Input File Tersembunyi -->
+        <input type="file" id="file-input" style="display: none;">
+        <button class="icon-btn" onclick="document.getElementById('file-input').click()">📎</button>
+        
         <div class="input-wrapper">
             <input type="text" id="message-input" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
         </div>
@@ -106,7 +116,6 @@
     </footer>
 
     <script>
-        // Konfigurasi IceServers Masif (Tahan Banting)
         const peer = new Peer({
             config: {
                 'iceServers': [
@@ -136,13 +145,13 @@
         const disconnectBtn = document.getElementById('disconnect-btn');
         const remoteIdInput = document.getElementById('remote-id');
         const emojiPicker = document.getElementById('emoji-picker');
+        const fileInput = document.getElementById('file-input');
 
         peer.on('open', id => {
             document.getElementById('my-id').innerText = id;
             appendMessage('system', 'Siap menerima koneksi.');
         });
 
-        // Debugging Error untuk HP
         peer.on('error', (err) => {
             console.error('Peer Error:', err.type);
             appendMessage('system', '⚠ ERROR: ' + err.type);
@@ -159,9 +168,7 @@
         function connectToPeer() {
             const rId = remoteIdInput.value.trim();
             if(!rId || rId === peer.id) return;
-            conn = peer.connect(rId, {
-                reliable: true
-            });
+            conn = peer.connect(rId, { reliable: true });
             setupConn();
             appendMessage('system', 'Mencoba handshake...');
         }
@@ -174,7 +181,16 @@
                 disconnectBtn.style.display = 'block';
                 appendMessage('system', 'TERHUBUNG!');
             });
-            conn.on('data', data => appendMessage('received', data));
+            
+            // Logic Menerima Pesan/File
+            conn.on('data', data => {
+                if (data && data.type === 'file') {
+                    appendFile('received', data.filename, data.filetype, data.filedata);
+                } else {
+                    appendMessage('received', data);
+                }
+            });
+            
             conn.on('close', resetUI);
         }
 
@@ -199,6 +215,73 @@
             }
         }
 
+        // --- FITUR KIRIM FILE ---
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            if (!conn || !conn.open) {
+                alert('Belum terhubung ke teman.');
+                fileInput.value = '';
+                return;
+            }
+
+            // Batasi ukuran file (misal 15MB) agar browser tidak crash karena WebRTC data channel limit
+            if (file.size > 15 * 1024 * 1024) {
+                alert("Ukuran file terlalu besar! Maksimal 15MB.");
+                fileInput.value = '';
+                return;
+            }
+
+            appendMessage('system', 'Mengirim file: ' + file.name + '...');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileData = e.target.result; // ArrayBuffer
+                
+                // Kirim sebagai Object
+                conn.send({
+                    type: 'file',
+                    filename: file.name,
+                    filetype: file.type,
+                    filedata: fileData
+                });
+                
+                appendFile('sent', file.name, file.type, fileData);
+            };
+            reader.readAsArrayBuffer(file);
+            fileInput.value = ''; // Reset input file
+        });
+
+        function appendFile(senderType, filename, filetype, fileData) {
+            const div = document.createElement('div');
+            div.className = `msg ${senderType}`;
+            
+            // Buat blob dan URL untuk merender file
+            const blob = new Blob([fileData], { type: filetype });
+            const url = URL.createObjectURL(blob);
+
+            // Jika file adalah gambar, tampilkan gambarnya
+            if (filetype.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = url;
+                img.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; }; // Auto scroll saat gambar selesai diload
+                div.appendChild(img);
+            } else {
+                // Jika file biasa, jadikan link download
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.className = 'file-link';
+                a.innerHTML = `📄 ${filename}`;
+                div.appendChild(a);
+            }
+
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+        // ------------------------
+
         function toggleEmoji() { emojiPicker.style.display = emojiPicker.style.display === 'grid' ? 'none' : 'grid'; }
         function addEmoji(emoji) { messageInput.value += emoji; messageInput.focus(); }
 
@@ -210,7 +293,6 @@
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
-        // Fix Tinggi Layar Mobile (Keyboard Fix)
         const updateHeight = () => {
             document.body.style.height = window.visualViewport.height + 'px';
             chatWindow.scrollTop = chatWindow.scrollHeight;
