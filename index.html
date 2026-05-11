@@ -259,6 +259,18 @@
             chatWindow.scrollTop = chatWindow.scrollHeight;
         };
         window.visualViewport.addEventListener('resize', fixHeight);
+
+        peer.on('error', (err) => {
+    console.log('Error Type:', err.type);
+    // Jika muncul error 'unavailable-id', artinya ID teman salah atau sudah expired
+    // Jika muncul 'network', artinya sinyal/jaringan memblokir P2P
+    appendMessage('system', '⚠ ERROR: ' + err.type);
+});
+
+// Deteksi jika koneksi sedang berusaha menembus firewall
+peer.on('call', (call) => {
+    appendMessage('system', 'Mencoba menembus firewall...');
+});
     </script>
 </body>
 </html>
