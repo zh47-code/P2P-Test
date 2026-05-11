@@ -7,7 +7,16 @@
     <title>P2P Dark Chat - 2 Pages</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        :root {
+        
+        #install-btn {
+            background: #53bdeb; /* Warna biru agar beda dengan tombol Connect */
+            color: #0b141a;
+            margin-top: 15px;
+            display: none; /* Disembunyikan secara default */
+        }
+        
+        #install-btn:hover { background: #3fa1c9; }
+                :root {
             --bg-deep: #0b141a;
             --bg-panel: #202c33;
             --text-main: #e9edef;
@@ -110,6 +119,7 @@
             <input type="text" id="remote-id" placeholder="Masukkan ID Teman di sini">
             <button id="connect-btn" onclick="connectToPeer()">Mulai Chat</button>
             <div id="login-status" class="status-text">Menunggu jaringan...</div>
+            <button id="install-btn">📱 Instal Aplikasi ke HP</button>
         </div>
     </div>
 
