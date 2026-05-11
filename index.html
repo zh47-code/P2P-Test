@@ -65,7 +65,7 @@
         .modal-overlay.show .modal-content { transform: scale(1); }
         .modal-content h3 { margin-bottom: 20px; font-size: 18px; color: var(--text-main); }
         
-        /* MODAL AKUN */
+        /* MODAL AKUN & ID JARINGAN */
         .avatar-edit-container { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 20px; }
         .avatar-preview-large { width: 100px; height: 100px; border-radius: 50%; background: var(--avatar-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 5px var(--shadow); }
         .avatar-preview-large img { width: 100%; height: 100%; object-fit: cover; }
@@ -76,6 +76,12 @@
         .modal-input-group { text-align: left; margin-bottom: 20px; }
         .modal-input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; font-weight: bold; }
         .modal-input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid transparent; background: var(--input-bg); color: var(--text-main); font-size: 15px; outline: none; }
+        
+        .my-id-box { background: var(--bg-deep); padding: 15px; border-radius: 8px; border: 1px solid rgba(134, 150, 160, 0.2); margin-top: 15px; margin-bottom: 20px; text-align: center; }
+        .my-id-box p { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; font-weight: bold; }
+        .id-badge { color: var(--accent); font-weight: bold; font-family: monospace; font-size: 18px; cursor: pointer; display: inline-block; padding: 5px 10px; border-radius: 6px; transition: background 0.2s; }
+        .id-badge:hover { background: rgba(0, 168, 132, 0.1); }
+
         .modal-actions { display: flex; gap: 10px; }
         .modal-actions button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s;}
         #close-modal-btn { background: var(--input-bg); color: var(--text-main); }
@@ -93,10 +99,6 @@
         .top-right-menu { position: absolute; top: 15px; right: 15px; z-index: 1000; }
         .login-card { background: var(--bg-panel); padding: 30px 20px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px var(--shadow); }
         .login-card h1 { font-size: 22px; margin-bottom: 25px; color: var(--text-main); }
-        .my-id-box { background: var(--bg-deep); padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid rgba(134, 150, 160, 0.2); }
-        .my-id-box p { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
-        .id-badge { color: var(--accent); font-weight: bold; font-family: monospace; font-size: 18px; cursor: pointer; display: inline-block; padding: 5px 10px; border-radius: 6px; transition: background 0.2s; }
-        .id-badge:hover { background: rgba(0, 168, 132, 0.1); }
         .input-group { text-align: left; margin-bottom: 15px; }
         .input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; padding-left: 5px; font-weight: bold; }
         .login-card input { width: 100%; padding: 15px; border-radius: 8px; border: none; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; text-align: center; }
@@ -185,10 +187,18 @@
                 <input type="file" id="avatar-input" accept="image/*" style="display: none;">
                 <button class="edit-avatar-btn" onclick="document.getElementById('avatar-input').click()">Ubah Foto</button>
             </div>
+            
             <div class="modal-input-group">
                 <label for="modal-name-input">NAMA TAMPILAN</label>
                 <input type="text" id="modal-name-input" placeholder="Masukkan nama Anda..." autocomplete="off">
             </div>
+
+            <!-- PINDAHAN ID JARINGAN -->
+            <div class="my-id-box">
+                <p>ID JARINGAN ANDA (KLIK UNTUK COPY)</p>
+                <span id="my-id" class="id-badge" title="Klik untuk Copy">Connecting...</span>
+            </div>
+
             <div class="modal-actions">
                 <button id="close-modal-btn">Batal</button>
                 <button id="save-account-btn">Simpan</button>
@@ -217,10 +227,6 @@
         </div>
         <div class="login-card">
             <h1>P2P SECURE CHAT</h1>
-            <div class="my-id-box">
-                <p>ID Jaringan Anda (Klik untuk menyalin):</p>
-                <span id="my-id" class="id-badge" title="Klik untuk Copy">Connecting...</span>
-            </div>
             <div class="input-group">
                 <label for="remote-id">MULAI CHAT BARU</label>
                 <input type="text" id="remote-id" placeholder="Tempel ID Teman di sini">
@@ -462,8 +468,24 @@
         const chatHeaderAvatar = document.getElementById('chat-header-avatar');
         let remoteName = "Teman";
 
-        peer.on('open', id => { document.getElementById('my-id').innerText = id; document.getElementById('login-status').innerText = "Sistem siap. Silakan masukkan ID teman."; document.getElementById('login-status').style.color = "var(--accent)"; });
-        document.getElementById('my-id').addEventListener('click', function() { if (this.innerText === 'Connecting...' || this.innerText === 'Tersalin!') return; navigator.clipboard.writeText(this.innerText).then(() => { this.innerText = 'Tersalin!'; this.style.color = '#53bdeb'; setTimeout(() => { this.innerText = peer.id; this.style.color = 'var(--accent)'; }, 2000); }); });
+        peer.on('open', id => { 
+            document.getElementById('my-id').innerText = id; 
+            document.getElementById('login-status').innerText = "Sistem siap. (Lihat ID Anda di Menu Akun)"; 
+            document.getElementById('login-status').style.color = "var(--accent)"; 
+        });
+        
+        document.getElementById('my-id').addEventListener('click', function() { 
+            if (this.innerText === 'Connecting...' || this.innerText === 'Tersalin!') return; 
+            navigator.clipboard.writeText(this.innerText).then(() => { 
+                this.innerText = 'Tersalin!'; 
+                this.style.color = '#53bdeb'; 
+                setTimeout(() => { 
+                    this.innerText = peer.id; 
+                    this.style.color = 'var(--accent)'; 
+                }, 2000); 
+            }); 
+        });
+        
         peer.on('error', (err) => { document.getElementById('login-status').innerText = '⚠ ERROR: ' + err.type; document.getElementById('login-status').style.color = "var(--danger)"; if(err.type === 'peer-unavailable') { alert('ID Teman tidak ditemukan/offline.'); document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false; } });
         peer.on('connection', connection => { if(conn) conn.close(); conn = connection; setupConn(); });
 
