@@ -126,16 +126,15 @@
         .msg { 
             display: inline-block; max-width: 85%; padding: 6px 10px 8px 10px; border-radius: 10px; 
             font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.3); position: relative;
-            -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; /* Mencegah selection untuk longpress */
+            -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
         }
-        .msg::after { content: ""; display: table; clear: both; } /* Clearfix hack untuk float */
+        .msg::after { content: ""; display: table; clear: both; } 
         .msg.sent { align-self: flex-end; background: var(--bubble-me); border-top-right-radius: 2px; }
         .msg.received { align-self: flex-start; background: var(--bubble-peer); border-top-left-radius: 2px; }
         .msg.system { align-self: center; background: rgba(0,0,0,0.4); color: #fff; font-size: 11px; padding: 4px 12px; border-radius: 6px; text-align: center; }
         body.light-theme .msg.system { background: rgba(0,0,0,0.1); color: var(--text-dim); }
 
         .msg-content { display: inline; white-space: pre-wrap; word-wrap: break-word; }
-        
         .msg img { max-width: 100%; max-height: 300px; border-radius: 6px; display: block; margin-top: 5px; }
         .file-link { color: #53bdeb; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
 
@@ -145,14 +144,14 @@
         .tick { color: var(--tick-color); font-size: 12px; font-weight: bold; }
         .tick.read { color: var(--tick-read); }
 
-        /* Reply Snippet (Kutipan balasan di dalam pesan) */
+        /* Reply Snippet */
         .replied-snippet { background: rgba(0,0,0,0.1); border-left: 4px solid var(--accent); border-radius: 6px; padding: 5px 8px; margin-bottom: 6px; font-size: 13px; color: var(--text-dim); }
         body.light-theme .replied-snippet { background: rgba(0,0,0,0.05); }
         .replied-snippet strong { color: var(--accent); display: block; margin-bottom: 2px; font-size: 12px; }
 
         #typing-indicator { display: none; font-size: 12px; color: var(--accent); font-style: italic; padding: 5px 15px; background: var(--bg-deep); }
 
-        footer { flex-shrink: 0; background: var(--bg-panel); padding: 10px; display: flex; gap: 8px; align-items: center; padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative; z-index: 10; }
+        footer { flex-shrink: 0; background: var(--bg-panel); padding: 10px; display: flex; gap: 6px; align-items: center; padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative; z-index: 10; }
         
         /* Container Preview Balasan */
         #reply-preview-container { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background: var(--bg-panel); border-top: 1px solid rgba(134,150,160,0.1); padding: 10px 15px; z-index: 5; }
@@ -165,7 +164,7 @@
         #message-input { flex: 1; background: transparent; border: none; color: var(--text-main); padding: 12px 5px; font-size: 16px; outline: none; }
         .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-dim); transition: 0.2s; }
         .icon-btn:hover { color: var(--accent); }
-        #send-btn { width: 46px; height: 46px; background: var(--accent); border: none; border-radius: 50%; color: #ffffff; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        #send-btn { width: 42px; height: 42px; background: var(--accent); border: none; border-radius: 50%; color: #ffffff; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; margin-left: 4px; }
     </style>
 </head>
 <body>
@@ -269,8 +268,12 @@
                 </div>
             </div>
 
+            <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;">
             <input type="file" id="file-input" style="display: none;">
-            <button class="icon-btn" onclick="document.getElementById('file-input').click()">📎</button>
+            
+            <button class="icon-btn" onclick="document.getElementById('camera-input').click()" title="Kamera">📷</button>
+            <button class="icon-btn" onclick="document.getElementById('file-input').click()" title="Lampirkan File">📎</button>
+            
             <div class="input-wrapper">
                 <input type="text" id="message-input" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
             </div>
@@ -385,14 +388,13 @@
             element.addEventListener('mousedown', start);
             element.addEventListener('mouseup', end);
             element.addEventListener('mouseleave', end);
-            // Handle PC Right Click
             element.addEventListener('contextmenu', (e) => { e.preventDefault(); openMsgMenu(element, msgObj); });
         }
 
         function openMsgMenu(element, obj) {
             selectedMsgDiv = element;
             selectedMsgObj = obj;
-            if (navigator.vibrate) navigator.vibrate(50); // Haptic feedback
+            if (navigator.vibrate) navigator.vibrate(50);
             msgActionOverlay.classList.add('show');
         }
 
@@ -493,14 +495,23 @@
             }
         }
 
-        document.getElementById('file-input').addEventListener('change', (e) => {
-            const file = e.target.files[0]; if (!file || !conn || !conn.open) return;
-            if (file.size > 15 * 1024 * 1024) { alert("Maksimal 15MB."); e.target.value = ''; return; }
-            const msgId = 'file-' + Date.now(); appendMessage('system', {text: 'Mengirim file: ' + file.name + '...'});
+        // --- FILE & CAMERA UPLOAD ---
+        function processFile(file) {
+            if (!file || !conn || !conn.open) return;
+            if (file.size > 15 * 1024 * 1024) { alert("Maksimal 15MB."); return; }
+            const msgId = 'file-' + Date.now(); 
+            appendMessage('system', {text: 'Mengirim file: ' + file.name + '...'});
             const reader = new FileReader();
-            reader.onload = function(evt) { const fileData = evt.target.result; conn.send({ type: 'file', id: msgId, filename: file.name, filetype: file.type, filedata: fileData }); appendFile('sent', file.name, file.type, fileData, msgId); };
-            reader.readAsArrayBuffer(file); e.target.value = '';
-        });
+            reader.onload = function(evt) { 
+                const fileData = evt.target.result; 
+                conn.send({ type: 'file', id: msgId, filename: file.name, filetype: file.type, filedata: fileData }); 
+                appendFile('sent', file.name, file.type, fileData, msgId); 
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        document.getElementById('file-input').addEventListener('change', (e) => { processFile(e.target.files[0]); e.target.value = ''; });
+        document.getElementById('camera-input').addEventListener('change', (e) => { processFile(e.target.files[0]); e.target.value = ''; });
 
         // --- RENDER PESAN ---
         function appendMessage(type, dataObj, id = null) {
@@ -508,7 +519,6 @@
             const replyTo = dataObj.replyTo || null;
             const div = document.createElement('div'); div.className = `msg ${type}`; if (id) div.id = id;
 
-            // Jika membalas pesan
             if (replyTo && type !== 'system') {
                 const replyDiv = document.createElement('div'); replyDiv.className = 'replied-snippet';
                 replyDiv.innerHTML = `<strong>${replyTo.sender}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${replyTo.text}</span>`;
