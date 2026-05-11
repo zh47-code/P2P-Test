@@ -291,3 +291,195 @@
 
         function playNotification() { notificationSound.play().catch(e => console.log('Suara diblokir browser', e)); }
         function showTyping() { typingIndicator.style.display = 'block'; chatWindow.scrollTop = chatWindow.scrollHeight; }
+        function hideTyping() { typingIndicator.style.display = 'none'; }
+        
+        function disconnectPeer() { 
+            if(conn) conn.close(); 
+            resetUI();
+        }
+
+        function resetUI() {
+            conn = null;
+            chatScreen.style.display = 'none';
+            loginScreen.style.display = 'flex';
+            remoteIdInput.value = '';
+            loginStatus.innerText = "Koneksi terakhir diputus.";
+            loginStatus.style.color = "var(--text-dim)";
+            typingIndicator.style.display = 'none';
+            incomingFiles = {}; // Reset transfer jika putus
+        }
+
+        messageInput.addEventListener('input', () => {
+            if (conn && conn.open) {
+                conn.send({ type: 'typing', isTyping: true });
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => { conn.send({ type: 'typing', isTyping: false }); }, 1500);
+            }
+        });
+
+        function sendMessage() {
+            const msg = messageInput.value.trim();
+            if(msg && conn && conn.open) {
+                conn.send(msg);
+                conn.send({ type: 'typing', isTyping: false });
+                clearTimeout(typingTimeout);
+                appendMessage('sent', msg);
+                messageInput.value = '';
+                messageInput.focus();
+            }
+        }
+
+        // --- FUNGSI PROGRESS BAR UI ---
+        function createProgressUI(id, filename, type) {
+            const div = document.createElement('div');
+            div.id = `transfer-${id}`;
+            div.className = `msg ${type}`;
+            div.innerHTML = `
+                <div class="progress-box">
+                    <div class="progress-header">
+                        <span>${type === 'sent' ? 'Mengirim' : 'Menerima'}: <b>${filename}</b></span>
+                        <span id="perc-${id}">0%</span>
+                    </div>
+                    <progress id="prog-${id}" value="0" max="100"></progress>
+                </div>
+            `;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function updateProgressUI(id, percent) {
+            const prog = document.getElementById(`prog-${id}`);
+            const perc = document.getElementById(`perc-${id}`);
+            if (prog && perc) {
+                prog.value = percent;
+                perc.innerText = `${percent}%`;
+            }
+        }
+
+        function removeProgressUI(id) {
+            const el = document.getElementById(`transfer-${id}`);
+            if (el) el.remove();
+        }
+
+        // --- PENGIRIMAN FILE DENGAN CHUNKING ---
+        fileInput.addEventListener('change', async () => {
+            const file = fileInput.files[0];
+            if (!file || !conn || !conn.open) return;
+
+            if (file.size > 15 * 1024 * 1024) {
+                alert("Ukuran file terlalu besar! Maksimal 15MB.");
+                fileInput.value = '';
+                return;
+            }
+
+            const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+            const fileId = 'file-' + Date.now(); // ID unik untuk transfer ini
+
+            // 1. Kirim Metadata File
+            conn.send({
+                type: 'file-meta',
+                fileId: fileId,
+                filename: file.name,
+                filetype: file.type,
+                totalChunks: totalChunks
+            });
+
+            // Munculkan UI Progress Bar untuk Pengirim
+            createProgressUI(fileId, file.name, 'sent');
+
+            // 2. Baca File & Proses Chunking
+            const arrayBuffer = await file.arrayBuffer();
+            let offset = 0;
+
+            while (offset < file.size) {
+                const chunk = arrayBuffer.slice(offset, offset + CHUNK_SIZE);
+                
+                conn.send({
+                    type: 'file-chunk',
+                    fileId: fileId,
+                    data: chunk
+                });
+                
+                offset += CHUNK_SIZE;
+                
+                // Update Progress Bar (Pengirim)
+                let percent = Math.min(Math.round((offset / file.size) * 100), 100);
+                updateProgressUI(fileId, percent);
+
+                // Penting: Jeda sangat singkat (2ms) untuk mencegah buffer WebRTC penuh & browser freeze
+                await new Promise(r => setTimeout(r, 2));
+            }
+
+            // Setelah selesai, hapus progress bar dan tampilkan file
+            removeProgressUI(fileId);
+            appendFile('sent', file.name, file.type, arrayBuffer);
+            fileInput.value = '';
+        });
+
+        // --- FUNGSI TAMPILKAN PESAN & FILE ---
+        function appendFile(senderType, filename, filetype, fileData) {
+            const div = document.createElement('div');
+            div.className = `msg ${senderType}`;
+            
+            const blob = new Blob([fileData], { type: filetype });
+            const url = URL.createObjectURL(blob);
+
+            if (filetype.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = url;
+                img.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; };
+                div.appendChild(img);
+            } else {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.className = 'file-link';
+                a.innerHTML = `📄 ${filename}`;
+                div.appendChild(a);
+            }
+
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function appendMessage(type, text) {
+            const div = document.createElement('div');
+            div.className = `msg ${type}`;
+            div.innerText = text;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        const updateHeight = () => {
+            document.body.style.height = window.visualViewport.height + 'px';
+            if(chatScreen.style.display === 'flex') chatWindow.scrollTop = chatWindow.scrollHeight;
+        };
+        window.visualViewport.addEventListener('resize', updateHeight);
+        window.visualViewport.addEventListener('scroll', updateHeight);
+
+        // --- PWA ---
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt !== null) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null; installBtn.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('appinstalled', () => { installBtn.style.display = 'none'; deferredPrompt = null; });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW gagal:', err));
+            });
+        }
+    </script>
+</body>
+</html>
