@@ -1,485 +1,478 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <link rel="manifest" href="./manifest.json">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>P2P Secure Chat</title>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <style>
-        :root {
-            --bg-deep: #0b141a;
-            --bg-panel: #202c33;
-            --text-main: #e9edef;
-            --text-dim: #8696a0;
-            --accent: #00a884;
-            --accent-hover: #008f6f;
-            --bubble-me: #005c4b;
-            --bubble-peer: #233138;
-            --input-bg: #2a3942;
-            --danger: #ea0038;
-        }
+    <meta charset="UTF-8">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>P2P Secure Chat</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        :root {
+            --bg-deep: #0b141a;
+            --bg-panel: #202c33;
+            --text-main: #e9edef;
+            --text-dim: #8696a0;
+            --accent: #00a884;
+            --accent-hover: #008f6f;
+            --bubble-me: #005c4b;
+            --bubble-peer: #233138;
+            --input-bg: #2a3942;
+            --danger: #ea0038;
+        }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; background-color: var(--bg-deep); color: var(--text-main); font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden; }
-        
-        /* --- HALAMAN LOGIN --- */
-        #login-screen {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100%; padding: 20px; text-align: center;
-        }
-        .login-card {
-            background: var(--bg-panel); padding: 30px 20px; border-radius: 16px; width: 100%; max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .login-card h1 { font-size: 22px; margin-bottom: 20px; color: var(--text-main); }
-        .my-id-box {
-            background: var(--bg-deep); padding: 15px; border-radius: 8px; margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .my-id-box p { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
-        
-        .id-badge { 
-            color: var(--accent); font-weight: bold; font-family: monospace; font-size: 18px; 
-            cursor: pointer; display: inline-block; padding: 5px 10px; border-radius: 6px;
-            transition: background 0.2s;
-        }
-        .id-badge:hover { background: rgba(0, 168, 132, 0.1); }
-        .id-badge:active { background: rgba(0, 168, 132, 0.3); }
-        
-        .login-card input {
-            width: 100%; padding: 15px; border-radius: 8px; border: none; margin-bottom: 15px;
-            background: var(--input-bg); color: white; font-size: 16px; outline: none; text-align: center;
-        }
-        .login-card button {
-            width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; font-size: 16px;
-            background: var(--accent); color: #0b141a; cursor: pointer; transition: 0.2s;
-        }
-        .login-card button:hover { background: var(--accent-hover); }
-        
-        #install-btn { background: #53bdeb; color: #0b141a; margin-top: 15px; display: none; }
-        #install-btn:hover { background: #3fa1c9; }
-        
-        .status-text { margin-top: 15px; font-size: 12px; color: var(--text-dim); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; background-color: var(--bg-deep); color: var(--text-main); font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden; }
+        
+        /* --- HALAMAN LOGIN --- */
+        #login-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; padding: 20px; text-align: center;
+        }
+        .login-card {
+            background: var(--bg-panel); padding: 30px 20px; border-radius: 16px; width: 100%; max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .login-card h1 { font-size: 22px; margin-bottom: 20px; color: var(--text-main); }
+        .my-id-box {
+            background: var(--bg-deep); padding: 15px; border-radius: 8px; margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .my-id-box p { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
+        
+        /* Modifikasi untuk efek Copy */
+        .id-badge { 
+            color: var(--accent); font-weight: bold; font-family: monospace; font-size: 18px; 
+            cursor: pointer; display: inline-block; padding: 5px 10px; border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .id-badge:hover { background: rgba(0, 168, 132, 0.1); }
+        .id-badge:active { background: rgba(0, 168, 132, 0.3); }
+        
+        .login-card input {
+            width: 100%; padding: 15px; border-radius: 8px; border: none; margin-bottom: 15px;
+            background: var(--input-bg); color: white; font-size: 16px; outline: none; text-align: center;
+        }
+        .login-card button {
+            width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; font-size: 16px;
+            background: var(--accent); color: #0b141a; cursor: pointer; transition: 0.2s;
+        }
+        .login-card button:hover { background: var(--accent-hover); }
+        
+        #install-btn {
+            background: #53bdeb;
+            color: #0b141a;
+            margin-top: 15px;
+            display: none;
+        }
+        #install-btn:hover { background: #3fa1c9; }
+        
+        .status-text { margin-top: 15px; font-size: 12px; color: var(--text-dim); }
 
-        /* --- HALAMAN CHAT --- */
-        #chat-screen { display: none; flex-direction: column; height: 100%; position: relative; }
-        
-        header { flex-shrink: 0; background-color: var(--bg-panel); padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-        .header-info { display: flex; flex-direction: column; }
-        .header-title { font-weight: bold; font-size: 16px; }
-        .header-status { font-size: 12px; color: var(--accent); }
-        
-        #disconnect-btn { background: var(--danger); color: white; padding: 8px 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+        /* --- HALAMAN CHAT --- */
+        #chat-screen { display: none; flex-direction: column; height: 100%; position: relative; }
+        
+        header { flex-shrink: 0; background-color: var(--bg-panel); padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+        .header-info { display: flex; flex-direction: column; }
+        .header-title { font-weight: bold; font-size: 16px; }
+        .header-status { font-size: 12px; color: var(--accent); }
+        
+        #disconnect-btn { background: var(--danger); color: white; padding: 8px 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
 
-        #chat-window {
-            flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px;
-            background-color: var(--bg-deep);
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-            background-blend-mode: multiply; background-size: 400px;
-        }
+        #chat-window {
+            flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px;
+            background-color: var(--bg-deep);
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background-blend-mode: multiply; background-size: 400px;
+        }
 
-        .msg { max-width: 85%; padding: 8px 12px; border-radius: 10px; font-size: 15px; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-        .msg.sent { align-self: flex-end; background: var(--bubble-me); border-top-right-radius: 2px; }
-        .msg.received { align-self: flex-start; background: var(--bubble-peer); border-top-left-radius: 2px; }
-        .msg.system { align-self: center; background: rgba(0,0,0,0.4); color: var(--text-dim); font-size: 11px; padding: 4px 12px; border-radius: 6px; text-align: center; }
+        .msg { max-width: 85%; padding: 8px 12px; border-radius: 10px; font-size: 15px; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .msg.sent { align-self: flex-end; background: var(--bubble-me); border-top-right-radius: 2px; }
+        .msg.received { align-self: flex-start; background: var(--bubble-peer); border-top-left-radius: 2px; }
+        .msg.system { align-self: center; background: rgba(0,0,0,0.4); color: var(--text-dim); font-size: 11px; padding: 4px 12px; border-radius: 6px; text-align: center; }
 
-        .msg img { max-width: 100%; max-height: 300px; border-radius: 6px; display: block; margin-top: 5px; }
-        .file-link { color: #53bdeb; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
-        .file-link:hover { text-decoration: underline; }
+        .msg img { max-width: 100%; max-height: 300px; border-radius: 6px; display: block; margin-top: 5px; }
+        .file-link { color: #53bdeb; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .file-link:hover { text-decoration: underline; }
 
-        /* UI Progress Bar Transfer File */
-        .progress-box { display: flex; flex-direction: column; gap: 6px; font-size: 13px; min-width: 200px; }
-        .progress-box progress { width: 100%; height: 6px; accent-color: var(--accent); }
-        .progress-header { display: flex; justify-content: space-between; align-items: center; }
+        /* Indikator Mengetik */
+        #typing-indicator {
+            display: none; font-size: 12px; color: var(--accent); font-style: italic;
+            padding: 5px 15px; background: var(--bg-deep);
+        }
 
-        #typing-indicator { display: none; font-size: 12px; color: var(--accent); font-style: italic; padding: 5px 15px; background: var(--bg-deep); }
+        footer {
+            flex-shrink: 0; background: var(--bg-panel); padding: 10px; display: flex; gap: 8px; align-items: center;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative; z-index: 10;
+        }
 
-        footer {
-            flex-shrink: 0; background: var(--bg-panel); padding: 10px; display: flex; gap: 8px; align-items: center;
-            padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative; z-index: 10;
-        }
-
-        .input-wrapper { flex: 1; background: var(--input-bg); border-radius: 24px; display: flex; align-items: center; padding: 0 12px; }
-        #message-input { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; font-size: 16px; outline: none; }
-        .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-dim); transition: 0.2s; }
-        .icon-btn:hover { color: var(--accent); }
-        #send-btn { width: 46px; height: 46px; background: var(--accent); border: none; border-radius: 50%; color: #0b141a; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    </style>
+        .input-wrapper { flex: 1; background: var(--input-bg); border-radius: 24px; display: flex; align-items: center; padding: 0 12px; }
+        #message-input { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; font-size: 16px; outline: none; }
+        .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-dim); transition: 0.2s; }
+        .icon-btn:hover { color: var(--accent); }
+        #send-btn { width: 46px; height: 46px; background: var(--accent); border: none; border-radius: 50%; color: #0b141a; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-card">
-            <h1>P2P SECURE CHAT</h1>
-            <div class="my-id-box">
-                <p>ID Anda (Klik untuk menyalin):</p>
-                <span id="my-id" class="id-badge" title="Klik untuk Copy">Connecting...</span>
-            </div>
-            
-            <input type="text" id="remote-id" placeholder="Masukkan ID Teman di sini">
-            <button id="connect-btn" onclick="connectToPeer()">Mulai Chat</button>
-            <div id="login-status" class="status-text">Menunggu jaringan...</div>
-            <button id="install-btn">📱 Instal Aplikasi ke HP</button>
-        </div>
-    </div>
+    <!-- HALAMAN 1: LOGIN SCREEN -->
+    <div id="login-screen">
+        <div class="login-card">
+            <h1>P2P SECURE CHAT</h1>
+            <div class="my-id-box">
+                <p>ID Anda (Klik untuk menyalin):</p>
+                <span id="my-id" class="id-badge" title="Klik untuk Copy">Connecting...</span>
+            </div>
+            
+            <input type="text" id="remote-id" placeholder="Masukkan ID Teman di sini">
+            <button id="connect-btn" onclick="connectToPeer()">Mulai Chat</button>
+            <div id="login-status" class="status-text">Menunggu jaringan...</div>
+            <button id="install-btn">📱 Instal Aplikasi ke HP</button>
+        </div>
+    </div>
 
-    <div id="chat-screen">
-        <header>
-            <div class="header-info">
-                <span class="header-title">Chat Privat</span>
-                <span class="header-status">Terhubung</span>
-            </div>
-            <button id="disconnect-btn" onclick="disconnectPeer()">Putus</button>
-        </header>
+    <!-- HALAMAN 2: CHAT SCREEN -->
+    <div id="chat-screen">
+        <header>
+            <div class="header-info">
+                <span class="header-title">Chat Privat</span>
+                <span class="header-status">Terhubung</span>
+            </div>
+            <button id="disconnect-btn" onclick="disconnectPeer()">Putus</button>
+        </header>
 
-        <div id="chat-window">
-            <div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>
-        </div>
-        
-        <div id="typing-indicator">Teman sedang mengetik...</div>
+        <div id="chat-window">
+            <div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>
+        </div>
+        
+        <!-- Typing Indicator Container -->
+        <div id="typing-indicator">Teman sedang mengetik...</div>
 
-        <footer>
-            <input type="file" id="file-input" style="display: none;">
-            <button class="icon-btn" onclick="document.getElementById('file-input').click()">📎</button>
-            
-            <div class="input-wrapper">
-                <input type="text" id="message-input" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
-            </div>
-            <button id="send-btn" onclick="sendMessage()">➤</button>
-        </footer>
-    </div>
+        <footer>
+            <input type="file" id="file-input" style="display: none;">
+            <button class="icon-btn" onclick="document.getElementById('file-input').click()">📎</button>
+            
+            <div class="input-wrapper">
+                <input type="text" id="message-input" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
+            </div>
+            <button id="send-btn" onclick="sendMessage()">➤</button>
+        </footer>
+    </div>
 
-    <script>
-        const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
+    <script>
+        // --- INISIALISASI AUDIO NOTIFIKASI ---
+        const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
 
-        const peer = new Peer({
-            config: {
-                'iceServers': [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun1.l.google.com:19302' },
-                    { urls: 'stun:stun2.l.google.com:19302' },
-                    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-                    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
-                ],
-                'sdpSemantics': 'unified-plan'
-            }
-        });
+        const peer = new Peer({
+            config: {
+                'iceServers': [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    {
+                        urls: 'turn:openrelay.metered.ca:443',
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
+                    },
+                    {
+                        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
+                    }
+                ],
+                'sdpSemantics': 'unified-plan'
+            }
+        });
 
-        let conn;
-        let typingTimeout;
-        const CHUNK_SIZE = 16 * 1024; // 16KB per chunk
-        let incomingFiles = {}; // Menyimpan data file yang sedang diterima
-        
-        const loginScreen = document.getElementById('login-screen');
-        const chatScreen = document.getElementById('chat-screen');
-        const chatWindow = document.getElementById('chat-window');
-        const messageInput = document.getElementById('message-input');
-        const remoteIdInput = document.getElementById('remote-id');
-        const loginStatus = document.getElementById('login-status');
-        const connectBtn = document.getElementById('connect-btn');
-        const fileInput = document.getElementById('file-input');
-        const typingIndicator = document.getElementById('typing-indicator');
-        const myIdBadge = document.getElementById('my-id');
+        let conn;
+        let typingTimeout;
+        
+        // Element DOM
+        const loginScreen = document.getElementById('login-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const chatWindow = document.getElementById('chat-window');
+        const messageInput = document.getElementById('message-input');
+        const remoteIdInput = document.getElementById('remote-id');
+        const loginStatus = document.getElementById('login-status');
+        const connectBtn = document.getElementById('connect-btn');
+        const fileInput = document.getElementById('file-input');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const myIdBadge = document.getElementById('my-id');
 
-        peer.on('open', id => {
-            myIdBadge.innerText = id;
-            loginStatus.innerText = "Sistem siap. Silakan masukkan ID teman.";
-            loginStatus.style.color = "var(--accent)";
-        });
+        peer.on('open', id => {
+            myIdBadge.innerText = id;
+            loginStatus.innerText = "Sistem siap. Silakan masukkan ID teman.";
+            loginStatus.style.color = "var(--accent)";
+        });
 
-        myIdBadge.addEventListener('click', () => {
-            const currentId = myIdBadge.innerText;
-            if (currentId === 'Connecting...' || currentId === 'Tersalin!') return;
-            
-            navigator.clipboard.writeText(currentId).then(() => {
-                myIdBadge.innerText = 'Tersalin!';
-                myIdBadge.style.color = '#53bdeb';
-                setTimeout(() => {
-                    myIdBadge.innerText = peer.id;
-                    myIdBadge.style.color = 'var(--accent)';
-                }, 2000);
-            }).catch(err => console.error('Gagal menyalin:', err));
-        });
+        // --- FITUR COPY ID ---
+        myIdBadge.addEventListener('click', () => {
+            const currentId = myIdBadge.innerText;
+            if (currentId === 'Connecting...' || currentId === 'Tersalin!') return;
+            
+            navigator.clipboard.writeText(currentId).then(() => {
+                myIdBadge.innerText = 'Tersalin!';
+                myIdBadge.style.color = '#53bdeb';
+                setTimeout(() => {
+                    myIdBadge.innerText = peer.id;
+                    myIdBadge.style.color = 'var(--accent)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Gagal menyalin:', err);
+            });
+        });
 
-        peer.on('error', (err) => {
-            console.error('Peer Error:', err.type);
-            loginStatus.innerText = '⚠ ERROR: ' + err.type;
-            loginStatus.style.color = "var(--danger)";
-            
-            if(err.type === 'peer-unavailable') {
-                alert('ID Teman tidak ditemukan atau sedang offline.');
-                connectBtn.innerText = "Mulai Chat";
-                connectBtn.disabled = false;
-            }
-        });
+        peer.on('error', (err) => {
+            console.error('Peer Error:', err.type);
+            loginStatus.innerText = '⚠ ERROR: ' + err.type;
+            loginStatus.style.color = "var(--danger)";
+            
+            if(err.type === 'peer-unavailable') {
+                alert('ID Teman tidak ditemukan atau sedang offline.');
+                connectBtn.innerText = "Mulai Chat";
+                connectBtn.disabled = false;
+            }
+        });
 
-        peer.on('connection', connection => {
-            if(conn) conn.close();
-            conn = connection;
-            setupConn();
-        });
+        // Saat seseorang connect ke kita
+        peer.on('connection', connection => {
+            if(conn) conn.close();
+            conn = connection;
+            setupConn();
+        });
 
-        function connectToPeer() {
-            const rId = remoteIdInput.value.trim();
-            if(!rId) return alert("Masukkan ID teman terlebih dahulu!");
-            if(rId === peer.id) return alert("Tidak bisa chat dengan diri sendiri!");
-            
-            connectBtn.innerText = "Menghubungkan...";
-            connectBtn.disabled = true;
-            
-            conn = peer.connect(rId, { reliable: true });
-            setupConn();
-        }
+        // Saat kita mencoba connect ke teman
+        function connectToPeer() {
+            const rId = remoteIdInput.value.trim();
+            if(!rId) {
+                alert("Masukkan ID teman terlebih dahulu!");
+                return;
+            }
+            if(rId === peer.id) {
+                alert("Tidak bisa chat dengan diri sendiri!");
+                return;
+            }
+            
+            connectBtn.innerText = "Menghubungkan...";
+            connectBtn.disabled = true;
+            
+            conn = peer.connect(rId, { reliable: true });
+            setupConn();
+        }
 
-        function setupConn() {
-            conn.on('open', () => {
-                loginScreen.style.display = 'none';
-                chatScreen.style.display = 'flex';
-                connectBtn.innerText = "Mulai Chat";
-                connectBtn.disabled = false;
-                chatWindow.innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>';
-                updateHeight();
-            });
-            
-            conn.on('data', data => {
-                // 1. Terima Metadata File
-                if (data && data.type === 'file-meta') {
-                    playNotification();
-                    hideTyping();
-                    incomingFiles[data.fileId] = {
-                        info: data,
-                        chunks: []
-                    };
-                    createProgressUI(data.fileId, data.filename, 'received');
-                } 
-                // 2. Terima Chunk File
-                else if (data && data.type === 'file-chunk') {
-                    const fileTransfer = incomingFiles[data.fileId];
-                    if (fileTransfer) {
-                        fileTransfer.chunks.push(data.data);
-                        
-                        // Update Progress Bar (Penerima)
-                        let percent = Math.min(Math.round((fileTransfer.chunks.length / fileTransfer.info.totalChunks) * 100), 100);
-                        updateProgressUI(data.fileId, percent);
+        // Setup Koneksi (Sukses)
+        function setupConn() {
+            conn.on('open', () => {
+                loginScreen.style.display = 'none';
+                chatScreen.style.display = 'flex';
+                
+                connectBtn.innerText = "Mulai Chat";
+                connectBtn.disabled = false;
+                
+                chatWindow.innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>';
+                updateHeight();
+            });
+            
+            conn.on('data', data => {
+                // Handle objek File
+                if (data && data.type === 'file') {
+                    playNotification();
+                    hideTyping();
+                    appendFile('received', data.filename, data.filetype, data.filedata);
+                } 
+                // Handle objek Typing Indicator
+                else if (data && data.type === 'typing') {
+                    if (data.isTyping) {
+                        showTyping();
+                    } else {
+                        hideTyping();
+                    }
+                } 
+                // Handle pesan teks (String murni)
+                else if (typeof data === 'string') {
+                    playNotification();
+                    hideTyping();
+                    appendMessage('received', data);
+                }
+            });
+            
+            conn.on('close', resetUI);
+        }
 
-                        // Jika semua chunk sudah diterima
-                        if (fileTransfer.chunks.length === fileTransfer.info.totalChunks) {
-                            const blob = new Blob(fileTransfer.chunks, { type: fileTransfer.info.filetype });
-                            blob.arrayBuffer().then(buffer => {
-                                removeProgressUI(data.fileId); // Hapus indikator progress
-                                appendFile('received', fileTransfer.info.filename, fileTransfer.info.filetype, buffer);
-                                delete incomingFiles[data.fileId]; // Bersihkan memori
-                            });
-                        }
-                    }
-                } 
-                // 3. Terima Status Mengetik
-                else if (data && data.type === 'typing') {
-                    if (data.isTyping) showTyping(); else hideTyping();
-                } 
-                // 4. Terima Pesan Teks Murni
-                else if (typeof data === 'string') {
-                    playNotification();
-                    hideTyping();
-                    appendMessage('received', data);
-                }
-            });
-            
-            conn.on('close', resetUI);
-        }
+        // --- FUNGSI PENDUKUNG ---
+        function playNotification() {
+            if (document.hidden) {
+                notificationSound.play().catch(e => console.log('Suara diblokir browser', e));
+            } else {
+                notificationSound.play().catch(e => console.log('Suara diblokir browser', e));
+            }
+        }
 
-        function playNotification() { notificationSound.play().catch(e => console.log('Suara diblokir browser', e)); }
-        function showTyping() { typingIndicator.style.display = 'block'; chatWindow.scrollTop = chatWindow.scrollHeight; }
-        function hideTyping() { typingIndicator.style.display = 'none'; }
-        
-        function disconnectPeer() { 
-            if(conn) conn.close(); 
-            resetUI();
-        }
+        function showTyping() {
+            typingIndicator.style.display = 'block';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
 
-        function resetUI() {
-            conn = null;
-            chatScreen.style.display = 'none';
-            loginScreen.style.display = 'flex';
-            remoteIdInput.value = '';
-            loginStatus.innerText = "Koneksi terakhir diputus.";
-            loginStatus.style.color = "var(--text-dim)";
-            typingIndicator.style.display = 'none';
-            incomingFiles = {}; // Reset transfer jika putus
-        }
+        function hideTyping() {
+            typingIndicator.style.display = 'none';
+        }
 
-        messageInput.addEventListener('input', () => {
-            if (conn && conn.open) {
-                conn.send({ type: 'typing', isTyping: true });
-                clearTimeout(typingTimeout);
-                typingTimeout = setTimeout(() => { conn.send({ type: 'typing', isTyping: false }); }, 1500);
-            }
-        });
+        // Tombol Putus ditekan
+        function disconnectPeer() { 
+            if(conn) conn.close(); 
+            resetUI();
+        }
 
-        function sendMessage() {
-            const msg = messageInput.value.trim();
-            if(msg && conn && conn.open) {
-                conn.send(msg);
-                conn.send({ type: 'typing', isTyping: false });
-                clearTimeout(typingTimeout);
-                appendMessage('sent', msg);
-                messageInput.value = '';
-                messageInput.focus();
-            }
-        }
+        // Kembali ke halaman Login
+        function resetUI() {
+            conn = null;
+            chatScreen.style.display = 'none';
+            loginScreen.style.display = 'flex';
+            remoteIdInput.value = '';
+            loginStatus.innerText = "Koneksi terakhir diputus.";
+            loginStatus.style.color = "var(--text-dim)";
+            typingIndicator.style.display = 'none';
+        }
 
-        // --- FUNGSI PROGRESS BAR UI ---
-        function createProgressUI(id, filename, type) {
-            const div = document.createElement('div');
-            div.id = `transfer-${id}`;
-            div.className = `msg ${type}`;
-            div.innerHTML = `
-                <div class="progress-box">
-                    <div class="progress-header">
-                        <span>${type === 'sent' ? 'Mengirim' : 'Menerima'}: <b>${filename}</b></span>
-                        <span id="perc-${id}">0%</span>
-                    </div>
-                    <progress id="prog-${id}" value="0" max="100"></progress>
-                </div>
-            `;
-            chatWindow.appendChild(div);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
+        // --- EVENT LISTENER KETIK PESAN (TYPING INDICATOR) ---
+        messageInput.addEventListener('input', () => {
+            if (conn && conn.open) {
+                // Kirim sinyal sedang mengetik
+                conn.send({ type: 'typing', isTyping: true });
+                
+                // Reset timer jika user masih mengetik
+                clearTimeout(typingTimeout);
+                
+                // Jika berhenti mengetik selama 1.5 detik, kirim sinyal berhenti
+                typingTimeout = setTimeout(() => {
+                    conn.send({ type: 'typing', isTyping: false });
+                }, 1500);
+            }
+        });
 
-        function updateProgressUI(id, percent) {
-            const prog = document.getElementById(`prog-${id}`);
-            const perc = document.getElementById(`perc-${id}`);
-            if (prog && perc) {
-                prog.value = percent;
-                perc.innerText = `${percent}%`;
-            }
-        }
+        function sendMessage() {
+            const msg = messageInput.value.trim();
+            if(msg && conn && conn.open) {
+                // Kirim pesan teks
+                conn.send(msg);
+                
+                // Hentikan indikator typing secara paksa
+                conn.send({ type: 'typing', isTyping: false });
+                clearTimeout(typingTimeout);
 
-        function removeProgressUI(id) {
-            const el = document.getElementById(`transfer-${id}`);
-            if (el) el.remove();
-        }
+                appendMessage('sent', msg);
+                messageInput.value = '';
+                messageInput.focus();
+            }
+        }
 
-        // --- PENGIRIMAN FILE DENGAN CHUNKING ---
-        fileInput.addEventListener('change', async () => {
-            const file = fileInput.files[0];
-            if (!file || !conn || !conn.open) return;
+        // --- FITUR KIRIM FILE ---
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (!file) return;
 
-            if (file.size > 15 * 1024 * 1024) {
-                alert("Ukuran file terlalu besar! Maksimal 15MB.");
-                fileInput.value = '';
-                return;
-            }
+            if (!conn || !conn.open) return;
 
-            const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-            const fileId = 'file-' + Date.now(); // ID unik untuk transfer ini
+            if (file.size > 15 * 1024 * 1024) {
+                alert("Ukuran file terlalu besar! Maksimal 15MB.");
+                fileInput.value = '';
+                return;
+            }
 
-            // 1. Kirim Metadata File
-            conn.send({
-                type: 'file-meta',
-                fileId: fileId,
-                filename: file.name,
-                filetype: file.type,
-                totalChunks: totalChunks
-            });
+            appendMessage('system', 'Mengirim file: ' + file.name + '...');
 
-            // Munculkan UI Progress Bar untuk Pengirim
-            createProgressUI(fileId, file.name, 'sent');
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileData = e.target.result;
+                conn.send({
+                    type: 'file',
+                    filename: file.name,
+                    filetype: file.type,
+                    filedata: fileData
+                });
+                appendFile('sent', file.name, file.type, fileData);
+            };
+            reader.readAsArrayBuffer(file);
+            fileInput.value = '';
+        });
 
-            // 2. Baca File & Proses Chunking
-            const arrayBuffer = await file.arrayBuffer();
-            let offset = 0;
+        function appendFile(senderType, filename, filetype, fileData) {
+            const div = document.createElement('div');
+            div.className = `msg ${senderType}`;
+            
+            const blob = new Blob([fileData], { type: filetype });
+            const url = URL.createObjectURL(blob);
 
-            while (offset < file.size) {
-                const chunk = arrayBuffer.slice(offset, offset + CHUNK_SIZE);
-                
-                conn.send({
-                    type: 'file-chunk',
-                    fileId: fileId,
-                    data: chunk
-                });
-                
-                offset += CHUNK_SIZE;
-                
-                // Update Progress Bar (Pengirim)
-                let percent = Math.min(Math.round((offset / file.size) * 100), 100);
-                updateProgressUI(fileId, percent);
+            if (filetype.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = url;
+                img.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; };
+                div.appendChild(img);
+            } else {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.className = 'file-link';
+                a.innerHTML = `📄 ${filename}`;
+                div.appendChild(a);
+            }
 
-                // Penting: Jeda sangat singkat (2ms) untuk mencegah buffer WebRTC penuh & browser freeze
-                await new Promise(r => setTimeout(r, 2));
-            }
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
 
-            // Setelah selesai, hapus progress bar dan tampilkan file
-            removeProgressUI(fileId);
-            appendFile('sent', file.name, file.type, arrayBuffer);
-            fileInput.value = '';
-        });
+        function appendMessage(type, text) {
+            const div = document.createElement('div');
+            div.className = `msg ${type}`;
+            div.innerText = text;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
 
-        // --- FUNGSI TAMPILKAN PESAN & FILE ---
-        function appendFile(senderType, filename, filetype, fileData) {
-            const div = document.createElement('div');
-            div.className = `msg ${senderType}`;
-            
-            const blob = new Blob([fileData], { type: filetype });
-            const url = URL.createObjectURL(blob);
+        // Fix Tinggi Layar Mobile
+        const updateHeight = () => {
+            document.body.style.height = window.visualViewport.height + 'px';
+            if(chatScreen.style.display === 'flex') {
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        };
+        window.visualViewport.addEventListener('resize', updateHeight);
+        window.visualViewport.addEventListener('scroll', updateHeight);
 
-            if (filetype.startsWith('image/')) {
-                const img = document.createElement('img');
-                img.src = url;
-                img.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; };
-                div.appendChild(img);
-            } else {
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                a.className = 'file-link';
-                a.innerHTML = `📄 ${filename}`;
-                div.appendChild(a);
-            }
+        // --- FITUR TOMBOL INSTAL PWA ---
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-btn');
 
-            chatWindow.appendChild(div);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+        });
 
-        function appendMessage(type, text) {
-            const div = document.createElement('div');
-            div.className = `msg ${type}`;
-            div.innerText = text;
-            chatWindow.appendChild(div);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt !== null) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('Aplikasi berhasil diinstal');
+                }
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+            }
+        });
 
-        const updateHeight = () => {
-            document.body.style.height = window.visualViewport.height + 'px';
-            if(chatScreen.style.display === 'flex') chatWindow.scrollTop = chatWindow.scrollHeight;
-        };
-        window.visualViewport.addEventListener('resize', updateHeight);
-        window.visualViewport.addEventListener('scroll', updateHeight);
+        window.addEventListener('appinstalled', () => {
+            installBtn.style.display = 'none';
+            deferredPrompt = null;
+        });
 
-        // --- PWA ---
-        let deferredPrompt;
-        const installBtn = document.getElementById('install-btn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'block';
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt !== null) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                deferredPrompt = null; installBtn.style.display = 'none';
-            }
-        });
-
-        window.addEventListener('appinstalled', () => { installBtn.style.display = 'none'; deferredPrompt = null; });
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW gagal:', err));
-            });
-        }
-    </script>
+        // Service Worker Init
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker terdaftar!', reg.scope))
+                .catch(err => console.log('Service Worker gagal:', err));
+            });
+        }
+    </script>
 </body>
 </html>
