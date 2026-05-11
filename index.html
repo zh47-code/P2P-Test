@@ -39,7 +39,6 @@
         }
         .my-id-box p { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
         
-        /* Modifikasi untuk efek Copy */
         .id-badge { 
             color: var(--accent); font-weight: bold; font-family: monospace; font-size: 18px; 
             cursor: pointer; display: inline-block; padding: 5px 10px; border-radius: 6px;
@@ -58,12 +57,7 @@
         }
         .login-card button:hover { background: var(--accent-hover); }
         
-        #install-btn {
-            background: #53bdeb;
-            color: #0b141a;
-            margin-top: 15px;
-            display: none;
-        }
+        #install-btn { background: #53bdeb; color: #0b141a; margin-top: 15px; display: none; }
         #install-btn:hover { background: #3fa1c9; }
         
         .status-text { margin-top: 15px; font-size: 12px; color: var(--text-dim); }
@@ -94,11 +88,12 @@
         .file-link { color: #53bdeb; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
         .file-link:hover { text-decoration: underline; }
 
-        /* Indikator Mengetik */
-        #typing-indicator {
-            display: none; font-size: 12px; color: var(--accent); font-style: italic;
-            padding: 5px 15px; background: var(--bg-deep);
-        }
+        /* UI Progress Bar Transfer File */
+        .progress-box { display: flex; flex-direction: column; gap: 6px; font-size: 13px; min-width: 200px; }
+        .progress-box progress { width: 100%; height: 6px; accent-color: var(--accent); }
+        .progress-header { display: flex; justify-content: space-between; align-items: center; }
+
+        #typing-indicator { display: none; font-size: 12px; color: var(--accent); font-style: italic; padding: 5px 15px; background: var(--bg-deep); }
 
         footer {
             flex-shrink: 0; background: var(--bg-panel); padding: 10px; display: flex; gap: 8px; align-items: center;
@@ -114,7 +109,6 @@
 </head>
 <body>
 
-    <!-- HALAMAN 1: LOGIN SCREEN -->
     <div id="login-screen">
         <div class="login-card">
             <h1>P2P SECURE CHAT</h1>
@@ -130,7 +124,6 @@
         </div>
     </div>
 
-    <!-- HALAMAN 2: CHAT SCREEN -->
     <div id="chat-screen">
         <header>
             <div class="header-info">
@@ -144,7 +137,6 @@
             <div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>
         </div>
         
-        <!-- Typing Indicator Container -->
         <div id="typing-indicator">Teman sedang mengetik...</div>
 
         <footer>
@@ -159,7 +151,6 @@
     </div>
 
     <script>
-        // --- INISIALISASI AUDIO NOTIFIKASI ---
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
 
         const peer = new Peer({
@@ -168,16 +159,8 @@
                     { urls: 'stun:stun.l.google.com:19302' },
                     { urls: 'stun:stun1.l.google.com:19302' },
                     { urls: 'stun:stun2.l.google.com:19302' },
-                    {
-                        urls: 'turn:openrelay.metered.ca:443',
-                        username: 'openrelayproject',
-                        credential: 'openrelayproject'
-                    },
-                    {
-                        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-                        username: 'openrelayproject',
-                        credential: 'openrelayproject'
-                    }
+                    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+                    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
                 ],
                 'sdpSemantics': 'unified-plan'
             }
@@ -185,8 +168,9 @@
 
         let conn;
         let typingTimeout;
+        const CHUNK_SIZE = 16 * 1024; // 16KB per chunk
+        let incomingFiles = {}; // Menyimpan data file yang sedang diterima
         
-        // Element DOM
         const loginScreen = document.getElementById('login-screen');
         const chatScreen = document.getElementById('chat-screen');
         const chatWindow = document.getElementById('chat-window');
@@ -204,7 +188,6 @@
             loginStatus.style.color = "var(--accent)";
         });
 
-        // --- FITUR COPY ID ---
         myIdBadge.addEventListener('click', () => {
             const currentId = myIdBadge.innerText;
             if (currentId === 'Connecting...' || currentId === 'Tersalin!') return;
@@ -216,9 +199,7 @@
                     myIdBadge.innerText = peer.id;
                     myIdBadge.style.color = 'var(--accent)';
                 }, 2000);
-            }).catch(err => {
-                console.error('Gagal menyalin:', err);
-            });
+            }).catch(err => console.error('Gagal menyalin:', err));
         });
 
         peer.on('error', (err) => {
@@ -233,24 +214,16 @@
             }
         });
 
-        // Saat seseorang connect ke kita
         peer.on('connection', connection => {
             if(conn) conn.close();
             conn = connection;
             setupConn();
         });
 
-        // Saat kita mencoba connect ke teman
         function connectToPeer() {
             const rId = remoteIdInput.value.trim();
-            if(!rId) {
-                alert("Masukkan ID teman terlebih dahulu!");
-                return;
-            }
-            if(rId === peer.id) {
-                alert("Tidak bisa chat dengan diri sendiri!");
-                return;
-            }
+            if(!rId) return alert("Masukkan ID teman terlebih dahulu!");
+            if(rId === peer.id) return alert("Tidak bisa chat dengan diri sendiri!");
             
             connectBtn.innerText = "Menghubungkan...";
             connectBtn.disabled = true;
@@ -259,35 +232,53 @@
             setupConn();
         }
 
-        // Setup Koneksi (Sukses)
         function setupConn() {
             conn.on('open', () => {
                 loginScreen.style.display = 'none';
                 chatScreen.style.display = 'flex';
-                
                 connectBtn.innerText = "Mulai Chat";
                 connectBtn.disabled = false;
-                
                 chatWindow.innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>';
                 updateHeight();
             });
             
             conn.on('data', data => {
-                // Handle objek File
-                if (data && data.type === 'file') {
+                // 1. Terima Metadata File
+                if (data && data.type === 'file-meta') {
                     playNotification();
                     hideTyping();
-                    appendFile('received', data.filename, data.filetype, data.filedata);
+                    incomingFiles[data.fileId] = {
+                        info: data,
+                        chunks: []
+                    };
+                    createProgressUI(data.fileId, data.filename, 'received');
                 } 
-                // Handle objek Typing Indicator
-                else if (data && data.type === 'typing') {
-                    if (data.isTyping) {
-                        showTyping();
-                    } else {
-                        hideTyping();
+                // 2. Terima Chunk File
+                else if (data && data.type === 'file-chunk') {
+                    const fileTransfer = incomingFiles[data.fileId];
+                    if (fileTransfer) {
+                        fileTransfer.chunks.push(data.data);
+                        
+                        // Update Progress Bar (Penerima)
+                        let percent = Math.min(Math.round((fileTransfer.chunks.length / fileTransfer.info.totalChunks) * 100), 100);
+                        updateProgressUI(data.fileId, percent);
+
+                        // Jika semua chunk sudah diterima
+                        if (fileTransfer.chunks.length === fileTransfer.info.totalChunks) {
+                            const blob = new Blob(fileTransfer.chunks, { type: fileTransfer.info.filetype });
+                            blob.arrayBuffer().then(buffer => {
+                                removeProgressUI(data.fileId); // Hapus indikator progress
+                                appendFile('received', fileTransfer.info.filename, fileTransfer.info.filetype, buffer);
+                                delete incomingFiles[data.fileId]; // Bersihkan memori
+                            });
+                        }
                     }
                 } 
-                // Handle pesan teks (String murni)
+                // 3. Terima Status Mengetik
+                else if (data && data.type === 'typing') {
+                    if (data.isTyping) showTyping(); else hideTyping();
+                } 
+                // 4. Terima Pesan Teks Murni
                 else if (typeof data === 'string') {
                     playNotification();
                     hideTyping();
@@ -298,181 +289,5 @@
             conn.on('close', resetUI);
         }
 
-        // --- FUNGSI PENDUKUNG ---
-        function playNotification() {
-            if (document.hidden) {
-                notificationSound.play().catch(e => console.log('Suara diblokir browser', e));
-            } else {
-                notificationSound.play().catch(e => console.log('Suara diblokir browser', e));
-            }
-        }
-
-        function showTyping() {
-            typingIndicator.style.display = 'block';
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
-
-        function hideTyping() {
-            typingIndicator.style.display = 'none';
-        }
-
-        // Tombol Putus ditekan
-        function disconnectPeer() { 
-            if(conn) conn.close(); 
-            resetUI();
-        }
-
-        // Kembali ke halaman Login
-        function resetUI() {
-            conn = null;
-            chatScreen.style.display = 'none';
-            loginScreen.style.display = 'flex';
-            remoteIdInput.value = '';
-            loginStatus.innerText = "Koneksi terakhir diputus.";
-            loginStatus.style.color = "var(--text-dim)";
-            typingIndicator.style.display = 'none';
-        }
-
-        // --- EVENT LISTENER KETIK PESAN (TYPING INDICATOR) ---
-        messageInput.addEventListener('input', () => {
-            if (conn && conn.open) {
-                // Kirim sinyal sedang mengetik
-                conn.send({ type: 'typing', isTyping: true });
-                
-                // Reset timer jika user masih mengetik
-                clearTimeout(typingTimeout);
-                
-                // Jika berhenti mengetik selama 1.5 detik, kirim sinyal berhenti
-                typingTimeout = setTimeout(() => {
-                    conn.send({ type: 'typing', isTyping: false });
-                }, 1500);
-            }
-        });
-
-        function sendMessage() {
-            const msg = messageInput.value.trim();
-            if(msg && conn && conn.open) {
-                // Kirim pesan teks
-                conn.send(msg);
-                
-                // Hentikan indikator typing secara paksa
-                conn.send({ type: 'typing', isTyping: false });
-                clearTimeout(typingTimeout);
-
-                appendMessage('sent', msg);
-                messageInput.value = '';
-                messageInput.focus();
-            }
-        }
-
-        // --- FITUR KIRIM FILE ---
-        fileInput.addEventListener('change', () => {
-            const file = fileInput.files[0];
-            if (!file) return;
-
-            if (!conn || !conn.open) return;
-
-            if (file.size > 15 * 1024 * 1024) {
-                alert("Ukuran file terlalu besar! Maksimal 15MB.");
-                fileInput.value = '';
-                return;
-            }
-
-            appendMessage('system', 'Mengirim file: ' + file.name + '...');
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const fileData = e.target.result;
-                conn.send({
-                    type: 'file',
-                    filename: file.name,
-                    filetype: file.type,
-                    filedata: fileData
-                });
-                appendFile('sent', file.name, file.type, fileData);
-            };
-            reader.readAsArrayBuffer(file);
-            fileInput.value = '';
-        });
-
-        function appendFile(senderType, filename, filetype, fileData) {
-            const div = document.createElement('div');
-            div.className = `msg ${senderType}`;
-            
-            const blob = new Blob([fileData], { type: filetype });
-            const url = URL.createObjectURL(blob);
-
-            if (filetype.startsWith('image/')) {
-                const img = document.createElement('img');
-                img.src = url;
-                img.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; };
-                div.appendChild(img);
-            } else {
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                a.className = 'file-link';
-                a.innerHTML = `📄 ${filename}`;
-                div.appendChild(a);
-            }
-
-            chatWindow.appendChild(div);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
-
-        function appendMessage(type, text) {
-            const div = document.createElement('div');
-            div.className = `msg ${type}`;
-            div.innerText = text;
-            chatWindow.appendChild(div);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
-
-        // Fix Tinggi Layar Mobile
-        const updateHeight = () => {
-            document.body.style.height = window.visualViewport.height + 'px';
-            if(chatScreen.style.display === 'flex') {
-                chatWindow.scrollTop = chatWindow.scrollHeight;
-            }
-        };
-        window.visualViewport.addEventListener('resize', updateHeight);
-        window.visualViewport.addEventListener('scroll', updateHeight);
-
-        // --- FITUR TOMBOL INSTAL PWA ---
-        let deferredPrompt;
-        const installBtn = document.getElementById('install-btn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt !== null) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    console.log('Aplikasi berhasil diinstal');
-                }
-                deferredPrompt = null;
-                installBtn.style.display = 'none';
-            }
-        });
-
-        window.addEventListener('appinstalled', () => {
-            installBtn.style.display = 'none';
-            deferredPrompt = null;
-        });
-
-        // Service Worker Init
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('Service Worker terdaftar!', reg.scope))
-                .catch(err => console.log('Service Worker gagal:', err));
-            });
-        }
-    </script>
-</body>
-</html>
+        function playNotification() { notificationSound.play().catch(e => console.log('Suara diblokir browser', e)); }
+        function showTyping() { typingIndicator.style.display = 'block'; chatWindow.scrollTop = chatWindow.scrollHeight; }
