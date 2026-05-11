@@ -445,17 +445,23 @@
         let savedPeerId = localStorage.getItem('my-peer-id');
         const peerConfig = { 
             config: { 
+                // 'iceTransportPolicy': 'relay', // Hapus // di depan baris ini jika ingin MEMAKSA mode relay
                 'iceServers': [
                     { urls: 'stun:stun.l.google.com:19302' }, 
                     { 
-                        urls: 'turn:free.expressturn.com:3478', 
-                        username: '000000002093856914',
-                        credential: 'p8zevhLmnoN+lQ2dsg1HpaHRZ5w='
+                        urls: 'turn:openrelay.metered.ca:80', 
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
                     },
                     { 
-                        urls: 'turn:free.expressturn.com:3478?transport=tcp', 
-                        username: '000000002093856914',
-                        credential: 'p8zevhLmnoN+lQ2dsg1HpaHRZ5w='
+                        urls: 'turn:openrelay.metered.ca:443', 
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
+                    },
+                    { 
+                        urls: 'turn:openrelay.metered.ca:443?transport=tcp', 
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
                     }
                 ] 
             },
@@ -495,7 +501,7 @@
         });
         
         peer.on('error', (err) => { 
-            clearTimeout(connectTimeout); // Reset timer jika ada error dari server
+            clearTimeout(connectTimeout); 
 
             document.getElementById('login-status').innerText = '⚠ ERROR: ' + err.type; 
             document.getElementById('login-status').style.color = "var(--danger)"; 
