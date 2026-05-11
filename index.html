@@ -122,7 +122,7 @@
         body:not(.light-theme) #chat-window { background-blend-mode: multiply; }
         body.light-theme #chat-window { opacity: 0.95; }
 
-        /* BUBBLE CHAT TERBARU (Sejajar) */
+        /* BUBBLE CHAT TERBARU */
         .msg { 
             display: inline-block; max-width: 85%; padding: 6px 10px 8px 10px; border-radius: 10px; 
             font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.3); position: relative;
@@ -137,6 +137,11 @@
         .msg-content { display: inline; white-space: pre-wrap; word-wrap: break-word; }
         .msg img { max-width: 100%; max-height: 300px; border-radius: 6px; display: block; margin-top: 5px; }
         .file-link { color: #53bdeb; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+
+        /* UI PROGRESS BAR FILE */
+        .progress-wrapper { width: 150px; background: rgba(134,150,160,0.2); border-radius: 4px; margin-top: 5px; height: 8px; overflow: hidden; position: relative; }
+        .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.1s linear; }
+        .progress-text { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 4px; font-weight: bold; }
 
         /* Waktu & Tanda Centang Inline */
         .msg-meta { float: right; display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: rgba(255,255,255,0.6); margin: 6px -2px -4px 10px; line-height: 1; }
@@ -280,6 +285,10 @@
     </div>
 
     <script>
+        // Variabel untuk menampung file chunk
+        let incomingFiles = {};
+        const CHUNK_SIZE = 64 * 1024; // 64KB per potongan file
+
         // --- LOGIKA PROFIL AKUN (NAMA & FOTO) ---
         const accountModal = document.getElementById('account-modal');
         const modalNameInput = document.getElementById('modal-name-input');
@@ -422,7 +431,7 @@
             document.getElementById('reply-preview-container').style.display = 'none';
         }
 
-        // --- CORE WEBRTC LOGIC (DENGAN SERVER EXPRESS TURN BARU) ---
+        // --- CORE WEBRTC LOGIC ---
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
         function playNotification() { if (!isMuted) notificationSound.play().catch(() => {}); }
 
@@ -442,7 +451,7 @@
                     }
                 ] 
             },
-            debug: 3 // Memudahkan melihat log koneksi ICE di Console
+            debug: 3 
         });
         
         let conn, typingTimeout;
@@ -458,7 +467,6 @@
         peer.on('error', (err) => { document.getElementById('login-status').innerText = '⚠ ERROR: ' + err.type; document.getElementById('login-status').style.color = "var(--danger)"; if(err.type === 'peer-unavailable') { alert('ID Teman tidak ditemukan/offline.'); document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false; } });
         peer.on('connection', connection => { if(conn) conn.close(); conn = connection; setupConn(); });
 
-        // Fungsi koneksi diperbarui, menghapus {reliable: true}
         function connectToPeer() {
             const rId = document.getElementById('remote-id').value.trim();
             if(!rId || rId === peer.id) return alert(!rId ? "Masukkan ID teman!" : "Tidak bisa chat dengan diri sendiri!");
@@ -480,13 +488,36 @@
                 } else if (data && data.type === 'ack') {
                     const msgElement = document.getElementById(data.msgId);
                     if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } }
-                } else if (data && data.type === 'file') {
-                    conn.send({ type: 'ack', msgId: data.id }); playNotification(); hideTyping(); appendFile('received', data.filename, data.filetype, data.filedata, data.id);
                 } else if (data && data.type === 'text') {
                     conn.send({ type: 'ack', msgId: data.id }); playNotification(); hideTyping(); appendMessage('received', data, data.id);
                 } else if (data && data.type === 'typing') {
                     data.isTyping ? showTyping() : hideTyping();
-                } else if (typeof data === 'string') { playNotification(); hideTyping(); appendMessage('received', {text: data}); }
+                } else if (data && data.type === 'file-start') {
+                    // Mulai menerima file baru
+                    incomingFiles[data.fileId] = { chunks: [], receivedSize: 0, metadata: data };
+                    renderFileProgress('received', data.fileId, data.filename, 0);
+                } else if (data && data.type === 'file-chunk') {
+                    // Terima potongan file
+                    const fileData = incomingFiles[data.fileId];
+                    if (fileData) {
+                        fileData.chunks.push(data.data);
+                        fileData.receivedSize += data.data.byteLength;
+                        const progress = Math.round((fileData.receivedSize / fileData.metadata.filesize) * 100);
+                        updateFileProgress(data.fileId, progress);
+                    }
+                } else if (data && data.type === 'file-end') {
+                    // File utuh berhasil diterima
+                    const fileData = incomingFiles[data.fileId];
+                    if (fileData) {
+                        const blob = new Blob(fileData.chunks, { type: fileData.metadata.filetype });
+                        finalizeFileMessage('received', data.fileId, fileData.metadata.filename, fileData.metadata.filetype, blob);
+                        delete incomingFiles[data.fileId]; // Bersihkan memory
+                        conn.send({ type: 'ack', msgId: data.fileId });
+                        playNotification(); hideTyping();
+                    }
+                } else if (typeof data === 'string') { 
+                    playNotification(); hideTyping(); appendMessage('received', {text: data}); 
+                }
             });
             conn.on('close', resetUI);
         }
@@ -512,24 +543,101 @@
             }
         }
 
-        // --- FILE UPLOAD ---
+        // --- FILE CHUNKING & UPLOAD LOGIC ---
         function processFile(file) {
             if (!file || !conn || !conn.open) return;
             if (file.size > 15 * 1024 * 1024) { alert("Maksimal 15MB."); return; }
-            const msgId = 'file-' + Date.now(); 
-            appendMessage('system', {text: 'Mengirim file: ' + file.name + '...'});
+            
+            const fileId = 'file-' + Date.now(); 
+            
+            // Tampilkan UI progress awal (0%) di layar pengirim
+            renderFileProgress('sent', fileId, file.name, 0);
+
+            // Kirim metadata awal ke penerima
+            conn.send({ type: 'file-start', fileId: fileId, filename: file.name, filetype: file.type, filesize: file.size });
+
+            let offset = 0;
             const reader = new FileReader();
-            reader.onload = function(evt) { 
-                const fileData = evt.target.result; 
-                conn.send({ type: 'file', id: msgId, filename: file.name, filetype: file.type, filedata: fileData }); 
-                appendFile('sent', file.name, file.type, fileData, msgId); 
+
+            reader.onload = function(e) {
+                // Kirim potongan file (chunk)
+                conn.send({ type: 'file-chunk', fileId: fileId, data: e.target.result });
+                offset += e.target.result.byteLength;
+                
+                // Perbarui progress bar lokal
+                const progress = Math.round((offset / file.size) * 100);
+                updateFileProgress(fileId, progress);
+
+                if (offset < file.size) {
+                    // Beri jeda kecil agar data tidak membanjiri buffer dan UI bisa dirender
+                    setTimeout(readNextChunk, 5); 
+                } else {
+                    // Semua potongan selesai dikirim
+                    conn.send({ type: 'file-end', fileId: fileId });
+                    finalizeFileMessage('sent', fileId, file.name, file.type, file);
+                }
             };
-            reader.readAsArrayBuffer(file);
+
+            function readNextChunk() {
+                const slice = file.slice(offset, offset + CHUNK_SIZE);
+                reader.readAsArrayBuffer(slice);
+            }
+
+            // Mulai membaca chunk pertama
+            readNextChunk();
         }
 
         document.getElementById('file-input').addEventListener('change', (e) => { processFile(e.target.files[0]); e.target.value = ''; });
 
-        // --- RENDER PESAN ---
+        // --- RENDER UI UNTUK FILE PROGRESS ---
+        function renderFileProgress(senderType, fileId, filename, progress) {
+            const div = document.createElement('div'); 
+            div.className = `msg ${senderType}`; 
+            div.id = fileId;
+            
+            div.innerHTML = `
+                <div class="msg-content">
+                    <div style="font-weight:bold; font-size:13px; margin-bottom:5px;">📄 ${filename}</div>
+                    <div class="progress-wrapper">
+                        <div class="progress-bar" id="pb-${fileId}" style="width: ${progress}%"></div>
+                    </div>
+                    <div class="progress-text" id="pt-${fileId}">${progress}% Memproses...</div>
+                </div>
+            `;
+            chatWindow.appendChild(div);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function updateFileProgress(fileId, progress) {
+            const pb = document.getElementById(`pb-${fileId}`);
+            const pt = document.getElementById(`pt-${fileId}`);
+            if (pb && pt) {
+                pb.style.width = `${progress}%`;
+                pt.innerText = progress === 100 ? "Menyelesaikan..." : `${progress}% Mengirim...`;
+            }
+        }
+
+        function finalizeFileMessage(senderType, fileId, filename, filetype, blob) {
+            const div = document.getElementById(fileId);
+            if (!div) return;
+            
+            const url = URL.createObjectURL(blob);
+            let contentHTML = '';
+            
+            if (filetype.startsWith('image/')) {
+                contentHTML = `<img src="${url}" alt="${filename}" onload="chatWindow.scrollTop = chatWindow.scrollHeight">`;
+            } else {
+                contentHTML = `<a href="${url}" download="${filename}" class="file-link">📄 ${filename}</a>`;
+            }
+            
+            // Mengganti UI Progress Bar menjadi File Final (Gambar/Link)
+            div.innerHTML = `<div class="msg-content">${contentHTML}</div>`;
+            appendMeta(div, senderType);
+            setupLongPress(div, { text: `📄 ${filename}`, sender: senderType === 'sent' ? (myName || 'Anda') : remoteName });
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // --- RENDER PESAN TEKS ---
         function appendMessage(type, dataObj, id = null) {
             const text = dataObj.text || "";
             const replyTo = dataObj.replyTo || null;
@@ -546,22 +654,6 @@
                 appendMeta(div, type); 
                 setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || 'Anda') : remoteName }); 
             }
-            chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
-
-        function appendFile(senderType, filename, filetype, fileData, id = null) {
-            const div = document.createElement('div'); div.className = `msg ${senderType}`; if (id) div.id = id;
-            const blob = new Blob([fileData], { type: filetype }); const url = URL.createObjectURL(blob);
-            const content = document.createElement('div'); content.className = 'msg-content';
-            
-            if (filetype.startsWith('image/')) {
-                const img = document.createElement('img'); img.src = url; img.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; }; content.appendChild(img);
-            } else {
-                const a = document.createElement('a'); a.href = url; a.download = filename; a.className = 'file-link'; a.innerHTML = `📄 ${filename}`; content.appendChild(a);
-            }
-            div.appendChild(content);
-            appendMeta(div, senderType);
-            setupLongPress(div, { text: `📄 ${filename}`, sender: senderType === 'sent' ? (myName || 'Anda') : remoteName });
             chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
