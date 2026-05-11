@@ -103,6 +103,7 @@
         .input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; padding-left: 5px; font-weight: bold; }
         .login-card input { width: 100%; padding: 15px; border-radius: 8px; border: none; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; text-align: center; }
         .login-card button#connect-btn { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; font-size: 16px; background: var(--accent); color: #ffffff; cursor: pointer; transition: 0.2s; margin-top: 10px;}
+        .login-card button#connect-btn:disabled { background: var(--text-dim); cursor: not-allowed; }
         .status-text { margin-top: 15px; font-size: 12px; color: var(--text-dim); }
 
         /* --- HALAMAN CHAT --- */
@@ -193,7 +194,6 @@
                 <input type="text" id="modal-name-input" placeholder="Masukkan nama Anda..." autocomplete="off">
             </div>
 
-            <!-- PINDAHAN ID JARINGAN -->
             <div class="my-id-box">
                 <p>ID JARINGAN ANDA (KLIK UNTUK COPY)</p>
                 <span id="my-id" class="id-badge" title="Klik untuk Copy">Connecting...</span>
@@ -291,9 +291,10 @@
     </div>
 
     <script>
-        // Variabel untuk menampung file chunk
+        // Variabel untuk menampung file chunk & batas waktu (timeout)
         let incomingFiles = {};
-        const CHUNK_SIZE = 64 * 1024; // 64KB per potongan file
+        const CHUNK_SIZE = 64 * 1024; 
+        let connectTimeout; // Timer untuk mencegah koneksi macet
 
         // --- LOGIKA PROFIL AKUN (NAMA & FOTO) ---
         const accountModal = document.getElementById('account-modal');
@@ -461,7 +462,6 @@
             debug: 3 
         };
 
-        // Jika ada ID tersimpan, gunakan itu. Jika tidak, biarkan PeerJS membuat ID baru.
         const peer = savedPeerId ? new Peer(savedPeerId, peerConfig) : new Peer(peerConfig);
         
         let conn, typingTimeout;
@@ -473,12 +473,10 @@
         let remoteName = "Teman";
 
         peer.on('open', id => { 
-            // Simpan ID yang baru dibuat agar permanen
             if (!savedPeerId) {
                 localStorage.setItem('my-peer-id', id);
                 savedPeerId = id;
             }
-
             document.getElementById('my-id').innerText = id; 
             document.getElementById('login-status').innerText = "Sistem siap. (Lihat ID Anda di Menu Akun)"; 
             document.getElementById('login-status').style.color = "var(--accent)"; 
@@ -497,13 +495,14 @@
         });
         
         peer.on('error', (err) => { 
+            clearTimeout(connectTimeout); // Reset timer jika ada error dari server
+
             document.getElementById('login-status').innerText = '⚠ ERROR: ' + err.type; 
             document.getElementById('login-status').style.color = "var(--danger)"; 
             
-            // Jika ID yang tersimpan ternyata bentrok / sudah dipakai, hapus agar bisa membuat baru saat direfresh
             if (err.type === 'unavailable-id') {
                 localStorage.removeItem('my-peer-id');
-                alert('ID sebelumnya sedang aktif di sesi lain. Halaman akan dimuat ulang untuk membuat ID baru.');
+                alert('ID sebelumnya sedang aktif di perangkat lain. Halaman akan dimuat ulang untuk membuat ID baru.');
                 window.location.reload();
             } else if(err.type === 'peer-unavailable') { 
                 alert('ID Teman tidak ditemukan/offline.'); 
@@ -514,15 +513,33 @@
 
         peer.on('connection', connection => { if(conn) conn.close(); conn = connection; setupConn(); });
 
+        // LOGIKA KONEKSI DIPERBARUI DENGAN TIMEOUT
         function connectToPeer() {
             const rId = document.getElementById('remote-id').value.trim();
             if(!rId || rId === peer.id) return alert(!rId ? "Masukkan ID teman!" : "Tidak bisa chat dengan diri sendiri!");
-            document.getElementById('connect-btn').innerText = "Menghubungkan..."; document.getElementById('connect-btn').disabled = true;
-            conn = peer.connect(rId); setupConn();
+            
+            document.getElementById('connect-btn').innerText = "Menghubungkan..."; 
+            document.getElementById('connect-btn').disabled = true;
+            
+            conn = peer.connect(rId); 
+            setupConn();
+
+            // Batasan waktu koneksi maksimal 15 detik
+            clearTimeout(connectTimeout);
+            connectTimeout = setTimeout(() => {
+                if (conn && !conn.open) {
+                    alert("Waktu habis! Gagal terhubung. Pastikan ID teman benar dan dia sedang membuka aplikasi.");
+                    if(conn) conn.close();
+                    document.getElementById('connect-btn').innerText = "Mulai Chat"; 
+                    document.getElementById('connect-btn').disabled = false;
+                }
+            }, 15000); // 15 Detik
         }
 
         function setupConn() {
             conn.on('open', () => {
+                clearTimeout(connectTimeout); // Hentikan timer karena koneksi sukses terjalin
+                
                 document.getElementById('login-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex'; document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false;
                 chatWindow.innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil.</div>'; updateHeight();
                 conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 });
@@ -540,11 +557,9 @@
                 } else if (data && data.type === 'typing') {
                     data.isTyping ? showTyping() : hideTyping();
                 } else if (data && data.type === 'file-start') {
-                    // Mulai menerima file baru
                     incomingFiles[data.fileId] = { chunks: [], receivedSize: 0, metadata: data };
                     renderFileProgress('received', data.fileId, data.filename, 0);
                 } else if (data && data.type === 'file-chunk') {
-                    // Terima potongan file
                     const fileData = incomingFiles[data.fileId];
                     if (fileData) {
                         fileData.chunks.push(data.data);
@@ -553,12 +568,11 @@
                         updateFileProgress(data.fileId, progress);
                     }
                 } else if (data && data.type === 'file-end') {
-                    // File utuh berhasil diterima
                     const fileData = incomingFiles[data.fileId];
                     if (fileData) {
                         const blob = new Blob(fileData.chunks, { type: fileData.metadata.filetype });
                         finalizeFileMessage('received', data.fileId, fileData.metadata.filename, fileData.metadata.filetype, blob);
-                        delete incomingFiles[data.fileId]; // Bersihkan memory
+                        delete incomingFiles[data.fileId]; 
                         conn.send({ type: 'ack', msgId: data.fileId });
                         playNotification(); hideTyping();
                     }
@@ -572,7 +586,9 @@
         function showTyping() { document.getElementById('typing-indicator').style.display = 'block'; chatWindow.scrollTop = chatWindow.scrollHeight; }
         function hideTyping() { document.getElementById('typing-indicator').style.display = 'none'; }
         function disconnectPeer() { if(conn) conn.close(); resetUI(); }
+        
         function resetUI() {
+            clearTimeout(connectTimeout);
             conn = null; document.getElementById('chat-screen').style.display = 'none'; document.getElementById('login-screen').style.display = 'flex'; document.getElementById('remote-id').value = '';
             document.getElementById('login-status').innerText = "Koneksi terakhir diputus."; document.getElementById('login-status').style.color = "var(--text-dim)";
             remoteName = "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = defaultSvgAvatar; hideTyping(); cancelReply();
@@ -597,29 +613,22 @@
             
             const fileId = 'file-' + Date.now(); 
             
-            // Tampilkan UI progress awal (0%) di layar pengirim
             renderFileProgress('sent', fileId, file.name, 0);
-
-            // Kirim metadata awal ke penerima
             conn.send({ type: 'file-start', fileId: fileId, filename: file.name, filetype: file.type, filesize: file.size });
 
             let offset = 0;
             const reader = new FileReader();
 
             reader.onload = function(e) {
-                // Kirim potongan file (chunk)
                 conn.send({ type: 'file-chunk', fileId: fileId, data: e.target.result });
                 offset += e.target.result.byteLength;
                 
-                // Perbarui progress bar lokal
                 const progress = Math.round((offset / file.size) * 100);
                 updateFileProgress(fileId, progress);
 
                 if (offset < file.size) {
-                    // Beri jeda kecil agar data tidak membanjiri buffer dan UI bisa dirender
                     setTimeout(readNextChunk, 5); 
                 } else {
-                    // Semua potongan selesai dikirim
                     conn.send({ type: 'file-end', fileId: fileId });
                     finalizeFileMessage('sent', fileId, file.name, file.type, file);
                 }
@@ -629,8 +638,6 @@
                 const slice = file.slice(offset, offset + CHUNK_SIZE);
                 reader.readAsArrayBuffer(slice);
             }
-
-            // Mulai membaca chunk pertama
             readNextChunk();
         }
 
@@ -677,7 +684,6 @@
                 contentHTML = `<a href="${url}" download="${filename}" class="file-link">📄 ${filename}</a>`;
             }
             
-            // Mengganti UI Progress Bar menjadi File Final (Gambar/Link)
             div.innerHTML = `<div class="msg-content">${contentHTML}</div>`;
             appendMeta(div, senderType);
             setupLongPress(div, { text: `📄 ${filename}`, sender: senderType === 'sent' ? (myName || 'Anda') : remoteName });
