@@ -8,7 +8,6 @@
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root {
-            /* Tema Gelap (Default) */
             --bg-deep: #0b141a;
             --bg-panel: #202c33;
             --text-main: #e9edef;
@@ -28,7 +27,6 @@
             --modal-overlay: rgba(0,0,0,0.7);
         }
 
-        /* Tema Terang */
         body.light-theme {
             --bg-deep: #ece5dd;
             --bg-panel: #ffffff;
@@ -51,21 +49,18 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { height: 100%; background-color: var(--bg-deep); color: var(--text-main); font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden; transition: background-color 0.3s; }
         
-        /* --- MENU KEBAB UMUM --- */
         .menu-btn { background: none; border: none; color: var(--text-main); font-size: 24px; font-weight: bold; cursor: pointer; padding: 5px 10px; border-radius: 50%; }
         .dropdown { position: absolute; top: 40px; right: 0; background: var(--bg-panel); border: 1px solid rgba(134, 150, 160, 0.2); border-radius: 8px; box-shadow: 0 5px 15px var(--shadow); display: none; flex-direction: column; min-width: 180px; overflow: hidden; z-index: 1000; }
         .dropdown.show { display: flex; }
         .dropdown button { background: transparent; border: none; color: var(--text-main); padding: 12px 15px; text-align: left; cursor: pointer; font-size: 14px; width: 100%; transition: background 0.2s; }
         .dropdown button:hover { background: var(--dropdown-hover); }
 
-        /* --- MODAL (OVERLAY) --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); display: none; align-items: center; justify-content: center; z-index: 2000; opacity: 0; transition: opacity 0.2s; }
         .modal-overlay.show { display: flex; opacity: 1; }
         .modal-content { background: var(--bg-panel); padding: 25px; border-radius: 12px; width: 90%; max-width: 320px; box-shadow: 0 10px 30px var(--shadow); text-align: center; transform: scale(0.9); transition: transform 0.2s; }
         .modal-overlay.show .modal-content { transform: scale(1); }
         .modal-content h3 { margin-bottom: 20px; font-size: 18px; color: var(--text-main); }
         
-        /* MODAL AKUN & ID JARINGAN */
         .avatar-edit-container { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 20px; }
         .avatar-preview-large { width: 100px; height: 100px; border-radius: 50%; background: var(--avatar-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 5px var(--shadow); }
         .avatar-preview-large img { width: 100%; height: 100%; object-fit: cover; }
@@ -87,14 +82,12 @@
         #close-modal-btn { background: var(--input-bg); color: var(--text-main); }
         #save-account-btn { background: var(--accent); color: #fff; }
 
-        /* MENU TEKAN LAMA (LONG PRESS) BUBBLE */
         .msg-menu-content { background: var(--bg-panel); border-radius: 12px; width: 90%; max-width: 300px; overflow: hidden; display: flex; flex-direction: column; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); transition: 0.2s; }
         .modal-overlay.show .msg-menu-content { transform: translateX(-50%) translateY(0); }
         .msg-menu-content button { background: transparent; border: none; border-bottom: 1px solid rgba(134,150,160,0.1); color: var(--text-main); padding: 15px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .msg-menu-content button:last-child { border-bottom: none; color: var(--danger); }
         .msg-menu-content button:hover { background: var(--dropdown-hover); }
 
-        /* --- HALAMAN LOGIN --- */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; position: relative; }
         .top-right-menu { position: absolute; top: 15px; right: 15px; z-index: 1000; }
         .login-card { background: var(--bg-panel); padding: 30px 20px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px var(--shadow); }
@@ -106,9 +99,7 @@
         .login-card button#connect-btn:disabled { background: var(--text-dim); cursor: not-allowed; }
         .status-text { margin-top: 15px; font-size: 12px; color: var(--text-dim); }
 
-        /* --- HALAMAN CHAT --- */
         #chat-screen { display: none; flex-direction: column; height: 100%; position: relative; }
-        
         header { flex-shrink: 0; background-color: var(--bg-panel); padding: 10px 15px; border-bottom: 1px solid rgba(134,150,160,0.1); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         .header-left { display: flex; align-items: center; gap: 12px; }
         .avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--avatar-bg); display: flex; align-items: center; justify-content: center; color: var(--avatar-color); overflow: hidden; }
@@ -125,34 +116,30 @@
         body:not(.light-theme) #chat-window { background-blend-mode: multiply; }
         body.light-theme #chat-window { opacity: 0.95; }
 
-        /* BUBBLE CHAT TERBARU */
-        .msg { 
-            display: inline-block; max-width: 85%; padding: 6px 10px 8px 10px; border-radius: 10px; 
-            font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.3); position: relative;
-            -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
-        }
+        .msg { display: inline-block; max-width: 85%; padding: 6px 10px 8px 10px; border-radius: 10px; font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.3); position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
         .msg::after { content: ""; display: table; clear: both; } 
         .msg.sent { align-self: flex-end; background: var(--bubble-me); border-top-right-radius: 2px; }
         .msg.received { align-self: flex-start; background: var(--bubble-peer); border-top-left-radius: 2px; }
-        .msg.system { align-self: center; background: rgba(0,0,0,0.4); color: #fff; font-size: 11px; padding: 4px 12px; border-radius: 6px; text-align: center; }
+        
+        /* WARNA LOG SYSTEM UNTUK DEBUGGING */
+        .msg.system { align-self: center; background: rgba(0,0,0,0.5); color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 6px; text-align: center; }
+        .msg.system.error { background: rgba(234, 0, 56, 0.8); font-weight: bold; }
+        .msg.system.success { background: rgba(0, 168, 132, 0.8); font-weight: bold; }
         body.light-theme .msg.system { background: rgba(0,0,0,0.1); color: var(--text-dim); }
 
         .msg-content { display: inline; white-space: pre-wrap; word-wrap: break-word; }
         .msg img { max-width: 100%; max-height: 300px; border-radius: 6px; display: block; margin-top: 5px; }
         .file-link { color: #53bdeb; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
 
-        /* UI PROGRESS BAR FILE */
         .progress-wrapper { width: 150px; background: rgba(134,150,160,0.2); border-radius: 4px; margin-top: 5px; height: 8px; overflow: hidden; position: relative; }
         .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.1s linear; }
         .progress-text { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 4px; font-weight: bold; }
 
-        /* Waktu & Tanda Centang Inline */
         .msg-meta { float: right; display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: rgba(255,255,255,0.6); margin: 6px -2px -4px 10px; line-height: 1; }
         body.light-theme .msg.received .msg-meta, body.light-theme .msg.sent .msg-meta { color: rgba(0,0,0,0.5); }
         .tick { color: var(--tick-color); font-size: 12px; font-weight: bold; }
         .tick.read { color: var(--tick-read); }
 
-        /* Reply Snippet */
         .replied-snippet { background: rgba(0,0,0,0.1); border-left: 4px solid var(--accent); border-radius: 6px; padding: 5px 8px; margin-bottom: 6px; font-size: 13px; color: var(--text-dim); }
         body.light-theme .replied-snippet { background: rgba(0,0,0,0.05); }
         .replied-snippet strong { color: var(--accent); display: block; margin-bottom: 2px; font-size: 12px; }
@@ -160,8 +147,6 @@
         #typing-indicator { display: none; font-size: 12px; color: var(--accent); font-style: italic; padding: 5px 15px; background: var(--bg-deep); }
 
         footer { flex-shrink: 0; background: var(--bg-panel); padding: 10px; display: flex; gap: 6px; align-items: center; padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative; z-index: 10; }
-        
-        /* Container Preview Balasan */
         #reply-preview-container { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background: var(--bg-panel); border-top: 1px solid rgba(134,150,160,0.1); padding: 10px 15px; z-index: 5; }
         .reply-box { background: var(--bg-deep); border-left: 4px solid var(--accent); border-radius: 6px; padding: 8px 12px; position: relative; font-size: 13px; }
         .reply-name { font-weight: bold; color: var(--accent); display: block; margin-bottom: 3px; }
@@ -177,7 +162,6 @@
 </head>
 <body>
 
-    <!-- MODAL PENGATURAN AKUN -->
     <div id="account-modal" class="modal-overlay">
         <div class="modal-content">
             <h3>Pengaturan Akun</h3>
@@ -206,7 +190,6 @@
         </div>
     </div>
 
-    <!-- MODAL MENU TEKAN LAMA PESAN -->
     <div id="msg-action-overlay" class="modal-overlay">
         <div class="msg-menu-content">
             <button id="msg-reply-btn">Balas</button>
@@ -215,7 +198,6 @@
         </div>
     </div>
 
-    <!-- HALAMAN 1: LOGIN SCREEN -->
     <div id="login-screen">
         <div class="top-right-menu">
             <button id="menu-toggle-btn" class="menu-btn">⋮</button>
@@ -236,7 +218,6 @@
         </div>
     </div>
 
-    <!-- HALAMAN 2: CHAT SCREEN -->
     <div id="chat-screen">
         <header>
             <div class="header-left">
@@ -264,13 +245,12 @@
         </header>
 
         <div id="chat-window">
-            <div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>
+            <div class="msg system">Membuka Diagnostic Mode...</div>
         </div>
         
         <div id="typing-indicator"><span id="typer-name">Teman</span> sedang mengetik...</div>
 
         <footer>
-            <!-- Kotak Preview Reply -->
             <div id="reply-preview-container">
                 <div class="reply-box">
                     <button class="cancel-reply" onclick="cancelReply()">✕</button>
@@ -278,11 +258,8 @@
                     <div class="reply-text" id="reply-preview-text">Message</div>
                 </div>
             </div>
-
             <input type="file" id="file-input" style="display: none;">
-            
             <button class="icon-btn" onclick="document.getElementById('file-input').click()" title="Lampirkan File">📎</button>
-            
             <div class="input-wrapper">
                 <input type="text" id="message-input" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
             </div>
@@ -291,12 +268,10 @@
     </div>
 
     <script>
-        // Variabel untuk menampung file chunk & batas waktu (timeout)
         let incomingFiles = {};
         const CHUNK_SIZE = 64 * 1024; 
-        let connectTimeout; // Timer untuk mencegah koneksi macet
+        let connectTimeout; 
 
-        // --- LOGIKA PROFIL AKUN (NAMA & FOTO) ---
         const accountModal = document.getElementById('account-modal');
         const modalNameInput = document.getElementById('modal-name-input');
         const modalAvatarPreview = document.getElementById('modal-avatar-preview');
@@ -305,163 +280,69 @@
         let myName = localStorage.getItem('my-chat-name') || '';
         let myAvatarBase64 = localStorage.getItem('my-chat-avatar') || '';
 
-        function openAccountModal() {
-            modalNameInput.value = myName;
-            modalAvatarPreview.innerHTML = myAvatarBase64 ? `<img src="${myAvatarBase64}" alt="Avatar">` : defaultSvgAvatar;
-            accountModal.classList.add('show');
-            document.getElementById('dropdown-menu').classList.remove('show');
-            document.getElementById('dropdown-menu-chat').classList.remove('show');
-        }
-
+        function openAccountModal() { modalNameInput.value = myName; modalAvatarPreview.innerHTML = myAvatarBase64 ? `<img src="${myAvatarBase64}" alt="Avatar">` : defaultSvgAvatar; accountModal.classList.add('show'); document.getElementById('dropdown-menu').classList.remove('show'); document.getElementById('dropdown-menu-chat').classList.remove('show'); }
         document.querySelectorAll('.account-btn').forEach(btn => btn.addEventListener('click', openAccountModal));
         document.getElementById('close-modal-btn').addEventListener('click', () => accountModal.classList.remove('show'));
 
-        document.getElementById('avatar-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            if (file.size > 2 * 1024 * 1024) return alert("Ukuran foto profil terlalu besar! Maksimal 2MB.");
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                myAvatarBase64 = evt.target.result;
-                modalAvatarPreview.innerHTML = `<img src="${myAvatarBase64}" alt="Avatar">`;
-            };
-            reader.readAsDataURL(file);
-        });
+        document.getElementById('avatar-input').addEventListener('change', (e) => { const file = e.target.files[0]; if (!file) return; if (file.size > 2 * 1024 * 1024) return alert("Ukuran foto profil terlalu besar! Maksimal 2MB."); const reader = new FileReader(); reader.onload = function(evt) { myAvatarBase64 = evt.target.result; modalAvatarPreview.innerHTML = `<img src="${myAvatarBase64}" alt="Avatar">`; }; reader.readAsDataURL(file); });
+        document.getElementById('save-account-btn').addEventListener('click', () => { myName = modalNameInput.value.trim(); localStorage.setItem('my-chat-name', myName); localStorage.setItem('my-chat-avatar', myAvatarBase64); accountModal.classList.remove('show'); if (conn && conn.open) conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 }); });
 
-        document.getElementById('save-account-btn').addEventListener('click', () => {
-            myName = modalNameInput.value.trim();
-            localStorage.setItem('my-chat-name', myName);
-            localStorage.setItem('my-chat-avatar', myAvatarBase64);
-            accountModal.classList.remove('show');
-            if (conn && conn.open) conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 });
-        });
-
-        // --- LOGIKA MENU LAINNYA, TEMA & NOTIFIKASI ---
         let isMuted = false;
         document.getElementById('menu-toggle-btn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('dropdown-menu').classList.toggle('show'); });
         document.getElementById('menu-toggle-chat-btn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('dropdown-menu-chat').classList.toggle('show'); });
-        document.addEventListener('click', (e) => { 
-            if (!accountModal.contains(e.target) && !e.target.classList.contains('account-btn')) {
-                document.getElementById('dropdown-menu').classList.remove('show'); 
-                document.getElementById('dropdown-menu-chat').classList.remove('show'); 
-            }
-        });
+        document.addEventListener('click', (e) => { if (!accountModal.contains(e.target) && !e.target.classList.contains('account-btn')) { document.getElementById('dropdown-menu').classList.remove('show'); document.getElementById('dropdown-menu-chat').classList.remove('show'); } });
 
         if (localStorage.getItem('app-theme') === 'light') document.body.classList.add('light-theme');
-        function toggleTheme() {
-            document.body.classList.toggle('light-theme');
-            localStorage.setItem('app-theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
-            document.getElementById('dropdown-menu').classList.remove('show'); document.getElementById('dropdown-menu-chat').classList.remove('show');
-        }
-        document.getElementById('theme-btn').addEventListener('click', toggleTheme);
-        document.getElementById('theme-chat-btn').addEventListener('click', toggleTheme);
+        function toggleTheme() { document.body.classList.toggle('light-theme'); localStorage.setItem('app-theme', document.body.classList.contains('light-theme') ? 'light' : 'dark'); document.getElementById('dropdown-menu').classList.remove('show'); document.getElementById('dropdown-menu-chat').classList.remove('show'); }
+        document.getElementById('theme-btn').addEventListener('click', toggleTheme); document.getElementById('theme-chat-btn').addEventListener('click', toggleTheme);
 
-        document.getElementById('cache-btn').addEventListener('click', async () => {
-            if (confirm("Hapus semua cache dan mulai ulang? (Ini juga akan mereset ID Jaringan Anda)")) {
-                localStorage.clear();
-                if ('serviceWorker' in navigator) { try { const regs = await navigator.serviceWorker.getRegistrations(); for (let reg of regs) await reg.unregister(); } catch(e) {} }
-                if ('caches' in window) { try { const keys = await caches.keys(); for (let key of keys) await caches.delete(key); } catch(e) {} }
-                window.location.reload(true);
-            }
-        });
+        document.getElementById('cache-btn').addEventListener('click', async () => { if (confirm("Hapus semua cache dan mulai ulang? (Ini juga akan mereset ID Jaringan Anda)")) { localStorage.clear(); if ('serviceWorker' in navigator) { try { const regs = await navigator.serviceWorker.getRegistrations(); for (let reg of regs) await reg.unregister(); } catch(e) {} } if ('caches' in window) { try { const keys = await caches.keys(); for (let key of keys) await caches.delete(key); } catch(e) {} } window.location.reload(true); } });
+        document.getElementById('mute-btn').addEventListener('click', () => { isMuted = !isMuted; document.getElementById('mute-btn').innerText = isMuted ? "Aktifkan Notifikasi" : "Bisukan Notifikasi"; document.getElementById('dropdown-menu-chat').classList.remove('show'); });
+        document.getElementById('search-btn').addEventListener('click', () => { document.getElementById('dropdown-menu-chat').classList.remove('show'); const keyword = prompt("Masukkan kata kunci pencarian:"); if (keyword) window.find(keyword); });
+        document.getElementById('clear-chat-btn').addEventListener('click', () => { if (confirm("Bersihkan layar percakapan?")) { document.getElementById('chat-window').innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>'; } document.getElementById('dropdown-menu-chat').classList.remove('show'); });
 
-        document.getElementById('mute-btn').addEventListener('click', () => {
-            isMuted = !isMuted; document.getElementById('mute-btn').innerText = isMuted ? "Aktifkan Notifikasi" : "Bisukan Notifikasi"; document.getElementById('dropdown-menu-chat').classList.remove('show');
-        });
-
-        document.getElementById('search-btn').addEventListener('click', () => {
-            document.getElementById('dropdown-menu-chat').classList.remove('show');
-            const keyword = prompt("Masukkan kata kunci pencarian:"); if (keyword) window.find(keyword);
-        });
-
-        document.getElementById('clear-chat-btn').addEventListener('click', () => {
-            if (confirm("Bersihkan layar percakapan?")) { document.getElementById('chat-window').innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>'; }
-            document.getElementById('dropdown-menu-chat').classList.remove('show');
-        });
-
-        // --- LONG PRESS & REPLY LOGIC ---
         const msgActionOverlay = document.getElementById('msg-action-overlay');
-        let activeReply = null; 
-        let selectedMsgDiv = null;
-        let selectedMsgObj = null;
+        let activeReply = null; let selectedMsgDiv = null; let selectedMsgObj = null;
 
-        function setupLongPress(element, msgObj) {
-            let pressTimer;
-            let isTouching = false;
-
-            const start = (e) => {
-                if (e.type === 'touchstart') isTouching = true;
-                if (e.type === 'mousedown' && isTouching) return; 
-                pressTimer = setTimeout(() => openMsgMenu(element, msgObj), 600);
-            };
-            const end = () => clearTimeout(pressTimer);
-
-            element.addEventListener('touchstart', start, {passive: true});
-            element.addEventListener('touchend', end);
-            element.addEventListener('touchmove', end);
-            element.addEventListener('mousedown', start);
-            element.addEventListener('mouseup', end);
-            element.addEventListener('mouseleave', end);
-            element.addEventListener('contextmenu', (e) => { e.preventDefault(); openMsgMenu(element, msgObj); });
-        }
-
-        function openMsgMenu(element, obj) {
-            selectedMsgDiv = element;
-            selectedMsgObj = obj;
-            if (navigator.vibrate) navigator.vibrate(50);
-            msgActionOverlay.classList.add('show');
-        }
-
+        function setupLongPress(element, msgObj) { let pressTimer; let isTouching = false; const start = (e) => { if (e.type === 'touchstart') isTouching = true; if (e.type === 'mousedown' && isTouching) return; pressTimer = setTimeout(() => openMsgMenu(element, msgObj), 600); }; const end = () => clearTimeout(pressTimer); element.addEventListener('touchstart', start, {passive: true}); element.addEventListener('touchend', end); element.addEventListener('touchmove', end); element.addEventListener('mousedown', start); element.addEventListener('mouseup', end); element.addEventListener('mouseleave', end); element.addEventListener('contextmenu', (e) => { e.preventDefault(); openMsgMenu(element, msgObj); }); }
+        function openMsgMenu(element, obj) { selectedMsgDiv = element; selectedMsgObj = obj; if (navigator.vibrate) navigator.vibrate(50); msgActionOverlay.classList.add('show'); }
         msgActionOverlay.addEventListener('click', function(e) { if(e.target === this) this.classList.remove('show'); });
+        document.getElementById('msg-reply-btn').addEventListener('click', () => { activeReply = selectedMsgObj; document.getElementById('reply-preview-name').innerText = activeReply.sender; document.getElementById('reply-preview-text').innerText = activeReply.text; document.getElementById('reply-preview-container').style.display = 'block'; document.getElementById('message-input').focus(); msgActionOverlay.classList.remove('show'); });
+        document.getElementById('msg-copy-btn').addEventListener('click', () => { navigator.clipboard.writeText(selectedMsgObj.text).catch(e => console.log('Gagal salin', e)); msgActionOverlay.classList.remove('show'); });
+        document.getElementById('msg-delete-btn').addEventListener('click', () => { if (selectedMsgDiv) selectedMsgDiv.remove(); msgActionOverlay.classList.remove('show'); });
+        function cancelReply() { activeReply = null; document.getElementById('reply-preview-container').style.display = 'none'; }
 
-        document.getElementById('msg-reply-btn').addEventListener('click', () => {
-            activeReply = selectedMsgObj;
-            document.getElementById('reply-preview-name').innerText = activeReply.sender;
-            document.getElementById('reply-preview-text').innerText = activeReply.text;
-            document.getElementById('reply-preview-container').style.display = 'block';
-            document.getElementById('message-input').focus();
-            msgActionOverlay.classList.remove('show');
-        });
-
-        document.getElementById('msg-copy-btn').addEventListener('click', () => {
-            navigator.clipboard.writeText(selectedMsgObj.text).catch(e => console.log('Gagal salin', e));
-            msgActionOverlay.classList.remove('show');
-        });
-
-        document.getElementById('msg-delete-btn').addEventListener('click', () => {
-            if (selectedMsgDiv) selectedMsgDiv.remove();
-            msgActionOverlay.classList.remove('show');
-        });
-
-        function cancelReply() {
-            activeReply = null;
-            document.getElementById('reply-preview-container').style.display = 'none';
+        // --- SISTEM DIAGNOSTIK VISUAL ---
+        function logDebug(message, type = 'system') {
+            const div = document.createElement('div');
+            div.className = `msg system ${type}`;
+            div.innerHTML = `<div class="msg-content">[DIAGNOSTIK]: ${message}</div>`;
+            document.getElementById('chat-window').appendChild(div);
+            document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
         }
 
-        // --- CORE WEBRTC LOGIC & PERSISTENT ID ---
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
         function playNotification() { if (!isMuted) notificationSound.play().catch(() => {}); }
 
         let savedPeerId = localStorage.getItem('my-peer-id');
+        
+        // KONFIGURASI SERVER STUN & TURN
         const peerConfig = { 
             config: { 
-                // 'iceTransportPolicy': 'relay', // Hapus // di depan baris ini jika ingin MEMAKSA mode relay
                 'iceServers': [
                     { urls: 'stun:stun.l.google.com:19302' }, 
+                    { urls: 'stun:stun.cloudflare.com:3478' },
                     { 
                         urls: 'turn:openrelay.metered.ca:80', 
-                        username: 'openrelayproject',
-                        credential: 'openrelayproject'
+                        username: 'openrelayproject', credential: 'openrelayproject'
                     },
                     { 
                         urls: 'turn:openrelay.metered.ca:443', 
-                        username: 'openrelayproject',
-                        credential: 'openrelayproject'
+                        username: 'openrelayproject', credential: 'openrelayproject'
                     },
                     { 
                         urls: 'turn:openrelay.metered.ca:443?transport=tcp', 
-                        username: 'openrelayproject',
-                        credential: 'openrelayproject'
+                        username: 'openrelayproject', credential: 'openrelayproject'
                     }
                 ] 
             },
@@ -479,10 +360,7 @@
         let remoteName = "Teman";
 
         peer.on('open', id => { 
-            if (!savedPeerId) {
-                localStorage.setItem('my-peer-id', id);
-                savedPeerId = id;
-            }
+            if (!savedPeerId) { localStorage.setItem('my-peer-id', id); savedPeerId = id; }
             document.getElementById('my-id').innerText = id; 
             document.getElementById('login-status').innerText = "Sistem siap. (Lihat ID Anda di Menu Akun)"; 
             document.getElementById('login-status').style.color = "var(--accent)"; 
@@ -490,64 +368,98 @@
         
         document.getElementById('my-id').addEventListener('click', function() { 
             if (this.innerText === 'Connecting...' || this.innerText === 'Tersalin!') return; 
-            navigator.clipboard.writeText(this.innerText).then(() => { 
-                this.innerText = 'Tersalin!'; 
-                this.style.color = '#53bdeb'; 
-                setTimeout(() => { 
-                    this.innerText = peer.id; 
-                    this.style.color = 'var(--accent)'; 
-                }, 2000); 
-            }); 
+            navigator.clipboard.writeText(this.innerText).then(() => { this.innerText = 'Tersalin!'; this.style.color = '#53bdeb'; setTimeout(() => { this.innerText = peer.id; this.style.color = 'var(--accent)'; }, 2000); }); 
         });
         
         peer.on('error', (err) => { 
             clearTimeout(connectTimeout); 
-
             document.getElementById('login-status').innerText = '⚠ ERROR: ' + err.type; 
             document.getElementById('login-status').style.color = "var(--danger)"; 
             
+            // Catat ke log visual jika sedang di layar chat
+            if (document.getElementById('chat-screen').style.display === 'flex') {
+                logDebug(`PeerJS Error: ${err.type}`, 'error');
+            }
+            
             if (err.type === 'unavailable-id') {
                 localStorage.removeItem('my-peer-id');
-                alert('ID sebelumnya sedang aktif di perangkat lain. Halaman akan dimuat ulang untuk membuat ID baru.');
+                alert('ID sebelumnya sedang aktif. Halaman akan dimuat ulang untuk membuat ID baru.');
                 window.location.reload();
             } else if(err.type === 'peer-unavailable') { 
-                alert('ID Teman tidak ditemukan/offline.'); 
+                alert('ID Teman tidak ditemukan/offline di server sinyal.'); 
                 document.getElementById('connect-btn').innerText = "Mulai Chat"; 
                 document.getElementById('connect-btn').disabled = false; 
             } 
         });
 
-        peer.on('connection', connection => { if(conn) conn.close(); conn = connection; setupConn(); });
+        // MEMANTAU KONEKSI JARINGAN BAWAAN (ICE)
+        function monitorICE(connection) {
+            setTimeout(() => {
+                if(connection && connection.peerConnection) {
+                    connection.peerConnection.addEventListener('iceconnectionstatechange', () => {
+                        const state = connection.peerConnection.iceConnectionState;
+                        logDebug(`Status Jaringan WebRTC (ICE) berubah menjadi: <b>${state.toUpperCase()}</b>`);
+                        
+                        if(state === 'failed' || state === 'disconnected') {
+                            logDebug('Gagal menembus NAT/Firewall. Server TURN terblokir atau mati.', 'error');
+                            document.getElementById('message-input').disabled = true;
+                            document.getElementById('message-input').placeholder = "Koneksi terputus...";
+                        } else if (state === 'connected' || state === 'completed') {
+                            logDebug('Jalur P2P berhasil diamankan!', 'success');
+                            document.getElementById('message-input').disabled = false;
+                            document.getElementById('message-input').placeholder = "Ketik pesan...";
+                        }
+                    });
+                } else {
+                    logDebug('Gagal memantau objek PeerConnection.', 'error');
+                }
+            }, 1000);
+        }
 
-        // LOGIKA KONEKSI DIPERBARUI DENGAN TIMEOUT
+        peer.on('connection', connection => { 
+            if(conn) conn.close(); 
+            conn = connection; 
+            document.getElementById('login-screen').style.display = 'none'; 
+            document.getElementById('chat-screen').style.display = 'flex';
+            chatWindow.innerHTML = '';
+            logDebug('Menerima koneksi masuk dari teman...');
+            monitorICE(conn);
+            setupConn(); 
+        });
+
         function connectToPeer() {
             const rId = document.getElementById('remote-id').value.trim();
             if(!rId || rId === peer.id) return alert(!rId ? "Masukkan ID teman!" : "Tidak bisa chat dengan diri sendiri!");
             
-            document.getElementById('connect-btn').innerText = "Menghubungkan..."; 
+            document.getElementById('connect-btn').innerText = "Mencari teman..."; 
             document.getElementById('connect-btn').disabled = true;
             
+            // Pindah langsung ke chat screen agar log visual terlihat
+            document.getElementById('login-screen').style.display = 'none'; 
+            document.getElementById('chat-screen').style.display = 'flex';
+            chatWindow.innerHTML = '';
+            
+            logDebug(`Menghubungi Server Sinyal untuk ID: ${rId}`);
+            
             conn = peer.connect(rId); 
+            monitorICE(conn);
             setupConn();
 
-            // Batasan waktu koneksi maksimal 15 detik
             clearTimeout(connectTimeout);
             connectTimeout = setTimeout(() => {
                 if (conn && !conn.open) {
-                    alert("Waktu habis! Gagal terhubung. Pastikan ID teman benar dan dia sedang membuka aplikasi.");
+                    logDebug('WAKTU HABIS! Server sinyal gagal merespon atau ID salah.', 'error');
+                    alert("Waktu habis! Gagal terhubung.");
                     if(conn) conn.close();
-                    document.getElementById('connect-btn').innerText = "Mulai Chat"; 
-                    document.getElementById('connect-btn').disabled = false;
+                    resetUI();
                 }
             }, 15000); // 15 Detik
         }
 
         function setupConn() {
             conn.on('open', () => {
-                clearTimeout(connectTimeout); // Hentikan timer karena koneksi sukses terjalin
-                
-                document.getElementById('login-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex'; document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false;
-                chatWindow.innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil.</div>'; updateHeight();
+                clearTimeout(connectTimeout); 
+                logDebug('Handshake awal berhasil! Bertukar profil...', 'success');
                 conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 });
             });
             
@@ -555,6 +467,7 @@
                 if (data && data.type === 'profile') {
                     remoteName = data.name || "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName;
                     chatHeaderAvatar.innerHTML = data.avatar ? `<img src="${data.avatar}" alt="Avatar">` : defaultSvgAvatar;
+                    logDebug(`Profil diterima. Terhubung dengan: ${remoteName}`);
                 } else if (data && data.type === 'ack') {
                     const msgElement = document.getElementById(data.msgId);
                     if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } }
@@ -586,7 +499,7 @@
                     playNotification(); hideTyping(); appendMessage('received', {text: data}); 
                 }
             });
-            conn.on('close', resetUI);
+            conn.on('close', () => { logDebug('Koneksi ditutup oleh teman.', 'error'); setTimeout(resetUI, 3000); });
         }
 
         function showTyping() { document.getElementById('typing-indicator').style.display = 'block'; chatWindow.scrollTop = chatWindow.scrollHeight; }
@@ -596,7 +509,8 @@
         function resetUI() {
             clearTimeout(connectTimeout);
             conn = null; document.getElementById('chat-screen').style.display = 'none'; document.getElementById('login-screen').style.display = 'flex'; document.getElementById('remote-id').value = '';
-            document.getElementById('login-status').innerText = "Koneksi terakhir diputus."; document.getElementById('login-status').style.color = "var(--text-dim)";
+            document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false;
+            document.getElementById('login-status').innerText = "Sistem siap. (Lihat ID Anda di Menu Akun)"; document.getElementById('login-status').style.color = "var(--text-dim)";
             remoteName = "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = defaultSvgAvatar; hideTyping(); cancelReply();
         }
 
@@ -609,123 +523,37 @@
                 const msgData = { type: 'text', id: msgId, text: msg, replyTo: activeReply ? { sender: activeReply.sender, text: activeReply.text } : null };
                 conn.send(msgData); conn.send({ type: 'typing', isTyping: false }); clearTimeout(typingTimeout);
                 appendMessage('sent', msgData, msgId); messageInput.value = ''; messageInput.focus(); cancelReply();
+            } else if (!conn || !conn.open) {
+                alert("Tidak dapat mengirim pesan, koneksi sedang terputus.");
             }
         }
 
-        // --- FILE CHUNKING & UPLOAD LOGIC ---
         function processFile(file) {
             if (!file || !conn || !conn.open) return;
             if (file.size > 15 * 1024 * 1024) { alert("Maksimal 15MB."); return; }
-            
             const fileId = 'file-' + Date.now(); 
-            
             renderFileProgress('sent', fileId, file.name, 0);
             conn.send({ type: 'file-start', fileId: fileId, filename: file.name, filetype: file.type, filesize: file.size });
-
-            let offset = 0;
-            const reader = new FileReader();
-
+            let offset = 0; const reader = new FileReader();
             reader.onload = function(e) {
                 conn.send({ type: 'file-chunk', fileId: fileId, data: e.target.result });
                 offset += e.target.result.byteLength;
-                
                 const progress = Math.round((offset / file.size) * 100);
                 updateFileProgress(fileId, progress);
-
-                if (offset < file.size) {
-                    setTimeout(readNextChunk, 5); 
-                } else {
-                    conn.send({ type: 'file-end', fileId: fileId });
-                    finalizeFileMessage('sent', fileId, file.name, file.type, file);
-                }
+                if (offset < file.size) { setTimeout(readNextChunk, 5); } else { conn.send({ type: 'file-end', fileId: fileId }); finalizeFileMessage('sent', fileId, file.name, file.type, file); }
             };
-
-            function readNextChunk() {
-                const slice = file.slice(offset, offset + CHUNK_SIZE);
-                reader.readAsArrayBuffer(slice);
-            }
+            function readNextChunk() { const slice = file.slice(offset, offset + CHUNK_SIZE); reader.readAsArrayBuffer(slice); }
             readNextChunk();
         }
 
         document.getElementById('file-input').addEventListener('change', (e) => { processFile(e.target.files[0]); e.target.value = ''; });
 
-        // --- RENDER UI UNTUK FILE PROGRESS ---
-        function renderFileProgress(senderType, fileId, filename, progress) {
-            const div = document.createElement('div'); 
-            div.className = `msg ${senderType}`; 
-            div.id = fileId;
-            
-            div.innerHTML = `
-                <div class="msg-content">
-                    <div style="font-weight:bold; font-size:13px; margin-bottom:5px;">📄 ${filename}</div>
-                    <div class="progress-wrapper">
-                        <div class="progress-bar" id="pb-${fileId}" style="width: ${progress}%"></div>
-                    </div>
-                    <div class="progress-text" id="pt-${fileId}">${progress}% Memproses...</div>
-                </div>
-            `;
-            chatWindow.appendChild(div);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
-
-        function updateFileProgress(fileId, progress) {
-            const pb = document.getElementById(`pb-${fileId}`);
-            const pt = document.getElementById(`pt-${fileId}`);
-            if (pb && pt) {
-                pb.style.width = `${progress}%`;
-                pt.innerText = progress === 100 ? "Menyelesaikan..." : `${progress}% Mengirim...`;
-            }
-        }
-
-        function finalizeFileMessage(senderType, fileId, filename, filetype, blob) {
-            const div = document.getElementById(fileId);
-            if (!div) return;
-            
-            const url = URL.createObjectURL(blob);
-            let contentHTML = '';
-            
-            if (filetype.startsWith('image/')) {
-                contentHTML = `<img src="${url}" alt="${filename}" onload="chatWindow.scrollTop = chatWindow.scrollHeight">`;
-            } else {
-                contentHTML = `<a href="${url}" download="${filename}" class="file-link">📄 ${filename}</a>`;
-            }
-            
-            div.innerHTML = `<div class="msg-content">${contentHTML}</div>`;
-            appendMeta(div, senderType);
-            setupLongPress(div, { text: `📄 ${filename}`, sender: senderType === 'sent' ? (myName || 'Anda') : remoteName });
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
-
-        // --- RENDER PESAN TEKS ---
-        function appendMessage(type, dataObj, id = null) {
-            const text = dataObj.text || "";
-            const replyTo = dataObj.replyTo || null;
-            const div = document.createElement('div'); div.className = `msg ${type}`; if (id) div.id = id;
-
-            if (replyTo && type !== 'system') {
-                const replyDiv = document.createElement('div'); replyDiv.className = 'replied-snippet';
-                replyDiv.innerHTML = `<strong>${replyTo.sender}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${replyTo.text}</span>`;
-                div.appendChild(replyDiv);
-            }
-
-            const content = document.createElement('div'); content.className = 'msg-content'; content.innerText = text; div.appendChild(content);
-            if (type !== 'system') {
-                appendMeta(div, type); 
-                setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || 'Anda') : remoteName }); 
-            }
-            chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
-
-        function appendMeta(parentDiv, type) {
-            const meta = document.createElement('div'); meta.className = 'msg-meta';
-            const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const timeSpan = document.createElement('span'); timeSpan.innerText = timeStr; meta.appendChild(timeSpan);
-            if (type === 'sent') { const tickSpan = document.createElement('span'); tickSpan.className = 'tick'; tickSpan.innerText = '✓'; meta.appendChild(tickSpan); }
-            parentDiv.appendChild(meta);
-        }
-
-        const updateHeight = () => { document.body.style.height = window.visualViewport.height + 'px'; if(document.getElementById('chat-screen').style.display === 'flex') chatWindow.scrollTop = chatWindow.scrollHeight; };
-        window.visualViewport.addEventListener('resize', updateHeight); window.visualViewport.addEventListener('scroll', updateHeight);
+        function renderFileProgress(senderType, fileId, filename, progress) { const div = document.createElement('div'); div.className = `msg ${senderType}`; div.id = fileId; div.innerHTML = `<div class="msg-content"><div style="font-weight:bold; font-size:13px; margin-bottom:5px;">📄 ${filename}</div><div class="progress-wrapper"><div class="progress-bar" id="pb-${fileId}" style="width: ${progress}%"></div></div><div class="progress-text" id="pt-${fileId}">${progress}% Memproses...</div></div>`; chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; }
+        function updateFileProgress(fileId, progress) { const pb = document.getElementById(`pb-${fileId}`); const pt = document.getElementById(`pt-${fileId}`); if (pb && pt) { pb.style.width = `${progress}%`; pt.innerText = progress === 100 ? "Menyelesaikan..." : `${progress}% Mengirim...`; } }
+        function finalizeFileMessage(senderType, fileId, filename, filetype, blob) { const div = document.getElementById(fileId); if (!div) return; const url = URL.createObjectURL(blob); let contentHTML = ''; if (filetype.startsWith('image/')) { contentHTML = `<img src="${url}" alt="${filename}" onload="chatWindow.scrollTop = chatWindow.scrollHeight">`; } else { contentHTML = `<a href="${url}" download="${filename}" class="file-link">📄 ${filename}</a>`; } div.innerHTML = `<div class="msg-content">${contentHTML}</div>`; appendMeta(div, senderType); setupLongPress(div, { text: `📄 ${filename}`, sender: senderType === 'sent' ? (myName || 'Anda') : remoteName }); chatWindow.scrollTop = chatWindow.scrollHeight; }
+        function appendMessage(type, dataObj, id = null) { const text = dataObj.text || ""; const replyTo = dataObj.replyTo || null; const div = document.createElement('div'); div.className = `msg ${type}`; if (id) div.id = id; if (replyTo && type !== 'system') { const replyDiv = document.createElement('div'); replyDiv.className = 'replied-snippet'; replyDiv.innerHTML = `<strong>${replyTo.sender}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${replyTo.text}</span>`; div.appendChild(replyDiv); } const content = document.createElement('div'); content.className = 'msg-content'; content.innerText = text; div.appendChild(content); if (type !== 'system') { appendMeta(div, type); setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || 'Anda') : remoteName }); } chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; }
+        function appendMeta(parentDiv, type) { const meta = document.createElement('div'); meta.className = 'msg-meta'; const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); const timeSpan = document.createElement('span'); timeSpan.innerText = timeStr; meta.appendChild(timeSpan); if (type === 'sent') { const tickSpan = document.createElement('span'); tickSpan.className = 'tick'; tickSpan.innerText = '✓'; meta.appendChild(tickSpan); } parentDiv.appendChild(meta); }
+        const updateHeight = () => { document.body.style.height = window.visualViewport.height + 'px'; if(document.getElementById('chat-screen').style.display === 'flex') chatWindow.scrollTop = chatWindow.scrollHeight; }; window.visualViewport.addEventListener('resize', updateHeight); window.visualViewport.addEventListener('scroll', updateHeight);
     </script>
 </body>
 </html>
