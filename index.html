@@ -373,9 +373,45 @@
         };
         window.visualViewport.addEventListener('resize', updateHeight);
         window.visualViewport.addEventListener('scroll', updateHeight);
-    </script>
-    <!-- Tambahkan tepat sebelum </body> -->
-<script>
+
+        // --- FITUR TOMBOL INSTAL PWA ---
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-btn');
+
+        // Browser mendeteksi web ini bisa diinstal
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Cegah pop-up otomatis bawaan browser
+            e.preventDefault();
+            // Simpan event agar bisa dipanggil saat tombol diklik
+            deferredPrompt = e;
+            // Munculkan tombol instal di halaman login
+            installBtn.style.display = 'block';
+        });
+
+        // Saat tombol diklik pengguna
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt !== null) {
+                // Panggil pop-up instalasi bawaan browser
+                deferredPrompt.prompt();
+                
+                // Tunggu respon pengguna (Klik Install atau Batal)
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('Aplikasi berhasil diinstal');
+                }
+                
+                // Reset dan sembunyikan tombol
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+            }
+        });
+
+        // Jika sudah terinstal, pastikan tombol hilang
+        window.addEventListener('appinstalled', () => {
+            installBtn.style.display = 'none';
+            deferredPrompt = null;
+        });
+        // -------------------------------
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
