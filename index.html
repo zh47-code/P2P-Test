@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="manifest" href="./manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>P2P Private Chat</title>
+    <title>P2P Secure Chat</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root {
@@ -105,13 +105,6 @@
             padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative; z-index: 10;
         }
 
-        #emoji-picker {
-            position: absolute; bottom: 70px; left: 10px; background: var(--bg-panel); border: 1px solid var(--input-bg);
-            border-radius: 12px; padding: 10px; display: none; grid-template-columns: repeat(6, 1fr); gap: 12px;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.6); z-index: 200;
-        }
-
-        .emoji-item { cursor: pointer; font-size: 22px; display: flex; justify-content: center; }
         .input-wrapper { flex: 1; background: var(--input-bg); border-radius: 24px; display: flex; align-items: center; padding: 0 12px; }
         #message-input { flex: 1; background: transparent; border: none; color: white; padding: 12px 5px; font-size: 16px; outline: none; }
         .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-dim); transition: 0.2s; }
@@ -154,21 +147,7 @@
         <!-- Typing Indicator Container -->
         <div id="typing-indicator">Teman sedang mengetik...</div>
 
-        <div id="emoji-picker">
-            <span class="emoji-item" onclick="addEmoji('😊')">😊</span>
-            <span class="emoji-item" onclick="addEmoji('😂')">😂</span>
-            <span class="emoji-item" onclick="addEmoji('😍')">😍</span>
-            <span class="emoji-item" onclick="addEmoji('👍')">👍</span>
-            <span class="emoji-item" onclick="addEmoji('🔥')">🔥</span>
-            <span class="emoji-item" onclick="addEmoji('🤔')">🤔</span>
-            <span class="emoji-item" onclick="addEmoji('😎')">😎</span>
-            <span class="emoji-item" onclick="addEmoji('❤️')">❤️</span>
-            <span class="emoji-item" onclick="addEmoji('😢')">😢</span>
-            <span class="emoji-item" onclick="addEmoji('✅')">✅</span>
-        </div>
-
         <footer>
-            <button class="icon-btn" onclick="toggleEmoji()">😊</button>
             <input type="file" id="file-input" style="display: none;">
             <button class="icon-btn" onclick="document.getElementById('file-input').click()">📎</button>
             
@@ -181,7 +160,6 @@
 
     <script>
         // --- INISIALISASI AUDIO NOTIFIKASI ---
-        // Menggunakan aset suara bebas royalti yang ringan
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
 
         const peer = new Peer({
@@ -206,7 +184,7 @@
         });
 
         let conn;
-        let typingTimeout; // Untuk fitur typing indicator
+        let typingTimeout;
         
         // Element DOM
         const loginScreen = document.getElementById('login-screen');
@@ -216,7 +194,6 @@
         const remoteIdInput = document.getElementById('remote-id');
         const loginStatus = document.getElementById('login-status');
         const connectBtn = document.getElementById('connect-btn');
-        const emojiPicker = document.getElementById('emoji-picker');
         const fileInput = document.getElementById('file-input');
         const typingIndicator = document.getElementById('typing-indicator');
         const myIdBadge = document.getElementById('my-id');
@@ -323,11 +300,9 @@
 
         // --- FUNGSI PENDUKUNG ---
         function playNotification() {
-            // Mainkan suara jika tab sedang tidak fokus (opsional, tapi disarankan)
             if (document.hidden) {
                 notificationSound.play().catch(e => console.log('Suara diblokir browser', e));
             } else {
-                // Hilangkan blok if(document.hidden) jika ingin suara tetap bunyi walau aplikasi sedang dibuka
                 notificationSound.play().catch(e => console.log('Suara diblokir browser', e));
             }
         }
@@ -386,7 +361,6 @@
 
                 appendMessage('sent', msg);
                 messageInput.value = '';
-                emojiPicker.style.display = 'none';
                 messageInput.focus();
             }
         }
@@ -445,10 +419,6 @@
             chatWindow.appendChild(div);
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
-
-        // --- UI & EMOJI ---
-        function toggleEmoji() { emojiPicker.style.display = emojiPicker.style.display === 'grid' ? 'none' : 'grid'; }
-        function addEmoji(emoji) { messageInput.value += emoji; messageInput.focus(); }
 
         function appendMessage(type, text) {
             const div = document.createElement('div');
