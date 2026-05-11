@@ -7,16 +7,7 @@
     <title>P2P Dark Chat - 2 Pages</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        
-        #install-btn {
-            background: #53bdeb; /* Warna biru agar beda dengan tombol Connect */
-            color: #0b141a;
-            margin-top: 15px;
-            display: none; /* Disembunyikan secara default */
-        }
-        
-        #install-btn:hover { background: #3fa1c9; }
-                :root {
+        :root {
             --bg-deep: #0b141a;
             --bg-panel: #202c33;
             --text-main: #e9edef;
@@ -47,7 +38,15 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
         .my-id-box p { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
-        .id-badge { color: var(--accent); font-weight: bold; font-family: monospace; font-size: 18px; user-select: all; }
+        
+        /* Modifikasi untuk efek Copy */
+        .id-badge { 
+            color: var(--accent); font-weight: bold; font-family: monospace; font-size: 18px; 
+            cursor: pointer; display: inline-block; padding: 5px 10px; border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .id-badge:hover { background: rgba(0, 168, 132, 0.1); }
+        .id-badge:active { background: rgba(0, 168, 132, 0.3); }
         
         .login-card input {
             width: 100%; padding: 15px; border-radius: 8px; border: none; margin-bottom: 15px;
@@ -58,10 +57,19 @@
             background: var(--accent); color: #0b141a; cursor: pointer; transition: 0.2s;
         }
         .login-card button:hover { background: var(--accent-hover); }
+        
+        #install-btn {
+            background: #53bdeb;
+            color: #0b141a;
+            margin-top: 15px;
+            display: none;
+        }
+        #install-btn:hover { background: #3fa1c9; }
+        
         .status-text { margin-top: 15px; font-size: 12px; color: var(--text-dim); }
 
         /* --- HALAMAN CHAT --- */
-        #chat-screen { display: none; flex-direction: column; height: 100%; }
+        #chat-screen { display: none; flex-direction: column; height: 100%; position: relative; }
         
         header { flex-shrink: 0; background-color: var(--bg-panel); padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         .header-info { display: flex; flex-direction: column; }
@@ -86,9 +94,15 @@
         .file-link { color: #53bdeb; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
         .file-link:hover { text-decoration: underline; }
 
+        /* Indikator Mengetik */
+        #typing-indicator {
+            display: none; font-size: 12px; color: var(--accent); font-style: italic;
+            padding: 5px 15px; background: var(--bg-deep);
+        }
+
         footer {
             flex-shrink: 0; background: var(--bg-panel); padding: 10px; display: flex; gap: 8px; align-items: center;
-            padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative; z-index: 10;
         }
 
         #emoji-picker {
@@ -112,8 +126,8 @@
         <div class="login-card">
             <h1>P2P SECURE CHAT</h1>
             <div class="my-id-box">
-                <p>ID Anda (Berikan ke teman):</p>
-                <span id="my-id" class="id-badge">Connecting...</span>
+                <p>ID Anda (Klik untuk menyalin):</p>
+                <span id="my-id" class="id-badge" title="Klik untuk Copy">Connecting...</span>
             </div>
             
             <input type="text" id="remote-id" placeholder="Masukkan ID Teman di sini">
@@ -136,6 +150,9 @@
         <div id="chat-window">
             <div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>
         </div>
+        
+        <!-- Typing Indicator Container -->
+        <div id="typing-indicator">Teman sedang mengetik...</div>
 
         <div id="emoji-picker">
             <span class="emoji-item" onclick="addEmoji('😊')">😊</span>
@@ -163,6 +180,10 @@
     </div>
 
     <script>
+        // --- INISIALISASI AUDIO NOTIFIKASI ---
+        // Menggunakan aset suara bebas royalti yang ringan
+        const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
+
         const peer = new Peer({
             config: {
                 'iceServers': [
@@ -185,6 +206,7 @@
         });
 
         let conn;
+        let typingTimeout; // Untuk fitur typing indicator
         
         // Element DOM
         const loginScreen = document.getElementById('login-screen');
@@ -196,11 +218,30 @@
         const connectBtn = document.getElementById('connect-btn');
         const emojiPicker = document.getElementById('emoji-picker');
         const fileInput = document.getElementById('file-input');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const myIdBadge = document.getElementById('my-id');
 
         peer.on('open', id => {
-            document.getElementById('my-id').innerText = id;
+            myIdBadge.innerText = id;
             loginStatus.innerText = "Sistem siap. Silakan masukkan ID teman.";
             loginStatus.style.color = "var(--accent)";
+        });
+
+        // --- FITUR COPY ID ---
+        myIdBadge.addEventListener('click', () => {
+            const currentId = myIdBadge.innerText;
+            if (currentId === 'Connecting...' || currentId === 'Tersalin!') return;
+            
+            navigator.clipboard.writeText(currentId).then(() => {
+                myIdBadge.innerText = 'Tersalin!';
+                myIdBadge.style.color = '#53bdeb';
+                setTimeout(() => {
+                    myIdBadge.innerText = peer.id;
+                    myIdBadge.style.color = 'var(--accent)';
+                }, 2000);
+            }).catch(err => {
+                console.error('Gagal menyalin:', err);
+            });
         });
 
         peer.on('error', (err) => {
@@ -244,30 +285,60 @@
         // Setup Koneksi (Sukses)
         function setupConn() {
             conn.on('open', () => {
-                // Pindah Halaman: Hilangkan Login, Munculkan Chat
                 loginScreen.style.display = 'none';
                 chatScreen.style.display = 'flex';
                 
-                // Reset tombol login untuk jaga-jaga saat nanti kembali
                 connectBtn.innerText = "Mulai Chat";
                 connectBtn.disabled = false;
                 
-                // Bersihkan chat history lama
                 chatWindow.innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>';
-                
-                // Panggil update tinggi layar untuk HP
                 updateHeight();
             });
             
             conn.on('data', data => {
+                // Handle objek File
                 if (data && data.type === 'file') {
+                    playNotification();
+                    hideTyping();
                     appendFile('received', data.filename, data.filetype, data.filedata);
-                } else {
+                } 
+                // Handle objek Typing Indicator
+                else if (data && data.type === 'typing') {
+                    if (data.isTyping) {
+                        showTyping();
+                    } else {
+                        hideTyping();
+                    }
+                } 
+                // Handle pesan teks (String murni)
+                else if (typeof data === 'string') {
+                    playNotification();
+                    hideTyping();
                     appendMessage('received', data);
                 }
             });
             
             conn.on('close', resetUI);
+        }
+
+        // --- FUNGSI PENDUKUNG ---
+        function playNotification() {
+            // Mainkan suara jika tab sedang tidak fokus (opsional, tapi disarankan)
+            if (document.hidden) {
+                notificationSound.play().catch(e => console.log('Suara diblokir browser', e));
+            } else {
+                // Hilangkan blok if(document.hidden) jika ingin suara tetap bunyi walau aplikasi sedang dibuka
+                notificationSound.play().catch(e => console.log('Suara diblokir browser', e));
+            }
+        }
+
+        function showTyping() {
+            typingIndicator.style.display = 'block';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function hideTyping() {
+            typingIndicator.style.display = 'none';
         }
 
         // Tombol Putus ditekan
@@ -284,12 +355,35 @@
             remoteIdInput.value = '';
             loginStatus.innerText = "Koneksi terakhir diputus.";
             loginStatus.style.color = "var(--text-dim)";
+            typingIndicator.style.display = 'none';
         }
+
+        // --- EVENT LISTENER KETIK PESAN (TYPING INDICATOR) ---
+        messageInput.addEventListener('input', () => {
+            if (conn && conn.open) {
+                // Kirim sinyal sedang mengetik
+                conn.send({ type: 'typing', isTyping: true });
+                
+                // Reset timer jika user masih mengetik
+                clearTimeout(typingTimeout);
+                
+                // Jika berhenti mengetik selama 1.5 detik, kirim sinyal berhenti
+                typingTimeout = setTimeout(() => {
+                    conn.send({ type: 'typing', isTyping: false });
+                }, 1500);
+            }
+        });
 
         function sendMessage() {
             const msg = messageInput.value.trim();
             if(msg && conn && conn.open) {
+                // Kirim pesan teks
                 conn.send(msg);
+                
+                // Hentikan indikator typing secara paksa
+                conn.send({ type: 'typing', isTyping: false });
+                clearTimeout(typingTimeout);
+
                 appendMessage('sent', msg);
                 messageInput.value = '';
                 emojiPicker.style.display = 'none';
@@ -378,47 +472,37 @@
         let deferredPrompt;
         const installBtn = document.getElementById('install-btn');
 
-        // Browser mendeteksi web ini bisa diinstal
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Cegah pop-up otomatis bawaan browser
             e.preventDefault();
-            // Simpan event agar bisa dipanggil saat tombol diklik
             deferredPrompt = e;
-            // Munculkan tombol instal di halaman login
             installBtn.style.display = 'block';
         });
 
-        // Saat tombol diklik pengguna
         installBtn.addEventListener('click', async () => {
             if (deferredPrompt !== null) {
-                // Panggil pop-up instalasi bawaan browser
                 deferredPrompt.prompt();
-                
-                // Tunggu respon pengguna (Klik Install atau Batal)
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') {
                     console.log('Aplikasi berhasil diinstal');
                 }
-                
-                // Reset dan sembunyikan tombol
                 deferredPrompt = null;
                 installBtn.style.display = 'none';
             }
         });
 
-        // Jika sudah terinstal, pastikan tombol hilang
         window.addEventListener('appinstalled', () => {
             installBtn.style.display = 'none';
             deferredPrompt = null;
         });
-        // -------------------------------
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker terdaftar!', reg.scope))
-        .catch(err => console.log('Service Worker gagal:', err));
-    });
-  }
-</script>
+
+        // Service Worker Init
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker terdaftar!', reg.scope))
+                .catch(err => console.log('Service Worker gagal:', err));
+            });
+        }
+    </script>
 </body>
 </html>
