@@ -25,6 +25,7 @@
             --tick-read: #53bdeb;
             --avatar-bg: #dfe5e7;
             --avatar-color: #ffffff;
+            --modal-overlay: rgba(0,0,0,0.7);
         }
 
         /* Tema Terang */
@@ -44,6 +45,7 @@
             --tick-color: #8696a0;
             --tick-read: #34b7f1;
             --avatar-bg: #dfe5e7;
+            --modal-overlay: rgba(0,0,0,0.4);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -60,25 +62,55 @@
         .dropdown button { background: transparent; border: none; color: var(--text-main); padding: 12px 15px; text-align: left; cursor: pointer; font-size: 14px; width: 100%; transition: background 0.2s; }
         .dropdown button:hover { background: var(--dropdown-hover); }
 
+        /* --- MODAL AKUN POP-UP --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay);
+            display: none; align-items: center; justify-content: center; z-index: 2000; opacity: 0; transition: opacity 0.2s;
+        }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-content {
+            background: var(--bg-panel); padding: 25px; border-radius: 12px; width: 90%; max-width: 320px;
+            box-shadow: 0 10px 30px var(--shadow); text-align: center; transform: scale(0.9); transition: transform 0.2s;
+        }
+        .modal-overlay.show .modal-content { transform: scale(1); }
+        .modal-content h3 { margin-bottom: 20px; font-size: 18px; color: var(--text-main); }
+        
+        .avatar-edit-container { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .avatar-preview-large { width: 100px; height: 100px; border-radius: 50%; background: var(--avatar-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 5px var(--shadow); }
+        .avatar-preview-large img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-preview-large svg { width: 60%; height: 60%; fill: #fff; margin-top: 10px;}
+        body.light-theme .avatar-preview-large svg { fill: #fff; }
+        .edit-avatar-btn { background: var(--input-bg); color: var(--text-main); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s;}
+        .edit-avatar-btn:hover { background: rgba(134,150,160,0.2); }
+
+        .modal-input-group { text-align: left; margin-bottom: 20px; }
+        .modal-input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; font-weight: bold; }
+        .modal-input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid transparent; background: var(--input-bg); color: var(--text-main); font-size: 15px; outline: none; }
+        .modal-input-group input:focus { border-color: var(--accent); }
+
+        .modal-actions { display: flex; gap: 10px; }
+        .modal-actions button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s;}
+        #close-modal-btn { background: var(--input-bg); color: var(--text-main); }
+        #close-modal-btn:hover { opacity: 0.8; }
+        #save-account-btn { background: var(--accent); color: #fff; }
+        #save-account-btn:hover { background: var(--accent-hover); }
+
         /* --- HALAMAN LOGIN --- */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; position: relative; }
         .top-right-menu { position: absolute; top: 15px; right: 15px; z-index: 1000; }
         
         .login-card { background: var(--bg-panel); padding: 30px 20px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px var(--shadow); }
-        .login-card h1 { font-size: 22px; margin-bottom: 20px; color: var(--text-main); }
+        .login-card h1 { font-size: 22px; margin-bottom: 25px; color: var(--text-main); }
         
-        /* Input Nama */
-        .input-group { text-align: left; margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; padding-left: 5px; font-weight: bold; }
-        
-        .my-id-box { background: var(--bg-deep); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(134, 150, 160, 0.2); }
+        .my-id-box { background: var(--bg-deep); padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid rgba(134, 150, 160, 0.2); }
         .my-id-box p { font-size: 12px; color: var(--text-dim); margin-bottom: 5px; }
         .id-badge { color: var(--accent); font-weight: bold; font-family: monospace; font-size: 18px; cursor: pointer; display: inline-block; padding: 5px 10px; border-radius: 6px; transition: background 0.2s; }
         .id-badge:hover { background: rgba(0, 168, 132, 0.1); }
         .id-badge:active { background: rgba(0, 168, 132, 0.3); }
         
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; padding-left: 5px; font-weight: bold; }
         .login-card input { width: 100%; padding: 15px; border-radius: 8px; border: none; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; text-align: center; }
-        .login-card input:focus { border: 1px solid var(--accent); }
         .login-card button#connect-btn { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; font-size: 16px; background: var(--accent); color: #ffffff; cursor: pointer; transition: 0.2s; margin-top: 10px;}
         .login-card button#connect-btn:hover { background: var(--accent-hover); }
         
@@ -91,10 +123,10 @@
         
         header { flex-shrink: 0; background-color: var(--bg-panel); padding: 10px 15px; border-bottom: 1px solid rgba(134,150,160,0.1); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         
-        /* Layout Header Kiri (Avatar + Nama) */
         .header-left { display: flex; align-items: center; gap: 12px; }
         .avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--avatar-bg); display: flex; align-items: center; justify-content: center; color: var(--avatar-color); overflow: hidden; }
-        .avatar svg { width: 100%; height: 100%; fill: #ffffff; margin-top: 5px; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar svg { width: 60%; height: 60%; fill: #ffffff; margin-top: 5px; }
         body.light-theme .avatar svg { fill: #ffffff; }
 
         .header-info { display: flex; flex-direction: column; }
@@ -121,7 +153,6 @@
         .file-link { color: #53bdeb; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
         .file-link:hover { text-decoration: underline; }
 
-        /* Waktu & Tick Message */
         .msg-meta { display: flex; justify-content: flex-end; align-items: center; gap: 4px; font-size: 10px; color: rgba(255,255,255,0.6); margin-top: 4px; }
         body.light-theme .msg.received .msg-meta, body.light-theme .msg.sent .msg-meta { color: rgba(0,0,0,0.5); }
         .tick { color: var(--tick-color); font-size: 12px; font-weight: bold; }
@@ -139,11 +170,38 @@
 </head>
 <body>
 
+    <!-- MODAL PENGATURAN AKUN -->
+    <div id="account-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Pengaturan Akun</h3>
+            
+            <div class="avatar-edit-container">
+                <div class="avatar-preview-large" id="modal-avatar-preview">
+                    <!-- Default SVG icon -->
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                </div>
+                <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                <button class="edit-avatar-btn" onclick="document.getElementById('avatar-input').click()">Ubah Foto</button>
+            </div>
+
+            <div class="modal-input-group">
+                <label for="modal-name-input">NAMA TAMPILAN</label>
+                <input type="text" id="modal-name-input" placeholder="Masukkan nama Anda..." autocomplete="off">
+            </div>
+
+            <div class="modal-actions">
+                <button id="close-modal-btn">Batal</button>
+                <button id="save-account-btn">Simpan</button>
+            </div>
+        </div>
+    </div>
+
     <!-- HALAMAN 1: LOGIN SCREEN -->
     <div id="login-screen">
         <div class="top-right-menu">
             <button id="menu-toggle-btn" class="menu-btn">⋮</button>
             <div id="dropdown-menu" class="dropdown">
+                <button class="account-btn">Akun</button>
                 <button id="theme-btn">Ganti Tema</button>
                 <button id="cache-btn">Hapus Cache</button>
             </div>
@@ -152,12 +210,6 @@
         <div class="login-card">
             <h1>P2P SECURE CHAT</h1>
             
-            <!-- Tambahan Input Nama -->
-            <div class="input-group">
-                <label for="my-name-input">NAMA ANDA</label>
-                <input type="text" id="my-name-input" placeholder="Masukkan nama..." autocomplete="off">
-            </div>
-
             <div class="my-id-box">
                 <p>ID Jaringan Anda (Klik untuk menyalin):</p>
                 <span id="my-id" class="id-badge" title="Klik untuk Copy">Connecting...</span>
@@ -178,8 +230,8 @@
     <div id="chat-screen">
         <header>
             <div class="header-left">
-                <!-- Tambahan Foto Profil / Avatar -->
-                <div class="avatar">
+                <!-- Foto Profil Teman -->
+                <div class="avatar" id="chat-header-avatar">
                     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
                 </div>
                 <div class="header-info">
@@ -195,6 +247,7 @@
                     <div id="dropdown-menu-chat" class="dropdown" style="top: 35px;">
                         <button id="mute-btn">Bisukan Notifikasi</button>
                         <button id="search-btn">Cari</button>
+                        <button class="account-btn">Akun</button>
                         <button id="theme-chat-btn">Ganti Tema</button>
                         <button id="clear-chat-btn">Hapus Chat</button>
                     </div>
@@ -220,41 +273,84 @@
     </div>
 
     <script>
-        // --- LOGIKA PROFIL NAMA ---
-        const myNameInput = document.getElementById('my-name-input');
-        const chatTitle = document.getElementById('chat-title');
-        const typerNameSpan = document.getElementById('typer-name');
+        // --- LOGIKA PROFIL AKUN (NAMA & FOTO) ---
+        const accountModal = document.getElementById('account-modal');
+        const modalNameInput = document.getElementById('modal-name-input');
+        const modalAvatarPreview = document.getElementById('modal-avatar-preview');
+        const defaultSvgAvatar = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>`;
 
-        // Load nama dari LocalStorage, default "Anonim"
         let myName = localStorage.getItem('my-chat-name') || '';
-        myNameInput.value = myName;
+        let myAvatarBase64 = localStorage.getItem('my-chat-avatar') || ''; // Gambar profil kita
 
-        // Simpan nama saat user mengetik
-        myNameInput.addEventListener('input', (e) => {
-            myName = e.target.value.trim();
-            localStorage.setItem('my-chat-name', myName);
+        // Render preview di Modal saat dibuka
+        function openAccountModal() {
+            modalNameInput.value = myName;
+            if (myAvatarBase64) {
+                modalAvatarPreview.innerHTML = `<img src="${myAvatarBase64}" alt="Avatar">`;
+            } else {
+                modalAvatarPreview.innerHTML = defaultSvgAvatar;
+            }
+            accountModal.classList.add('show');
+            dropdownMenu.classList.remove('show');
+            dropdownMenuChat.classList.remove('show');
+        }
+
+        // Event listener untuk tombol Akun (di Login & Chat)
+        document.querySelectorAll('.account-btn').forEach(btn => {
+            btn.addEventListener('click', openAccountModal);
         });
 
-        // Nama teman jarak jauh (default "Teman")
-        let remoteName = "Teman";
+        // Tutup Modal
+        document.getElementById('close-modal-btn').addEventListener('click', () => { accountModal.classList.remove('show'); });
 
-        // --- LOGIKA MENU, TEMA & NOTIFIKASI ---
+        // Ganti Foto Profil (Konversi gambar ke Base64)
+        document.getElementById('avatar-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            // Batasi ukuran foto profil (Maks 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert("Ukuran foto profil terlalu besar! Maksimal 2MB.");
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                myAvatarBase64 = evt.target.result;
+                modalAvatarPreview.innerHTML = `<img src="${myAvatarBase64}" alt="Avatar">`;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Simpan Pengaturan Akun
+        document.getElementById('save-account-btn').addEventListener('click', () => {
+            myName = modalNameInput.value.trim();
+            localStorage.setItem('my-chat-name', myName);
+            localStorage.setItem('my-chat-avatar', myAvatarBase64);
+            
+            accountModal.classList.remove('show');
+
+            // Jika sedang terhubung, langsung update profil ke teman
+            if (conn && conn.open) {
+                conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 });
+            }
+        });
+
+
+        // --- LOGIKA MENU LAINNYA, TEMA & NOTIFIKASI ---
         let isMuted = false;
         const menuToggleBtn = document.getElementById('menu-toggle-btn');
         const dropdownMenu = document.getElementById('dropdown-menu');
-        const themeBtn = document.getElementById('theme-btn');
-        const cacheBtn = document.getElementById('cache-btn');
-
         const menuToggleChatBtn = document.getElementById('menu-toggle-chat-btn');
         const dropdownMenuChat = document.getElementById('dropdown-menu-chat');
-        const muteBtn = document.getElementById('mute-btn');
-        const searchBtn = document.getElementById('search-btn');
-        const themeChatBtn = document.getElementById('theme-chat-btn');
-        const clearChatBtn = document.getElementById('clear-chat-btn');
 
         menuToggleBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('show'); });
         menuToggleChatBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenuChat.classList.toggle('show'); });
-        document.addEventListener('click', () => { dropdownMenu.classList.remove('show'); dropdownMenuChat.classList.remove('show'); });
+        document.addEventListener('click', (e) => { 
+            if (!accountModal.contains(e.target) && !e.target.classList.contains('account-btn')) {
+                dropdownMenu.classList.remove('show'); 
+                dropdownMenuChat.classList.remove('show'); 
+            }
+        });
 
         if (localStorage.getItem('app-theme') === 'light') document.body.classList.add('light-theme');
         function toggleTheme() {
@@ -262,10 +358,10 @@
             localStorage.setItem('app-theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
             dropdownMenu.classList.remove('show'); dropdownMenuChat.classList.remove('show');
         }
-        themeBtn.addEventListener('click', toggleTheme);
-        themeChatBtn.addEventListener('click', toggleTheme);
+        document.getElementById('theme-btn').addEventListener('click', toggleTheme);
+        document.getElementById('theme-chat-btn').addEventListener('click', toggleTheme);
 
-        cacheBtn.addEventListener('click', async () => {
+        document.getElementById('cache-btn').addEventListener('click', async () => {
             if (confirm("Hapus semua cache dan mulai ulang?")) {
                 localStorage.clear();
                 if ('serviceWorker' in navigator) { try { const regs = await navigator.serviceWorker.getRegistrations(); for (let reg of regs) await reg.unregister(); } catch(e) {} }
@@ -274,19 +370,20 @@
             }
         });
 
-        muteBtn.addEventListener('click', () => {
-            isMuted = !isMuted; muteBtn.innerText = isMuted ? "Aktifkan Notifikasi" : "Bisukan Notifikasi"; dropdownMenuChat.classList.remove('show');
+        document.getElementById('mute-btn').addEventListener('click', () => {
+            isMuted = !isMuted; document.getElementById('mute-btn').innerText = isMuted ? "Aktifkan Notifikasi" : "Bisukan Notifikasi"; dropdownMenuChat.classList.remove('show');
         });
 
-        searchBtn.addEventListener('click', () => {
+        document.getElementById('search-btn').addEventListener('click', () => {
             dropdownMenuChat.classList.remove('show');
             const keyword = prompt("Masukkan kata kunci pencarian:"); if (keyword) window.find(keyword);
         });
 
-        clearChatBtn.addEventListener('click', () => {
+        document.getElementById('clear-chat-btn').addEventListener('click', () => {
             if (confirm("Bersihkan layar percakapan?")) { document.getElementById('chat-window').innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>'; }
             dropdownMenuChat.classList.remove('show');
         });
+
 
         // --- CORE WEBRTC LOGIC ---
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
@@ -308,6 +405,12 @@
         const connectBtn = document.getElementById('connect-btn');
         const chatWindow = document.getElementById('chat-window');
         const messageInput = document.getElementById('message-input');
+        
+        // Element Header Teman
+        const chatTitle = document.getElementById('chat-title');
+        const typerNameSpan = document.getElementById('typer-name');
+        const chatHeaderAvatar = document.getElementById('chat-header-avatar');
+        let remoteName = "Teman";
 
         peer.on('open', id => {
             myIdBadge.innerText = id;
@@ -336,9 +439,6 @@
             if(!rId) return alert("Masukkan ID teman terlebih dahulu!");
             if(rId === peer.id) return alert("Tidak bisa chat dengan diri sendiri!");
             
-            // Validasi Nama Kosong
-            if(!myName) myName = "Anonim"; 
-            
             connectBtn.innerText = "Menghubungkan..."; connectBtn.disabled = true;
             conn = peer.connect(rId, { reliable: true });
             setupConn();
@@ -352,16 +452,22 @@
                 chatWindow.innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil.</div>';
                 updateHeight();
 
-                // Segera kirim profil nama kita ke teman setelah terhubung
-                conn.send({ type: 'profile', name: myName || "Anonim" });
+                // Kirim profil kita ke teman (Nama & Foto)
+                conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 });
             });
             
             conn.on('data', data => {
                 if (data && data.type === 'profile') {
-                    // Update tampilan profil nama teman di Header & Typing Indicator
+                    // Update tampilan Nama & Foto Profil teman yang terhubung
                     remoteName = data.name || "Teman";
                     chatTitle.innerText = remoteName;
                     typerNameSpan.innerText = remoteName;
+                    
+                    if(data.avatar) {
+                        chatHeaderAvatar.innerHTML = `<img src="${data.avatar}" alt="Avatar">`;
+                    } else {
+                        chatHeaderAvatar.innerHTML = defaultSvgAvatar;
+                    }
                 } else if (data && data.type === 'ack') {
                     const msgElement = document.getElementById(data.msgId);
                     if (msgElement) {
@@ -394,7 +500,10 @@
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('remote-id').value = '';
             loginStatus.innerText = "Koneksi terakhir diputus."; loginStatus.style.color = "var(--text-dim)";
-            remoteName = "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; // Reset text
+            
+            // Reset tampilan teman ke default
+            remoteName = "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName;
+            chatHeaderAvatar.innerHTML = defaultSvgAvatar;
             hideTyping();
         }
 
