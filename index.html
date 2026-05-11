@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dark P2P Chat Pro</title>
+    <title>P2P Secure Chat - Multi Network</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root {
@@ -38,7 +38,7 @@
             z-index: 100;
         }
 
-        .info-bar { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 8px; color: var(--text-dim); letter-spacing: 1px; }
+        .info-bar { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 8px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
         .id-badge { color: var(--accent); font-weight: bold; font-family: monospace; }
 
         .connect-area { display: flex; gap: 8px; }
@@ -47,7 +47,7 @@
             background: var(--input-bg); color: white; font-size: 14px; outline: none;
         }
 
-        .btn { padding: 8px 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+        .btn { padding: 8px 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
         #connect-btn { background: var(--accent); color: #0b141a; }
         #disconnect-btn { background: var(--danger); color: white; display: none; }
 
@@ -64,10 +64,10 @@
             background-size: 400px;
         }
 
-        .msg { max-width: 85%; padding: 8px 12px; border-radius: 10px; font-size: 15px; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .msg { max-width: 85%; padding: 8px 12px; border-radius: 10px; font-size: 15px; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
         .msg.sent { align-self: flex-end; background: var(--bubble-me); border-top-right-radius: 2px; }
         .msg.received { align-self: flex-start; background: var(--bubble-peer); border-top-left-radius: 2px; }
-        .msg.system { align-self: center; background: rgba(0,0,0,0.4); color: var(--text-dim); font-size: 11px; padding: 4px 12px; border-radius: 6px; }
+        .msg.system { align-self: center; background: rgba(0,0,0,0.4); color: var(--text-dim); font-size: 11px; padding: 4px 12px; border-radius: 6px; text-align: center; }
 
         footer {
             flex-shrink: 0;
@@ -100,43 +100,43 @@
             padding: 12px 5px; font-size: 16px; outline: none;
         }
 
-        .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; opacity: 0.6; }
+        .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; opacity: 0.6; color: var(--text-dim); }
 
         #send-btn {
             width: 46px; height: 46px; background: var(--accent); border: none;
             border-radius: 50%; color: #0b141a; font-size: 20px;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
+        #send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="info-bar">
-            <span>P2P Secure Chat</span>
+            <span>P2P Multi-Network Chat</span>
             <div>ID: <span id="my-id" class="id-badge">...</span></div>
         </div>
         <div class="connect-area">
-            <input type="text" id="remote-id" placeholder="ID Teman">
+            <input type="text" id="remote-id" placeholder="Masukkan ID Teman">
             <button id="connect-btn" class="btn" onclick="connectToPeer()">Connect</button>
             <button id="disconnect-btn" class="btn" onclick="disconnectPeer()">Batal</button>
         </div>
     </header>
 
     <div id="chat-window">
-        <div class="msg system">Gunakan ID untuk koneksi privat antar jaringan.</div>
+        <div class="msg system">Gunakan ID untuk koneksi privat. Koneksi akan mencoba menembus firewall jaringan via STUN/TURN.</div>
     </div>
 
+    <!-- Emoji Picker -->
     <div id="emoji-picker">
         <span class="emoji-item" onclick="addEmoji('😊')">😊</span>
         <span class="emoji-item" onclick="addEmoji('😂')">😂</span>
         <span class="emoji-item" onclick="addEmoji('😍')">😍</span>
         <span class="emoji-item" onclick="addEmoji('👍')">👍</span>
         <span class="emoji-item" onclick="addEmoji('🔥')">🔥</span>
-        <span class="emoji-item" onclick="addEmoji('🙌')">🙌</span>
         <span class="emoji-item" onclick="addEmoji('🤔')">🤔</span>
         <span class="emoji-item" onclick="addEmoji('😎')">😎</span>
-        <span class="emoji-item" onclick="addEmoji('😢')">😢</span>
         <span class="emoji-item" onclick="addEmoji('❤️')">❤️</span>
         <span class="emoji-item" onclick="addEmoji('✨')">✨</span>
         <span class="emoji-item" onclick="addEmoji('✅')">✅</span>
@@ -151,25 +151,28 @@
     </footer>
 
     <script>
-        // KONFIGURASI KRITIKAL: STUN & TURN SERVER
-        // Ini memungkinkan data menembus firewall provider seluler
+        // UPDATE: Konfigurasi Masif untuk Lintas Jaringan
         const peer = new Peer({
             config: {
                 'iceServers': [
-                    { url: 'stun:stun.l.google.com:19302' },
-                    { url: 'stun:stun1.l.google.com:19302' },
-                    // Menggunakan OpenRelay TURN (Gratis)
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun3.l.google.com:19302' },
+                    { urls: 'stun:stun4.l.google.com:19302' },
+                    // TURN Server dari OpenRelay (Gratis)
                     {
                         urls: 'turn:openrelay.metered.ca:443',
                         username: 'openrelayproject',
                         credential: 'openrelayproject'
                     },
                     {
-                        urls: 'turn:openrelay.metered.ca:80',
+                        urls: 'turn:openrelay.metered.ca:443?transport=tcp',
                         username: 'openrelayproject',
                         credential: 'openrelayproject'
                     }
-                ]
+                ],
+                'sdpSemantics': 'unified-plan'
             }
         });
 
@@ -183,6 +186,14 @@
         const emojiPicker = document.getElementById('emoji-picker');
 
         peer.on('open', id => document.getElementById('my-id').innerText = id);
+
+        // Debugging: Munculkan pesan jika ada error teknis
+        peer.on('error', (err) => {
+            console.error('PeerJS Error:', err.type);
+            appendMessage('system', 'Error Terjadi: ' + err.type);
+            if(err.type === 'peer--unavailable') alert('ID teman tidak ditemukan.');
+            if(err.type === 'network') alert('Masalah jaringan. Pastikan anda menggunakan HTTPS.');
+        });
 
         peer.on('connection', connection => {
             if(conn) connection.close();
@@ -203,7 +214,7 @@
                 connectBtn.style.display = 'none';
                 remoteIdInput.style.display = 'none';
                 disconnectBtn.style.display = 'block';
-                appendMessage('system', 'Terhubung via Secure Tunnel!');
+                appendMessage('system', 'KONEKSI BERHASIL (P2P Secured)');
             });
             conn.on('data', data => appendMessage('received', data));
             conn.on('close', resetUI);
@@ -244,6 +255,7 @@
         // Fix Keyboard Mobile
         const fixHeight = () => {
             document.body.style.height = window.visualViewport.height + 'px';
+            window.scrollTo(0, 0);
             chatWindow.scrollTop = chatWindow.scrollHeight;
         };
         window.visualViewport.addEventListener('resize', fixHeight);
