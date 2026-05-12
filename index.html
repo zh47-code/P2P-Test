@@ -46,6 +46,12 @@
             --modal-overlay: rgba(0,0,0,0.4);
         }
 
+        /* Styling khusus untuk Log Sistem */
+        .log-entry { margin-bottom: 8px; padding: 8px; border-radius: 6px; border-left: 4px solid var(--text-dim); background: rgba(0,0,0,0.2); font-family: monospace; font-size: 12px; color: var(--text-main); word-wrap: break-word; }
+        .log-entry.error { border-left-color: var(--danger); background: rgba(234, 0, 56, 0.1); }
+        .log-entry.success { border-left-color: var(--accent); background: rgba(0, 168, 132, 0.1); }
+        .log-container { height: 300px; overflow-y: auto; background: var(--bg-deep); padding: 10px; border-radius: 8px; text-align: left; margin-bottom: 15px; border: 1px solid rgba(134, 150, 160, 0.1); }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { height: 100%; background-color: var(--bg-deep); color: var(--text-main); font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden; transition: background-color 0.3s; }
         
@@ -121,11 +127,7 @@
         .msg.sent { align-self: flex-end; background: var(--bubble-me); border-top-right-radius: 2px; }
         .msg.received { align-self: flex-start; background: var(--bubble-peer); border-top-left-radius: 2px; }
         
-        /* WARNA LOG SYSTEM UNTUK DEBUGGING */
         .msg.system { align-self: center; background: rgba(0,0,0,0.5); color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 6px; text-align: center; }
-        .msg.system.error { background: rgba(234, 0, 56, 0.8); font-weight: bold; }
-        .msg.system.success { background: rgba(0, 168, 132, 0.8); font-weight: bold; }
-        body.light-theme .msg.system { background: rgba(0,0,0,0.1); color: var(--text-dim); }
 
         .msg-content { display: inline; white-space: pre-wrap; word-wrap: break-word; }
         .msg img { max-width: 100%; max-height: 300px; border-radius: 6px; display: block; margin-top: 5px; }
@@ -190,6 +192,15 @@
         </div>
     </div>
 
+    <div id="log-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px; width: 95%;">
+            <h3>Log Diagnostik Koneksi</h3>
+            <div id="log-container" class="log-container">
+                </div>
+            <button id="close-log-btn" style="width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: var(--input-bg); color: var(--text-main);">Tutup</button>
+        </div>
+    </div>
+
     <div id="msg-action-overlay" class="modal-overlay">
         <div class="msg-menu-content">
             <button id="msg-reply-btn">Balas</button>
@@ -204,6 +215,7 @@
             <div id="dropdown-menu" class="dropdown">
                 <button class="account-btn">Akun</button>
                 <button id="theme-btn">Ganti Tema</button>
+                <button id="log-btn">Log Sistem</button>
                 <button id="cache-btn">Hapus Cache</button>
             </div>
         </div>
@@ -245,8 +257,7 @@
         </header>
 
         <div id="chat-window">
-            <div class="msg system">Membuka Diagnostic Mode...</div>
-        </div>
+            </div>
         
         <div id="typing-indicator"><span id="typer-name">Teman</span> sedang mengetik...</div>
 
@@ -299,7 +310,7 @@
         document.getElementById('cache-btn').addEventListener('click', async () => { if (confirm("Hapus semua cache dan mulai ulang? (Ini juga akan mereset ID Jaringan Anda)")) { localStorage.clear(); if ('serviceWorker' in navigator) { try { const regs = await navigator.serviceWorker.getRegistrations(); for (let reg of regs) await reg.unregister(); } catch(e) {} } if ('caches' in window) { try { const keys = await caches.keys(); for (let key of keys) await caches.delete(key); } catch(e) {} } window.location.reload(true); } });
         document.getElementById('mute-btn').addEventListener('click', () => { isMuted = !isMuted; document.getElementById('mute-btn').innerText = isMuted ? "Aktifkan Notifikasi" : "Bisukan Notifikasi"; document.getElementById('dropdown-menu-chat').classList.remove('show'); });
         document.getElementById('search-btn').addEventListener('click', () => { document.getElementById('dropdown-menu-chat').classList.remove('show'); const keyword = prompt("Masukkan kata kunci pencarian:"); if (keyword) window.find(keyword); });
-        document.getElementById('clear-chat-btn').addEventListener('click', () => { if (confirm("Bersihkan layar percakapan?")) { document.getElementById('chat-window').innerHTML = '<div class="msg system">Koneksi end-to-end terenkripsi berhasil. File max 15MB.</div>'; } document.getElementById('dropdown-menu-chat').classList.remove('show'); });
+        document.getElementById('clear-chat-btn').addEventListener('click', () => { if (confirm("Bersihkan layar percakapan?")) { document.getElementById('chat-window').innerHTML = ''; } document.getElementById('dropdown-menu-chat').classList.remove('show'); });
 
         const msgActionOverlay = document.getElementById('msg-action-overlay');
         let activeReply = null; let selectedMsgDiv = null; let selectedMsgObj = null;
@@ -312,13 +323,24 @@
         document.getElementById('msg-delete-btn').addEventListener('click', () => { if (selectedMsgDiv) selectedMsgDiv.remove(); msgActionOverlay.classList.remove('show'); });
         function cancelReply() { activeReply = null; document.getElementById('reply-preview-container').style.display = 'none'; }
 
-        // --- SISTEM DIAGNOSTIK VISUAL ---
+        // --- EVENT LISTENER MODAL LOG ---
+        document.getElementById('log-btn').addEventListener('click', () => { 
+            document.getElementById('log-modal').classList.add('show'); 
+            document.getElementById('dropdown-menu').classList.remove('show'); 
+        });
+        document.getElementById('close-log-btn').addEventListener('click', () => { 
+            document.getElementById('log-modal').classList.remove('show'); 
+        });
+
+        // --- SISTEM DIAGNOSTIK VISUAL (BARU) ---
         function logDebug(message, type = 'system') {
+            const container = document.getElementById('log-container');
             const div = document.createElement('div');
-            div.className = `msg system ${type}`;
-            div.innerHTML = `<div class="msg-content">[DIAGNOSTIK]: ${message}</div>`;
-            document.getElementById('chat-window').appendChild(div);
-            document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
+            div.className = `log-entry ${type}`;
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+            div.innerHTML = `[${time}] ${message}`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
         }
 
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
@@ -326,7 +348,6 @@
 
         let savedPeerId = localStorage.getItem('my-peer-id');
         
-        // KONFIGURASI SERVER STUN & TURN
         const peerConfig = { 
             config: { 
                 'iceServers': [
@@ -364,6 +385,7 @@
             document.getElementById('my-id').innerText = id; 
             document.getElementById('login-status').innerText = "Sistem siap. (Lihat ID Anda di Menu Akun)"; 
             document.getElementById('login-status').style.color = "var(--accent)"; 
+            logDebug(`Sistem Siap. Peer ID: ${id}`, 'success');
         });
         
         document.getElementById('my-id').addEventListener('click', function() { 
@@ -376,42 +398,34 @@
             document.getElementById('login-status').innerText = '⚠ ERROR: ' + err.type; 
             document.getElementById('login-status').style.color = "var(--danger)"; 
             
-            // Catat ke log visual jika sedang di layar chat
-            if (document.getElementById('chat-screen').style.display === 'flex') {
-                logDebug(`PeerJS Error: ${err.type}`, 'error');
-            }
+            logDebug(`PeerJS Error: ${err.type}`, 'error');
             
             if (err.type === 'unavailable-id') {
                 localStorage.removeItem('my-peer-id');
-                alert('ID sebelumnya sedang aktif. Halaman akan dimuat ulang untuk membuat ID baru.');
+                alert('ID sebelumnya sedang aktif. Halaman akan dimuat ulang.');
                 window.location.reload();
             } else if(err.type === 'peer-unavailable') { 
-                alert('ID Teman tidak ditemukan/offline di server sinyal.'); 
+                alert('ID Teman tidak ditemukan/offline.'); 
                 document.getElementById('connect-btn').innerText = "Mulai Chat"; 
                 document.getElementById('connect-btn').disabled = false; 
             } 
         });
 
-        // MEMANTAU KONEKSI JARINGAN BAWAAN (ICE)
         function monitorICE(connection) {
             setTimeout(() => {
                 if(connection && connection.peerConnection) {
                     connection.peerConnection.addEventListener('iceconnectionstatechange', () => {
                         const state = connection.peerConnection.iceConnectionState;
-                        logDebug(`Status Jaringan WebRTC (ICE) berubah menjadi: <b>${state.toUpperCase()}</b>`);
+                        logDebug(`Status Jaringan WebRTC (ICE): <b>${state.toUpperCase()}</b>`);
                         
                         if(state === 'failed' || state === 'disconnected') {
                             logDebug('Gagal menembus NAT/Firewall. Server TURN terblokir atau mati.', 'error');
                             document.getElementById('message-input').disabled = true;
-                            document.getElementById('message-input').placeholder = "Koneksi terputus...";
                         } else if (state === 'connected' || state === 'completed') {
                             logDebug('Jalur P2P berhasil diamankan!', 'success');
                             document.getElementById('message-input').disabled = false;
-                            document.getElementById('message-input').placeholder = "Ketik pesan...";
                         }
                     });
-                } else {
-                    logDebug('Gagal memantau objek PeerConnection.', 'error');
                 }
             }, 1000);
         }
@@ -434,12 +448,7 @@
             document.getElementById('connect-btn').innerText = "Mencari teman..."; 
             document.getElementById('connect-btn').disabled = true;
             
-            // Pindah langsung ke chat screen agar log visual terlihat
-            document.getElementById('login-screen').style.display = 'none'; 
-            document.getElementById('chat-screen').style.display = 'flex';
-            chatWindow.innerHTML = '';
-            
-            logDebug(`Menghubungi Server Sinyal untuk ID: ${rId}`);
+            logDebug(`Mencoba menghubungkan ke: ${rId}`);
             
             conn = peer.connect(rId); 
             monitorICE(conn);
@@ -448,17 +457,19 @@
             clearTimeout(connectTimeout);
             connectTimeout = setTimeout(() => {
                 if (conn && !conn.open) {
-                    logDebug('WAKTU HABIS! Server sinyal gagal merespon atau ID salah.', 'error');
+                    logDebug('WAKTU HABIS! Gagal terhubung.', 'error');
                     alert("Waktu habis! Gagal terhubung.");
                     if(conn) conn.close();
                     resetUI();
                 }
-            }, 15000); // 15 Detik
+            }, 15000);
         }
 
         function setupConn() {
             conn.on('open', () => {
                 clearTimeout(connectTimeout); 
+                document.getElementById('login-screen').style.display = 'none'; 
+                document.getElementById('chat-screen').style.display = 'flex';
                 logDebug('Handshake awal berhasil! Bertukar profil...', 'success');
                 conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 });
             });
@@ -495,11 +506,9 @@
                         conn.send({ type: 'ack', msgId: data.fileId });
                         playNotification(); hideTyping();
                     }
-                } else if (typeof data === 'string') { 
-                    playNotification(); hideTyping(); appendMessage('received', {text: data}); 
                 }
             });
-            conn.on('close', () => { logDebug('Koneksi ditutup oleh teman.', 'error'); setTimeout(resetUI, 3000); });
+            conn.on('close', () => { logDebug('Koneksi ditutup.', 'error'); setTimeout(resetUI, 1000); });
         }
 
         function showTyping() { document.getElementById('typing-indicator').style.display = 'block'; chatWindow.scrollTop = chatWindow.scrollHeight; }
@@ -523,8 +532,6 @@
                 const msgData = { type: 'text', id: msgId, text: msg, replyTo: activeReply ? { sender: activeReply.sender, text: activeReply.text } : null };
                 conn.send(msgData); conn.send({ type: 'typing', isTyping: false }); clearTimeout(typingTimeout);
                 appendMessage('sent', msgData, msgId); messageInput.value = ''; messageInput.focus(); cancelReply();
-            } else if (!conn || !conn.open) {
-                alert("Tidak dapat mengirim pesan, koneksi sedang terputus.");
             }
         }
 
