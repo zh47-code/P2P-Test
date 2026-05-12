@@ -7,158 +7,194 @@
     <title>P2P Secure Chat (IPv6 Ready)</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-
-    :root {
-        /* Material Design 3 Dark Theme Colors */
-        --md-sys-color-background: #1c1b1f;
-        --md-sys-color-surface: #282a2d;
-        --md-sys-color-surface-variant: #44474e;
-        --md-sys-color-primary: #a8c7fa;
-        --md-sys-color-on-primary: #062e6f;
-        --md-sys-color-primary-container: #004a77;
-        --md-sys-color-on-primary-container: #c2e7ff;
-        --md-sys-color-secondary-container: #4a4458;
-        --md-sys-color-on-surface: #e3e2e6;
-        --md-sys-color-on-surface-variant: #c4c6d0;
-        --md-sys-color-error: #ffb4ab;
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+    
+        :root {
+            /* Material Design 3 Dark Theme Colors */
+            --bg-deep: #1c1b1f; 
+            --bg-panel: #282a2d; 
+            --text-main: #e3e2e6;
+            --text-dim: #c4c6d0; 
+            --accent: #a8c7fa; 
+            --accent-hover: #b9d4ff;
+            --bubble-me: #004a77; 
+            --bubble-peer: #44474e; 
+            --input-bg: #4a4458;
+            --danger: #ffb4ab; 
+            --shadow: rgba(0,0,0,0.3); 
+            --dropdown-hover: rgba(255,255,255,0.08);
+            --tick-color: #c4c6d0; 
+            --tick-read: #a8c7fa; 
+            --avatar-bg: #004a77;
+            --avatar-color: #c2e7ff; 
+            --modal-overlay: rgba(0,0,0,0.6);
+            --md-on-primary: #062e6f;
+            --md-on-primary-container: #c2e7ff;
+        }
         
-        --bg-deep: var(--md-sys-color-background); 
-        --bg-panel: var(--md-sys-color-surface); 
-        --text-main: var(--md-sys-color-on-surface);
-        --text-dim: var(--md-sys-color-on-surface-variant); 
-        --accent: var(--md-sys-color-primary); 
-        --accent-hover: #b9d4ff;
-        --bubble-me: var(--md-sys-color-primary-container); 
-        --bubble-peer: var(--md-sys-color-surface-variant); 
-        --input-bg: var(--md-sys-color-secondary-container);
-        --danger: var(--md-sys-color-error); 
-        --shadow: rgba(0,0,0,0.3); 
-        --dropdown-hover: rgba(255,255,255,0.08);
-        --tick-color: var(--text-dim); 
-        --tick-read: var(--md-sys-color-primary); 
-        --avatar-bg: var(--md-sys-color-primary-container);
-        --avatar-color: var(--md-sys-color-on-primary-container); 
-        --modal-overlay: rgba(0,0,0,0.6);
-    }
+        body.light-theme {
+            /* Material Design 3 Light Theme Colors */
+            --bg-deep: #fffbff; 
+            --bg-panel: #f3f3f9; 
+            --text-main: #1c1b1f;
+            --text-dim: #44474f; 
+            --accent: #0b57d0; 
+            --accent-hover: #0842a0;
+            --bubble-me: #d3e3fd; 
+            --bubble-peer: #e1e2ec; 
+            --input-bg: #e8def8;
+            --danger: #ba1a1a; 
+            --shadow: rgba(0,0,0,0.1); 
+            --dropdown-hover: rgba(0,0,0,0.05);
+            --tick-color: #44474f; 
+            --tick-read: #0b57d0; 
+            --avatar-bg: #d3e3fd;
+            --avatar-color: #041e49;
+            --modal-overlay: rgba(0,0,0,0.3);
+            --md-on-primary: #ffffff;
+            --md-on-primary-container: #041e49;
+        }
     
-    body.light-theme {
-        /* Material Design 3 Light Theme Colors */
-        --md-sys-color-background: #fffbff;
-        --md-sys-color-surface: #f3f3f9;
-        --md-sys-color-surface-variant: #e1e2ec;
-        --md-sys-color-primary: #0b57d0;
-        --md-sys-color-on-primary: #ffffff;
-        --md-sys-color-primary-container: #d3e3fd;
-        --md-sys-color-on-primary-container: #041e49;
-        --md-sys-color-secondary-container: #e8def8;
-        --md-sys-color-on-surface: #1c1b1f;
-        --md-sys-color-on-surface-variant: #44474f;
-        --md-sys-color-error: #ba1a1a;
-
-        --bg-deep: var(--md-sys-color-background); 
-        --bg-panel: var(--md-sys-color-surface); 
-        --text-main: var(--md-sys-color-on-surface);
-        --text-dim: var(--md-sys-color-on-surface-variant); 
-        --accent: var(--md-sys-color-primary); 
-        --accent-hover: #0842a0;
-        --bubble-me: var(--md-sys-color-primary-container); 
-        --bubble-peer: var(--md-sys-color-surface-variant); 
-        --input-bg: var(--md-sys-color-secondary-container);
-        --danger: var(--md-sys-color-error); 
-        --shadow: rgba(0,0,0,0.1); 
-        --dropdown-hover: rgba(0,0,0,0.05);
-        --tick-color: var(--text-dim); 
-        --tick-read: var(--md-sys-color-primary); 
-        --avatar-bg: var(--md-sys-color-primary-container);
-        --modal-overlay: rgba(0,0,0,0.3);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; background-color: var(--bg-deep); color: var(--text-main); font-family: 'Roboto', sans-serif; overflow: hidden; transition: background-color 0.3s ease; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; background-color: var(--bg-deep); color: var(--text-main); font-family: 'Roboto', sans-serif; overflow: hidden; transition: background-color 0.3s; }
+        
+        button { font-family: 'Roboto', sans-serif; }
     
-    /* Typography & Core Adjustments */
-    button { font-family: 'Roboto', sans-serif; letter-spacing: 0.1px; }
+        /* Logger */
+        .log-entry { margin-bottom: 8px; padding: 10px 12px; border-radius: 8px; border-left: 4px solid var(--text-dim); background: rgba(0,0,0,0.2); font-family: monospace; font-size: 12px; color: var(--text-main); word-wrap: break-word; }
+        .log-entry.error { border-left-color: var(--danger); background: rgba(255, 180, 171, 0.1); }
+        .log-entry.success { border-left-color: var(--accent); background: rgba(168, 199, 250, 0.1); }
+        .log-container { height: 300px; overflow-y: auto; background: var(--bg-deep); padding: 12px; border-radius: 16px; text-align: left; margin-bottom: 15px; border: 1px solid rgba(134, 150, 160, 0.1); }
     
-    .menu-btn { background: none; border: none; color: var(--text-main); font-size: 24px; font-weight: 500; cursor: pointer; padding: 8px; border-radius: 50%; transition: background 0.2s; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
-    .menu-btn:hover { background: var(--dropdown-hover); }
-
-    /* Modals & Dropdowns (MD3 Large Border Radius) */
-    .dropdown { position: absolute; top: 50px; right: 10px; background: var(--bg-panel); border: none; border-radius: 16px; box-shadow: 0 4px 20px var(--shadow); display: none; flex-direction: column; min-width: 200px; overflow: hidden; z-index: 1000; padding: 8px 0; }
-    .dropdown.show { display: flex; }
-    .dropdown button { background: transparent; border: none; color: var(--text-main); padding: 12px 20px; text-align: left; cursor: pointer; font-size: 14px; width: 100%; transition: background 0.2s; font-weight: 500;}
-    .dropdown button:hover { background: var(--dropdown-hover); }
-
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); display: none; align-items: center; justify-content: center; z-index: 2000; opacity: 0; transition: opacity 0.2s ease; backdrop-filter: blur(2px); }
-    .modal-overlay.show { display: flex; opacity: 1; }
-    .modal-content { background: var(--bg-panel); padding: 28px; border-radius: 28px; width: 90%; max-width: 360px; box-shadow: 0 10px 30px var(--shadow); text-align: center; transform: scale(0.95); transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1); }
-    .modal-overlay.show .modal-content { transform: scale(1); }
-    .modal-content h3 { margin-bottom: 24px; font-size: 22px; font-weight: 500; color: var(--text-main); }
-
-    /* Avatars */
-    .avatar-edit-container { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 24px; }
-    .avatar-preview-large { width: 96px; height: 96px; border-radius: 50%; background: var(--avatar-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .avatar-preview-large img { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-preview-large svg { width: 50%; height: 50%; fill: var(--avatar-color); }
+        /* Menus & Dropdowns */
+        .menu-btn { background: none; border: none; color: var(--text-main); font-size: 24px; font-weight: 500; cursor: pointer; padding: 5px 10px; border-radius: 50%; transition: background 0.2s; }
+        .menu-btn:hover { background: var(--dropdown-hover); }
+        .dropdown { position: absolute; top: 45px; right: 0; background: var(--bg-panel); border: none; border-radius: 16px; box-shadow: 0 4px 20px var(--shadow); display: none; flex-direction: column; min-width: 180px; overflow: hidden; z-index: 1000; padding: 8px 0; }
+        .dropdown.show { display: flex; }
+        .dropdown button { background: transparent; border: none; color: var(--text-main); padding: 12px 20px; text-align: left; cursor: pointer; font-size: 14px; font-weight: 500; width: 100%; transition: background 0.2s; }
+        .dropdown button:hover { background: var(--dropdown-hover); }
     
-    /* Buttons MD3 Style */
-    .edit-avatar-btn, .modal-actions button, #connect-btn, #refresh-network-btn, .img-modal-btn { padding: 10px 24px; border-radius: 100px; border: none; font-weight: 500; cursor: pointer; font-size: 14px; transition: 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-    .edit-avatar-btn { background: var(--md-sys-color-secondary-container); color: var(--text-main); }
-    .edit-avatar-btn:hover { background: rgba(134,150,160,0.3); }
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); display: none; align-items: center; justify-content: center; z-index: 2000; opacity: 0; transition: opacity 0.2s; backdrop-filter: blur(2px); }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-content { background: var(--bg-panel); padding: 28px; border-radius: 28px; width: 90%; max-width: 340px; box-shadow: 0 10px 30px var(--shadow); text-align: center; transform: scale(0.9); transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1); }
+        .modal-overlay.show .modal-content { transform: scale(1); }
+        .modal-content h3 { margin-bottom: 24px; font-size: 20px; font-weight: 500; color: var(--text-main); }
+        
+        /* Avatars */
+        .avatar-edit-container { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .avatar-preview-large { width: 96px; height: 96px; border-radius: 50%; background: var(--avatar-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 8px var(--shadow); }
+        .avatar-preview-large img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-preview-large svg { width: 50%; height: 50%; fill: var(--avatar-color); }
+        body.light-theme .avatar-preview-large svg { fill: var(--avatar-color); }
+        .edit-avatar-btn { background: var(--input-bg); color: var(--text-main); border: none; padding: 10px 20px; border-radius: 100px; cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.2s; }
+        .edit-avatar-btn:hover { background: var(--dropdown-hover); }
     
-    #close-modal-btn, .img-modal-btn { background: transparent; color: var(--accent); }
-    #close-modal-btn:hover, .img-modal-btn:hover { background: var(--dropdown-hover); }
+        /* Inputs */
+        .modal-input-group { text-align: left; margin-bottom: 20px; }
+        .modal-input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; font-weight: 500; padding-left: 12px; }
+        .modal-input-group input { width: 100%; padding: 16px; border-radius: 28px; border: 2px solid transparent; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; transition: 0.2s; }
+        .modal-input-group input:focus { background: var(--bg-panel); border-color: var(--accent); }
+        
+        .my-id-box { background: var(--bg-deep); padding: 16px; border-radius: 16px; border: none; margin-top: 15px; margin-bottom: 20px; text-align: center; }
+        .my-id-box p { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; font-weight: 500; }
+        .id-badge { color: var(--accent); font-weight: 500; font-family: monospace; font-size: 18px; cursor: pointer; display: inline-block; padding: 8px 16px; border-radius: 12px; transition: background 0.2s; background: var(--input-bg); }
+        .id-badge:hover { background: var(--dropdown-hover); }
+        
+        .modal-actions { display: flex; gap: 12px; }
+        .modal-actions button { flex: 1; padding: 14px; border-radius: 100px; border: none; font-weight: 500; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        #close-modal-btn { background: var(--input-bg); color: var(--text-main); }
+        #save-account-btn { background: var(--accent); color: var(--md-on-primary); }
     
-    #save-account-btn, #connect-btn { background: var(--accent); color: var(--md-sys-color-on-primary); }
-    #save-account-btn:hover, #connect-btn:hover { background: var(--accent-hover); box-shadow: 0 1px 3px var(--shadow); }
+        /* Long Press Menu */
+        .msg-menu-content { background: var(--bg-panel); border-radius: 28px; width: 90%; max-width: 300px; overflow: hidden; display: flex; flex-direction: column; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); transition: 0.2s; box-shadow: 0 10px 30px var(--shadow); }
+        .modal-overlay.show .msg-menu-content { transform: translateX(-50%) translateY(0); }
+        .msg-menu-content button { background: transparent; border: none; color: var(--text-main); padding: 18px; font-size: 16px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .msg-menu-content button:last-child { color: var(--danger); }
+        .msg-menu-content button:hover { background: var(--dropdown-hover); }
     
-    .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
-
-    /* Inputs MD3 Style */
-    .modal-input-group, .input-group { text-align: left; margin-bottom: 20px; }
-    .modal-input-group label, .input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; font-weight: 500; padding-left: 16px; }
-    .modal-input-group input, .login-card input { width: 100%; padding: 16px 20px; border-radius: 28px; border: none; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; transition: background 0.2s; }
-    .modal-input-group input:focus, .login-card input:focus { background: var(--bg-panel); box-shadow: inset 0 0 0 2px var(--accent); }
-
-    /* Login Screen & Cards */
-    #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; position: relative; }
-    .login-card { background: var(--bg-panel); padding: 40px 30px; border-radius: 28px; width: 100%; max-width: 420px; box-shadow: 0 4px 20px var(--shadow); }
-    .login-card h1 { font-size: 24px; font-weight: 500; margin-bottom: 30px; color: var(--text-main); }
+        /* Image Viewer Layout Preserved */
+        .img-modal-btn { background: var(--bg-panel); color: var(--text-main); border: none; padding: 12px 20px; border-radius: 100px; font-weight: 500; cursor: pointer; transition: 0.2s; flex: 1; text-align: center; font-size: 14px; }
+        .img-modal-btn:hover { background: var(--dropdown-hover); }
     
-    .role-btn { width: 100%; padding: 16px; margin-bottom: 16px; border-radius: 16px; border: 1px solid var(--md-sys-color-surface-variant); background: var(--md-sys-color-surface); color: var(--text-main); font-weight: 500; font-size: 16px; cursor: pointer; transition: 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 12px; }
-    .role-btn:hover { background: var(--md-sys-color-surface-variant); }
-    .role-btn svg { stroke: var(--accent); }
-
-    /* Chat Screen */
-    header { flex-shrink: 0; background-color: var(--bg-panel); padding: 12px 20px; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px var(--shadow); }
-    .avatar { width: 44px; height: 44px; border-radius: 50%; background-color: var(--avatar-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .avatar svg { width: 60%; height: 60%; fill: var(--avatar-color); }
-    .header-title { font-weight: 500; font-size: 18px; color: var(--text-main); }
+        /* Login Screen - STRUCTURAL FIXES */
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; position: relative; }
+        .top-right-menu { position: absolute; top: 15px; right: 15px; z-index: 1000; display: flex; align-items: center; gap: 8px; }
+        
+        .login-card { background: var(--bg-panel); padding: 40px 24px; border-radius: 28px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px var(--shadow); }
+        .login-card h1 { font-size: 24px; margin-bottom: 30px; font-weight: 500; color: var(--text-main); }
+        
+        .role-btn { width: 100%; padding: 16px; margin-bottom: 16px; border-radius: 16px; border: 2px solid var(--input-bg); background: transparent; color: var(--text-main); font-weight: 500; font-size: 16px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .role-btn:hover { background: var(--input-bg); border-color: var(--accent); }
+        .back-btn { background: none; border: none; color: var(--text-dim); text-decoration: none; cursor: pointer; margin-top: 20px; font-size: 14px; font-weight: 500; }
+        
+        .input-group { text-align: left; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; padding-left: 12px; font-weight: 500; }
+        .login-card input { width: 100%; padding: 16px; border-radius: 28px; border: 2px solid transparent; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; text-align: center; transition: 0.2s; }
+        .login-card input:focus { background: var(--bg-panel); border-color: var(--accent); }
+        
+        .login-card button#connect-btn { width: 100%; padding: 16px; border-radius: 100px; border: none; font-weight: 500; font-size: 16px; background: var(--accent); color: var(--md-on-primary); cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        .login-card button#connect-btn:disabled { background: var(--input-bg); color: var(--text-dim); cursor: not-allowed; }
+        .status-text { margin-top: 20px; font-size: 14px; font-weight: 500; color: var(--text-dim); }
+        
+        #refresh-network-btn { width: 100%; padding: 14px; margin-top: 20px; background: var(--danger); color: white; border: none; border-radius: 100px; font-weight: 500; cursor: pointer; display: none; }
     
-    #chat-window { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background-color: var(--bg-deep); }
-    
-    /* Bubbles MD3 */
-    .msg { display: inline-block; max-width: 80%; padding: 12px 16px; border-radius: 20px; font-size: 15px; position: relative; line-height: 1.4; }
-    .msg.sent { align-self: flex-end; background: var(--bubble-me); color: var(--md-sys-color-on-primary-container); border-bottom-right-radius: 4px; }
-    .msg.received { align-self: flex-start; background: var(--bubble-peer); color: var(--text-main); border-bottom-left-radius: 4px; }
-    .msg.system { align-self: center; background: var(--md-sys-color-surface-variant); color: var(--text-main); font-size: 12px; padding: 8px 16px; border-radius: 100px; font-weight: 500; }
-    
-    /* Footer & Input MD3 */
-    footer { flex-shrink: 0; background: var(--bg-panel); padding: 12px 20px; display: flex; gap: 12px; align-items: center; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
-    .input-wrapper { flex: 1; background: var(--input-bg); border-radius: 32px; display: flex; align-items: center; padding: 4px 16px; }
-    #message-input { flex: 1; background: transparent; border: none; color: var(--text-main); padding: 12px 0; font-size: 16px; outline: none; }
-    
-    #send-btn { width: 48px; height: 48px; background: var(--accent); border: none; border-radius: 50%; color: var(--md-sys-color-on-primary); font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: transform 0.2s, box-shadow 0.2s; }
-    #send-btn:hover { transform: scale(1.05); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-    
-    .icon-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-dim); transition: 0.2s; padding: 8px; border-radius: 50%; }
-    .icon-btn:hover { background: var(--dropdown-hover); color: var(--text-main); }
-
-    /* Other Utilities */
-    .id-badge { background: var(--md-sys-color-secondary-container); color: var(--text-main); font-family: monospace; padding: 8px 16px; border-radius: 12px; letter-spacing: 1px; }
-    .my-id-box { background: transparent; border: none; }
-    .status-text { margin-top: 20px; font-size: 14px; font-weight: 500; color: var(--accent); }
-</style>
+        /* Chat Screen - STRUCTURAL FIXES */
+        #chat-screen { display: none; flex-direction: column; height: 100%; position: relative; }
+        header { flex-shrink: 0; background-color: var(--bg-panel); padding: 12px 16px; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px var(--shadow); }
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 44px; height: 44px; border-radius: 50%; background-color: var(--avatar-bg); display: flex; align-items: center; justify-content: center; color: var(--avatar-color); overflow: hidden; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar svg { width: 60%; height: 60%; fill: var(--avatar-color); }
+        body.light-theme .avatar svg { fill: var(--avatar-color); }
+        .header-info { display: flex; flex-direction: column; }
+        .header-title { font-weight: 500; font-size: 16px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+        .header-status { font-size: 12px; color: var(--text-dim); }
+        .header-actions { display: flex; align-items: center; gap: 8px; position: relative; }
+        
+        #chat-window { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background-color: var(--bg-deep); }
+        
+        /* Messages Structure Maintained */
+        .msg { display: inline-block; max-width: 85%; padding: 10px 14px; border-radius: 20px; font-size: 15px; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; line-height: 1.4; }
+        .msg::after { content: ""; display: table; clear: both; } 
+        .msg.sent { align-self: flex-end; background: var(--bubble-me); color: var(--md-on-primary-container); border-bottom-right-radius: 4px; }
+        .msg.received { align-self: flex-start; background: var(--bubble-peer); color: var(--text-main); border-bottom-left-radius: 4px; }
+        .msg.system { align-self: center; background: var(--input-bg); color: var(--text-main); font-size: 12px; padding: 8px 16px; border-radius: 100px; text-align: center; font-weight: 500; }
+        .msg-content { display: inline; white-space: pre-wrap; word-wrap: break-word; }
+        .msg img { max-width: 100%; max-height: 300px; border-radius: 12px; display: block; margin-top: 8px; cursor: pointer; }
+        
+        .file-link { color: var(--accent); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .progress-wrapper { width: 150px; background: var(--bg-panel); border-radius: 100px; margin-top: 8px; height: 8px; overflow: hidden; position: relative; }
+        .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.1s linear; }
+        .progress-text { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 6px; font-weight: 500; }
+        
+        .msg-meta { float: right; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: inherit; opacity: 0.7; margin: 8px -2px -4px 12px; line-height: 1; }
+        .tick { font-size: 12px; font-weight: bold; opacity: 0.6; }
+        .tick.read { color: var(--tick-read); opacity: 1; }
+        
+        .replied-snippet { background: rgba(0,0,0,0.15); border-left: 4px solid var(--accent); border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; font-size: 13px; color: inherit; opacity: 0.9; }
+        body.light-theme .replied-snippet { background: rgba(0,0,0,0.05); }
+        .replied-snippet strong { color: var(--accent); display: block; margin-bottom: 4px; font-size: 13px; }
+        
+        #typing-indicator { display: none; font-size: 13px; color: var(--text-dim); font-style: italic; padding: 8px 20px; background: var(--bg-deep); }
+        
+        /* Footer Structure Preserved */
+        footer { flex-shrink: 0; background: var(--bg-panel); padding: 12px 16px; display: flex; gap: 8px; align-items: center; padding-bottom: calc(12px + env(safe-area-inset-bottom)); position: relative; z-index: 10; }
+        #reply-preview-container { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background: var(--bg-panel); padding: 12px 16px; z-index: 5; border-radius: 20px 20px 0 0; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); }
+        .reply-box { background: var(--input-bg); border-left: 4px solid var(--accent); border-radius: 12px; padding: 12px 16px; position: relative; font-size: 13px; }
+        .reply-name { font-weight: 500; color: var(--accent); display: block; margin-bottom: 4px; }
+        .reply-text { color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%; }
+        .cancel-reply { position: absolute; right: 16px; top: 16px; color: var(--text-dim); cursor: pointer; background: none; border: none; font-size: 20px; }
+        
+        .input-wrapper { flex: 1; background: var(--input-bg); border-radius: 32px; display: flex; align-items: center; padding: 4px 16px; }
+        #message-input { flex: 1; background: transparent; border: none; color: var(--text-main); padding: 12px 4px; font-size: 16px; outline: none; }
+        
+        .icon-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-dim); transition: 0.2s; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; }
+        .icon-btn:hover { color: var(--accent); background: var(--dropdown-hover); }
+        
+        #send-btn { width: 48px; height: 48px; background: var(--accent); border: none; border-radius: 50%; color: var(--md-on-primary); font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; margin-left: 8px; transition: 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        #send-btn:hover { transform: scale(1.05); }
+    </style>
 </head>
 <body>
 
