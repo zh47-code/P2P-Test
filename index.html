@@ -4,69 +4,41 @@
     <meta charset="UTF-8">
     <link rel="manifest" href="./manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>P2P Secure Chat</title>
+    <title>P2P Secure Chat (IPv6 Ready)</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root {
-            --bg-deep: #0b141a;
-            --bg-panel: #202c33;
-            --text-main: #e9edef;
-            --text-dim: #8696a0;
-            --accent: #00a884;
-            --accent-hover: #008f6f;
-            --bubble-me: #005c4b;
-            --bubble-peer: #233138;
-            --input-bg: #2a3942;
-            --danger: #ea0038;
-            --shadow: rgba(0,0,0,0.5);
-            --dropdown-hover: rgba(255,255,255,0.1);
-            --tick-color: #8696a0;
-            --tick-read: #53bdeb;
-            --avatar-bg: #dfe5e7;
-            --avatar-color: #ffffff;
-            --modal-overlay: rgba(0,0,0,0.7);
+            --bg-deep: #0b141a; --bg-panel: #202c33; --text-main: #e9edef;
+            --text-dim: #8696a0; --accent: #00a884; --accent-hover: #008f6f;
+            --bubble-me: #005c4b; --bubble-peer: #233138; --input-bg: #2a3942;
+            --danger: #ea0038; --shadow: rgba(0,0,0,0.5); --dropdown-hover: rgba(255,255,255,0.1);
+            --tick-color: #8696a0; --tick-read: #53bdeb; --avatar-bg: #dfe5e7;
+            --avatar-color: #ffffff; --modal-overlay: rgba(0,0,0,0.7);
         }
-
         body.light-theme {
-            --bg-deep: #ece5dd;
-            --bg-panel: #ffffff;
-            --text-main: #111b21;
-            --text-dim: #667781;
-            --accent: #25d366;
-            --accent-hover: #1da851;
-            --bubble-me: #d9fdd3;
-            --bubble-peer: #ffffff;
-            --input-bg: #f0f2f5;
-            --danger: #ea0038;
-            --shadow: rgba(0,0,0,0.1);
-            --dropdown-hover: rgba(0,0,0,0.05);
-            --tick-color: #8696a0;
-            --tick-read: #34b7f1;
-            --avatar-bg: #dfe5e7;
+            --bg-deep: #ece5dd; --bg-panel: #ffffff; --text-main: #111b21;
+            --text-dim: #667781; --accent: #25d366; --accent-hover: #1da851;
+            --bubble-me: #d9fdd3; --bubble-peer: #ffffff; --input-bg: #f0f2f5;
+            --danger: #ea0038; --shadow: rgba(0,0,0,0.1); --dropdown-hover: rgba(0,0,0,0.05);
+            --tick-color: #8696a0; --tick-read: #34b7f1; --avatar-bg: #dfe5e7;
             --modal-overlay: rgba(0,0,0,0.4);
         }
-
-        /* Log Sistem */
         .log-entry { margin-bottom: 8px; padding: 8px; border-radius: 6px; border-left: 4px solid var(--text-dim); background: rgba(0,0,0,0.2); font-family: monospace; font-size: 12px; color: var(--text-main); word-wrap: break-word; }
         .log-entry.error { border-left-color: var(--danger); background: rgba(234, 0, 56, 0.1); }
         .log-entry.success { border-left-color: var(--accent); background: rgba(0, 168, 132, 0.1); }
         .log-container { height: 300px; overflow-y: auto; background: var(--bg-deep); padding: 10px; border-radius: 8px; text-align: left; margin-bottom: 15px; border: 1px solid rgba(134, 150, 160, 0.1); }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { height: 100%; background-color: var(--bg-deep); color: var(--text-main); font-family: 'Segoe UI', Roboto, sans-serif; overflow: hidden; transition: background-color 0.3s; }
-        
         .menu-btn { background: none; border: none; color: var(--text-main); font-size: 24px; font-weight: bold; cursor: pointer; padding: 5px 10px; border-radius: 50%; }
         .dropdown { position: absolute; top: 40px; right: 0; background: var(--bg-panel); border: 1px solid rgba(134, 150, 160, 0.2); border-radius: 8px; box-shadow: 0 5px 15px var(--shadow); display: none; flex-direction: column; min-width: 180px; overflow: hidden; z-index: 1000; }
         .dropdown.show { display: flex; }
         .dropdown button { background: transparent; border: none; color: var(--text-main); padding: 12px 15px; text-align: left; cursor: pointer; font-size: 14px; width: 100%; transition: background 0.2s; }
         .dropdown button:hover { background: var(--dropdown-hover); }
-
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); display: none; align-items: center; justify-content: center; z-index: 2000; opacity: 0; transition: opacity 0.2s; }
         .modal-overlay.show { display: flex; opacity: 1; }
         .modal-content { background: var(--bg-panel); padding: 25px; border-radius: 12px; width: 90%; max-width: 320px; box-shadow: 0 10px 30px var(--shadow); text-align: center; transform: scale(0.9); transition: transform 0.2s; }
         .modal-overlay.show .modal-content { transform: scale(1); }
         .modal-content h3 { margin-bottom: 20px; font-size: 18px; color: var(--text-main); }
-        
         .avatar-edit-container { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 20px; }
         .avatar-preview-large { width: 100px; height: 100px; border-radius: 50%; background: var(--avatar-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 5px var(--shadow); }
         .avatar-preview-large img { width: 100%; height: 100%; object-fit: cover; }
@@ -77,34 +49,26 @@
         .modal-input-group { text-align: left; margin-bottom: 20px; }
         .modal-input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; font-weight: bold; }
         .modal-input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid transparent; background: var(--input-bg); color: var(--text-main); font-size: 15px; outline: none; }
-        
         .my-id-box { background: var(--bg-deep); padding: 15px; border-radius: 8px; border: 1px solid rgba(134, 150, 160, 0.2); margin-top: 15px; margin-bottom: 20px; text-align: center; }
         .my-id-box p { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; font-weight: bold; }
         .id-badge { color: var(--accent); font-weight: bold; font-family: monospace; font-size: 18px; cursor: pointer; display: inline-block; padding: 5px 10px; border-radius: 6px; transition: background 0.2s; }
         .id-badge:hover { background: rgba(0, 168, 132, 0.1); }
-
         .modal-actions { display: flex; gap: 10px; }
         .modal-actions button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s;}
         #close-modal-btn { background: var(--input-bg); color: var(--text-main); }
         #save-account-btn { background: var(--accent); color: #fff; }
-
         .msg-menu-content { background: var(--bg-panel); border-radius: 12px; width: 90%; max-width: 300px; overflow: hidden; display: flex; flex-direction: column; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); transition: 0.2s; }
         .modal-overlay.show .msg-menu-content { transform: translateX(-50%) translateY(0); }
         .msg-menu-content button { background: transparent; border: none; border-bottom: 1px solid rgba(134,150,160,0.1); color: var(--text-main); padding: 15px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .msg-menu-content button:last-child { border-bottom: none; color: var(--danger); }
         .msg-menu-content button:hover { background: var(--dropdown-hover); }
-
-        /* Login Screen */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; position: relative; }
         .top-right-menu { position: absolute; top: 15px; right: 15px; z-index: 1000; display: flex; align-items: center; gap: 8px; }
         .login-card { background: var(--bg-panel); padding: 30px 20px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px var(--shadow); }
         .login-card h1 { font-size: 22px; margin-bottom: 25px; color: var(--text-main); }
-        
-        /* Opsi Peran */
         .role-btn { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 8px; border: 1px solid var(--accent); background: transparent; color: var(--text-main); font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .role-btn:hover { background: rgba(0, 168, 132, 0.1); }
         .back-btn { background: none; border: none; color: var(--text-dim); text-decoration: underline; cursor: pointer; margin-top: 15px; font-size: 14px; }
-        
         .input-group { text-align: left; margin-bottom: 15px; }
         .input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; padding-left: 5px; font-weight: bold; }
         .login-card input { width: 100%; padding: 15px; border-radius: 8px; border: none; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; text-align: center; }
@@ -112,8 +76,6 @@
         .login-card button#connect-btn:disabled { background: var(--text-dim); cursor: not-allowed; }
         .status-text { margin-top: 15px; font-size: 12px; color: var(--text-dim); }
         #refresh-network-btn { width: 100%; padding: 12px; margin-top: 15px; background: var(--danger); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: none; }
-
-        /* Chat Screen */
         #chat-screen { display: none; flex-direction: column; height: 100%; position: relative; }
         header { flex-shrink: 0; background-color: var(--bg-panel); padding: 10px 15px; border-bottom: 1px solid rgba(134,150,160,0.1); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         .header-left { display: flex; align-items: center; gap: 12px; }
@@ -125,51 +87,39 @@
         .header-title { font-weight: bold; font-size: 16px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;}
         .header-status { font-size: 12px; color: var(--accent); }
         .header-actions { display: flex; align-items: center; gap: 5px; position: relative; }
-
         #chat-window { flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background-color: var(--bg-deep); background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: 400px; }
         body:not(.light-theme) #chat-window { background-blend-mode: multiply; }
         body.light-theme #chat-window { opacity: 0.95; }
-
         .msg { display: inline-block; max-width: 85%; padding: 6px 10px 8px 10px; border-radius: 10px; font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.3); position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
         .msg::after { content: ""; display: table; clear: both; } 
         .msg.sent { align-self: flex-end; background: var(--bubble-me); border-top-right-radius: 2px; }
         .msg.received { align-self: flex-start; background: var(--bubble-peer); border-top-left-radius: 2px; }
-        
         .msg.system { align-self: center; background: rgba(0,0,0,0.5); color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 6px; text-align: center; }
-
         .msg-content { display: inline; white-space: pre-wrap; word-wrap: break-word; }
         .msg img { max-width: 100%; max-height: 300px; border-radius: 6px; display: block; margin-top: 5px; cursor: pointer; }
         .file-link { color: #53bdeb; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
-
         .progress-wrapper { width: 150px; background: rgba(134,150,160,0.2); border-radius: 4px; margin-top: 5px; height: 8px; overflow: hidden; position: relative; }
         .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.1s linear; }
         .progress-text { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 4px; font-weight: bold; }
-
         .msg-meta { float: right; display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: rgba(255,255,255,0.6); margin: 6px -2px -4px 10px; line-height: 1; }
         body.light-theme .msg.received .msg-meta, body.light-theme .msg.sent .msg-meta { color: rgba(0,0,0,0.5); }
         .tick { color: var(--tick-color); font-size: 12px; font-weight: bold; }
         .tick.read { color: var(--tick-read); }
-
         .replied-snippet { background: rgba(0,0,0,0.1); border-left: 4px solid var(--accent); border-radius: 6px; padding: 5px 8px; margin-bottom: 6px; font-size: 13px; color: var(--text-dim); }
         body.light-theme .replied-snippet { background: rgba(0,0,0,0.05); }
         .replied-snippet strong { color: var(--accent); display: block; margin-bottom: 2px; font-size: 12px; }
-
         #typing-indicator { display: none; font-size: 12px; color: var(--accent); font-style: italic; padding: 5px 15px; background: var(--bg-deep); }
-
         footer { flex-shrink: 0; background: var(--bg-panel); padding: 10px; display: flex; gap: 6px; align-items: center; padding-bottom: calc(10px + env(safe-area-inset-bottom)); position: relative; z-index: 10; }
         #reply-preview-container { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background: var(--bg-panel); border-top: 1px solid rgba(134,150,160,0.1); padding: 10px 15px; z-index: 5; }
         .reply-box { background: var(--bg-deep); border-left: 4px solid var(--accent); border-radius: 6px; padding: 8px 12px; position: relative; font-size: 13px; }
         .reply-name { font-weight: bold; color: var(--accent); display: block; margin-bottom: 3px; }
         .reply-text { color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%; }
         .cancel-reply { position: absolute; right: 12px; top: 12px; color: var(--text-dim); cursor: pointer; background: none; border: none; font-size: 18px; }
-
         .input-wrapper { flex: 1; background: var(--input-bg); border-radius: 24px; display: flex; align-items: center; padding: 0 12px; }
         #message-input { flex: 1; background: transparent; border: none; color: var(--text-main); padding: 12px 5px; font-size: 16px; outline: none; }
         .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-dim); transition: 0.2s; display: flex; align-items: center; justify-content: center;}
         .icon-btn:hover { color: var(--accent); }
         #send-btn { width: 42px; height: 42px; background: var(--accent); border: none; border-radius: 50%; color: #ffffff; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; margin-left: 4px; }
-        
-        /* Tombol Modal Image */
         .img-modal-btn { background: var(--bg-panel); color: var(--text-main); border: 1px solid rgba(134, 150, 160, 0.2); padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; flex: 1; text-align: center;}
         .img-modal-btn:hover { background: var(--dropdown-hover); }
     </style>
@@ -422,7 +372,7 @@
             document.getElementById('dropdown-menu-chat').classList.remove('show'); 
         });
 
-        // === SISTEM TINDAKAN PESAN (REPLY/COPY/DELETE) ===
+        // === SISTEM TINDAKAN PESAN ===
         const msgActionOverlay = document.getElementById('msg-action-overlay');
         let activeReply = null; let selectedMsgDiv = null; let selectedMsgObj = null;
 
@@ -482,19 +432,11 @@
             document.getElementById('image-viewer-modal').classList.add('show');
         }
 
-        document.getElementById('img-close-btn').addEventListener('click', () => {
-            document.getElementById('image-viewer-modal').classList.remove('show');
-        });
-
+        document.getElementById('img-close-btn').addEventListener('click', () => { document.getElementById('image-viewer-modal').classList.remove('show'); });
         document.getElementById('img-save-btn').addEventListener('click', () => {
-            const a = document.createElement('a');
-            a.href = currentEnlargedFile.src;
-            a.download = currentEnlargedFile.name || 'image.png';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            const a = document.createElement('a'); a.href = currentEnlargedFile.src; a.download = currentEnlargedFile.name || 'image.png';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
         });
-
         document.getElementById('img-reply-btn').addEventListener('click', () => {
             activeReply = selectedMsgObj; 
             document.getElementById('reply-preview-name').innerText = activeReply.sender; 
@@ -503,7 +445,6 @@
             document.getElementById('message-input').focus(); 
             document.getElementById('image-viewer-modal').classList.remove('show');
         });
-
         document.getElementById('img-delete-btn').addEventListener('click', () => {
             if (selectedMsgDiv) selectedMsgDiv.remove(); 
             document.getElementById('image-viewer-modal').classList.remove('show');
@@ -524,30 +465,22 @@
             div.className = `log-entry ${type}`;
             const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
             div.innerHTML = `[${time}] ${message}`;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
+            container.appendChild(div); container.scrollTop = container.scrollHeight;
 
-            // Tampilkan juga di log penerima jika sedang di menu penerima
             const receiverLog = document.getElementById('receiver-log');
             if (receiverLog && document.getElementById('receiver-ui').style.display !== 'none') {
                 const recDiv = div.cloneNode(true);
-                receiverLog.appendChild(recDiv);
-                receiverLog.scrollTop = receiverLog.scrollHeight;
+                receiverLog.appendChild(recDiv); receiverLog.scrollTop = receiverLog.scrollHeight;
             }
         }
 
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
         function playNotification() { if (!isMuted) notificationSound.play().catch(() => {}); }
 
-        // === LOGIKA PILIH PERAN (LOGIN BARU) ===
         function selectRole(role) {
             document.getElementById('role-selection').style.display = 'none';
-            if (role === 'sender') {
-                document.getElementById('sender-ui').style.display = 'block';
-            } else {
-                document.getElementById('receiver-ui').style.display = 'block';
-                document.getElementById('my-id-display').innerText = peer.id || 'Loading...';
-            }
+            if (role === 'sender') { document.getElementById('sender-ui').style.display = 'block'; } 
+            else { document.getElementById('receiver-ui').style.display = 'block'; document.getElementById('my-id-display').innerText = peer.id || 'Loading...'; }
         }
         
         function resetRole() {
@@ -556,38 +489,28 @@
             document.getElementById('role-selection').style.display = 'block';
         }
 
-        // Copy ID pada halaman receiver
         document.getElementById('my-id-display').addEventListener('click', function() {
             if (this.innerText === 'Loading...' || this.innerText === 'Tersalin!') return;
             navigator.clipboard.writeText(this.innerText).then(() => {
-                const original = this.innerText;
-                this.innerText = 'Tersalin!';
-                this.style.color = '#53bdeb';
+                const original = this.innerText; this.innerText = 'Tersalin!'; this.style.color = '#53bdeb';
                 setTimeout(() => { this.innerText = original; this.style.color = 'inherit'; }, 2000);
             });
         });
 
 
-        // === KONEKSI PEERJS ===
+        // === KONEKSI PEERJS (OPTIMASI IPv6 STUN) ===
         let savedPeerId = localStorage.getItem('my-peer-id');
         
+        // Kita HAPUS server TURN yang mati/lambat, 
+        // dan tambahkan banyak STUN server andal dari Google & Cloudflare
+        // agar WebRTC bisa menemukan kandidat jaringan IPv6.
         const peerConfig = { 
             config: { 
                 'iceServers': [
                     { urls: 'stun:stun.l.google.com:19302' }, 
-                    { urls: 'stun:stun.cloudflare.com:3478' },
-                    { 
-                        urls: 'turn:openrelay.metered.ca:80', 
-                        username: 'openrelayproject', credential: 'openrelayproject'
-                    },
-                    { 
-                        urls: 'turn:openrelay.metered.ca:443', 
-                        username: 'openrelayproject', credential: 'openrelayproject'
-                    },
-                    { 
-                        urls: 'turn:openrelay.metered.ca:443?transport=tcp', 
-                        username: 'openrelayproject', credential: 'openrelayproject'
-                    }
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun.cloudflare.com:3478' }
                 ] 
             },
             debug: 3 
@@ -607,7 +530,7 @@
             if (!savedPeerId) { localStorage.setItem('my-peer-id', id); savedPeerId = id; }
             document.getElementById('my-id').innerText = id;
             document.getElementById('my-id-display').innerText = id;
-            document.getElementById('login-status').innerText = "Sistem siap digunakan."; 
+            document.getElementById('login-status').innerText = "Sistem P2P siap digunakan."; 
             document.getElementById('login-status').style.color = "var(--accent)"; 
             logDebug(`Sistem Siap. ID Anda: ${id}`, 'success');
         });
@@ -615,8 +538,7 @@
         document.getElementById('my-id').addEventListener('click', function() { 
             if (this.innerText === 'Connecting...' || this.innerText === 'Tersalin!') return; 
             navigator.clipboard.writeText(this.innerText).then(() => { 
-                this.innerText = 'Tersalin!'; 
-                this.style.color = '#53bdeb'; 
+                this.innerText = 'Tersalin!'; this.style.color = '#53bdeb'; 
                 setTimeout(() => { this.innerText = peer.id; this.style.color = 'var(--accent)'; }, 2000); 
             }); 
         });
@@ -625,19 +547,10 @@
             clearTimeout(connectTimeout); 
             document.getElementById('login-status').innerText = '⚠ ERROR: ' + err.type; 
             document.getElementById('login-status').style.color = "var(--danger)"; 
-            document.getElementById('refresh-network-btn').style.display = 'block'; // Tampilkan tombol refresh
-            
+            document.getElementById('refresh-network-btn').style.display = 'block'; 
             logDebug(`PeerJS Error: ${err.type}`, 'error');
-            
-            if (err.type === 'unavailable-id') {
-                localStorage.removeItem('my-peer-id');
-                alert('ID sebelumnya sedang aktif. Halaman akan dimuat ulang.');
-                window.location.reload();
-            } else if(err.type === 'peer-unavailable') { 
-                alert('ID Teman tidak ditemukan/offline.'); 
-                document.getElementById('connect-btn').innerText = "Mulai Chat"; 
-                document.getElementById('connect-btn').disabled = false; 
-            } 
+            if (err.type === 'unavailable-id') { localStorage.removeItem('my-peer-id'); alert('ID aktif di tab lain. Refresh...'); window.location.reload(); } 
+            else if(err.type === 'peer-unavailable') { alert('ID Teman offline.'); document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false; } 
         });
 
         function monitorICE(connection) {
@@ -645,10 +558,9 @@
                 if(connection && connection.peerConnection) {
                     connection.peerConnection.addEventListener('iceconnectionstatechange', () => {
                         const state = connection.peerConnection.iceConnectionState;
-                        logDebug(`Status Jaringan WebRTC (ICE): <b>${state.toUpperCase()}</b>`);
-                        
+                        logDebug(`Status Jaringan WebRTC: <b>${state.toUpperCase()}</b>`);
                         if(state === 'failed' || state === 'disconnected') {
-                            logDebug('Gagal menembus NAT/Firewall. Server TURN terblokir atau mati.', 'error');
+                            logDebug('Gagal koneksi. Pastikan IPv6 aktif di kedua perangkat.', 'error');
                             document.getElementById('message-input').disabled = true;
                         } else if (state === 'connected' || state === 'completed') {
                             logDebug('Jalur P2P berhasil diamankan!', 'success');
@@ -659,125 +571,59 @@
             }, 1000);
         }
 
-        // Penerima mendapatkan koneksi masuk
         peer.on('connection', connection => { 
-            if(conn) conn.close(); 
-            conn = connection; 
-            document.getElementById('login-screen').style.display = 'none'; 
-            document.getElementById('chat-screen').style.display = 'flex';
-            chatWindow.innerHTML = '';
-            logDebug('Menerima koneksi masuk dari teman...', 'success');
-            monitorICE(conn);
-            setupConn(); 
+            if(conn) conn.close(); conn = connection; 
+            document.getElementById('login-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex'; chatWindow.innerHTML = '';
+            logDebug('Menerima koneksi masuk...', 'success'); monitorICE(conn); setupConn(); 
         });
 
-        // Pengirim menekan tombol hubungkan
         function connectToPeer() {
             const rId = document.getElementById('remote-id').value.trim();
-            if(!rId || rId === peer.id) return alert(!rId ? "Masukkan ID teman!" : "Tidak bisa chat dengan diri sendiri!");
-            
-            document.getElementById('connect-btn').innerText = "Mencari teman..."; 
-            document.getElementById('connect-btn').disabled = true;
-            
-            logDebug(`Mencoba menghubungkan ke: ${rId}`);
-            
-            conn = peer.connect(rId); 
-            monitorICE(conn);
-            setupConn();
-
+            if(!rId || rId === peer.id) return alert(!rId ? "Masukkan ID!" : "Tidak bisa dengan diri sendiri!");
+            document.getElementById('connect-btn').innerText = "Mencari..."; document.getElementById('connect-btn').disabled = true;
+            logDebug(`Menghubungkan ke: ${rId}`);
+            conn = peer.connect(rId); monitorICE(conn); setupConn();
             clearTimeout(connectTimeout);
             connectTimeout = setTimeout(() => {
-                if (conn && !conn.open) {
-                    logDebug('WAKTU HABIS! Gagal terhubung.', 'error');
-                    alert("Waktu habis! Gagal terhubung.");
-                    if(conn) conn.close();
-                    resetUI();
-                }
+                if (conn && !conn.open) { alert("Waktu habis! Pastikan IPv6 aktif."); if(conn) conn.close(); resetUI(); }
             }, 15000);
         }
 
         function setupConn() {
             conn.on('open', () => {
-                clearTimeout(connectTimeout); 
-                document.getElementById('login-screen').style.display = 'none'; 
-                document.getElementById('chat-screen').style.display = 'flex';
-                logDebug('Handshake awal berhasil! Bertukar profil...', 'success');
+                clearTimeout(connectTimeout); document.getElementById('login-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex';
+                logDebug('Handshake berhasil!', 'success');
                 conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 });
             });
-            
             conn.on('data', data => {
-                if (data && data.type === 'profile') {
-                    remoteName = data.name || "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName;
-                    chatHeaderAvatar.innerHTML = data.avatar ? `<img src="${data.avatar}" alt="Avatar">` : defaultSvgAvatar;
-                    logDebug(`Profil diterima. Terhubung dengan: ${remoteName}`);
-                } else if (data && data.type === 'ack') {
-                    const msgElement = document.getElementById(data.msgId);
-                    if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } }
-                } else if (data && data.type === 'text') {
-                    conn.send({ type: 'ack', msgId: data.id }); playNotification(); hideTyping(); appendMessage('received', data, data.id);
-                } else if (data && data.type === 'typing') {
-                    data.isTyping ? showTyping() : hideTyping();
-                } else if (data && data.type === 'file-start') {
-                    incomingFiles[data.fileId] = { chunks: [], receivedSize: 0, metadata: data };
-                    renderFileProgress('received', data.fileId, data.filename, 0);
-                } else if (data && data.type === 'file-chunk') {
-                    const fileData = incomingFiles[data.fileId];
-                    if (fileData) {
-                        fileData.chunks.push(data.data);
-                        fileData.receivedSize += data.data.byteLength;
-                        const progress = Math.round((fileData.receivedSize / fileData.metadata.filesize) * 100);
-                        updateFileProgress(data.fileId, progress);
-                    }
-                } else if (data && data.type === 'file-end') {
-                    const fileData = incomingFiles[data.fileId];
-                    if (fileData) {
-                        const blob = new Blob(fileData.chunks, { type: fileData.metadata.filetype });
-                        finalizeFileMessage('received', data.fileId, fileData.metadata.filename, fileData.metadata.filetype, blob);
-                        delete incomingFiles[data.fileId]; 
-                        conn.send({ type: 'ack', msgId: data.fileId });
-                        playNotification(); hideTyping();
-                    }
-                }
+                if (data && data.type === 'profile') { remoteName = data.name || "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = data.avatar ? `<img src="${data.avatar}" alt="Avatar">` : defaultSvgAvatar; } 
+                else if (data && data.type === 'ack') { const msgElement = document.getElementById(data.msgId); if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } } } 
+                else if (data && data.type === 'text') { conn.send({ type: 'ack', msgId: data.id }); playNotification(); hideTyping(); appendMessage('received', data, data.id); } 
+                else if (data && data.type === 'typing') { data.isTyping ? showTyping() : hideTyping(); } 
+                else if (data && data.type === 'file-start') { incomingFiles[data.fileId] = { chunks: [], receivedSize: 0, metadata: data }; renderFileProgress('received', data.fileId, data.filename, 0); } 
+                else if (data && data.type === 'file-chunk') { const fileData = incomingFiles[data.fileId]; if (fileData) { fileData.chunks.push(data.data); fileData.receivedSize += data.data.byteLength; updateFileProgress(data.fileId, Math.round((fileData.receivedSize / fileData.metadata.filesize) * 100)); } } 
+                else if (data && data.type === 'file-end') { const fileData = incomingFiles[data.fileId]; if (fileData) { finalizeFileMessage('received', data.fileId, fileData.metadata.filename, fileData.metadata.filetype, new Blob(fileData.chunks, { type: fileData.metadata.filetype })); delete incomingFiles[data.fileId]; conn.send({ type: 'ack', msgId: data.fileId }); playNotification(); hideTyping(); } }
             });
             conn.on('close', () => { logDebug('Koneksi ditutup.', 'error'); setTimeout(resetUI, 1000); });
         }
 
         function showTyping() { document.getElementById('typing-indicator').style.display = 'block'; chatWindow.scrollTop = chatWindow.scrollHeight; }
         function hideTyping() { document.getElementById('typing-indicator').style.display = 'none'; }
-        
-        function disconnectPeer() { 
-            if(conn) conn.close(); 
-            document.getElementById('dropdown-menu-chat').classList.remove('show');
-            resetUI(); 
-        }
+        function disconnectPeer() { if(conn) conn.close(); document.getElementById('dropdown-menu-chat').classList.remove('show'); resetUI(); }
         
         function resetUI() {
-            clearTimeout(connectTimeout);
-            conn = null; 
-            document.getElementById('chat-screen').style.display = 'none'; 
-            document.getElementById('login-screen').style.display = 'flex'; 
-            document.getElementById('remote-id').value = '';
-            document.getElementById('connect-btn').innerText = "Mulai Chat"; 
-            document.getElementById('connect-btn').disabled = false;
-            resetRole(); // Kembali ke pilihan menu awal
-            
+            clearTimeout(connectTimeout); conn = null; document.getElementById('chat-screen').style.display = 'none'; document.getElementById('login-screen').style.display = 'flex'; 
+            document.getElementById('remote-id').value = ''; document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false; resetRole();
             remoteName = "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = defaultSvgAvatar; hideTyping(); cancelReply();
         }
 
-        // === PENGIRIMAN PESAN & FILE ===
-        messageInput.addEventListener('input', () => { 
-            if (conn && conn.open) { 
-                conn.send({ type: 'typing', isTyping: true }); 
-                clearTimeout(typingTimeout); 
-                typingTimeout = setTimeout(() => { conn.send({ type: 'typing', isTyping: false }); }, 1500); 
-            } 
-        });
+        // === PENGIRIMAN PESAN ===
+        messageInput.addEventListener('input', () => { if (conn && conn.open) { conn.send({ type: 'typing', isTyping: true }); clearTimeout(typingTimeout); typingTimeout = setTimeout(() => { conn.send({ type: 'typing', isTyping: false }); }, 1500); } });
 
         function sendMessage() {
             const msg = messageInput.value.trim();
             if(msg && conn && conn.open) {
-                const msgId = 'msg-' + Date.now();
-                const msgData = { type: 'text', id: msgId, text: msg, replyTo: activeReply ? { sender: activeReply.sender, text: activeReply.text } : null };
+                const msgId = 'msg-' + Date.now(); const msgData = { type: 'text', id: msgId, text: msg, replyTo: activeReply ? { sender: activeReply.sender, text: activeReply.text } : null };
                 conn.send(msgData); conn.send({ type: 'typing', isTyping: false }); clearTimeout(typingTimeout);
                 appendMessage('sent', msgData, msgId); messageInput.value = ''; messageInput.focus(); cancelReply();
             }
@@ -785,16 +631,13 @@
 
         function processFile(file) {
             if (!file || !conn || !conn.open) return;
-            if (file.size > 15 * 1024 * 1024) { alert("Maksimal 15MB."); return; }
-            const fileId = 'file-' + Date.now(); 
-            renderFileProgress('sent', fileId, file.name, 0);
+            if (file.size > 15 * 1024 * 1024) return alert("Maksimal 15MB.");
+            const fileId = 'file-' + Date.now(); renderFileProgress('sent', fileId, file.name, 0);
             conn.send({ type: 'file-start', fileId: fileId, filename: file.name, filetype: file.type, filesize: file.size });
             let offset = 0; const reader = new FileReader();
             reader.onload = function(e) {
-                conn.send({ type: 'file-chunk', fileId: fileId, data: e.target.result });
-                offset += e.target.result.byteLength;
-                const progress = Math.round((offset / file.size) * 100);
-                updateFileProgress(fileId, progress);
+                conn.send({ type: 'file-chunk', fileId: fileId, data: e.target.result }); offset += e.target.result.byteLength;
+                updateFileProgress(fileId, Math.round((offset / file.size) * 100));
                 if (offset < file.size) { setTimeout(readNextChunk, 5); } else { conn.send({ type: 'file-end', fileId: fileId }); finalizeFileMessage('sent', fileId, file.name, file.type, file); }
             };
             function readNextChunk() { const slice = file.slice(offset, offset + CHUNK_SIZE); reader.readAsArrayBuffer(slice); }
@@ -803,72 +646,31 @@
 
         document.getElementById('file-input').addEventListener('change', (e) => { processFile(e.target.files[0]); e.target.value = ''; });
 
-        function renderFileProgress(senderType, fileId, filename, progress) { 
-            const div = document.createElement('div'); div.className = `msg ${senderType}`; div.id = fileId; 
-            div.innerHTML = `<div class="msg-content"><div style="font-weight:bold; font-size:13px; margin-bottom:5px;">📄 ${filename}</div><div class="progress-wrapper"><div class="progress-bar" id="pb-${fileId}" style="width: ${progress}%"></div></div><div class="progress-text" id="pt-${fileId}">${progress}% Memproses...</div></div>`; 
-            chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; 
-        }
-        
-        function updateFileProgress(fileId, progress) { 
-            const pb = document.getElementById(`pb-${fileId}`); 
-            const pt = document.getElementById(`pt-${fileId}`); 
-            if (pb && pt) { pb.style.width = `${progress}%`; pt.innerText = progress === 100 ? "Menyelesaikan..." : `${progress}% Mengirim...`; } 
-        }
+        function renderFileProgress(senderType, fileId, filename, progress) { const div = document.createElement('div'); div.className = `msg ${senderType}`; div.id = fileId; div.innerHTML = `<div class="msg-content"><div style="font-weight:bold; font-size:13px; margin-bottom:5px;">📄 ${filename}</div><div class="progress-wrapper"><div class="progress-bar" id="pb-${fileId}" style="width: ${progress}%"></div></div><div class="progress-text" id="pt-${fileId}">${progress}% Memproses...</div></div>`; chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; }
+        function updateFileProgress(fileId, progress) { const pb = document.getElementById(`pb-${fileId}`); const pt = document.getElementById(`pt-${fileId}`); if (pb && pt) { pb.style.width = `${progress}%`; pt.innerText = progress === 100 ? "Menyelesaikan..." : `${progress}% Mengirim...`; } }
         
         function finalizeFileMessage(senderType, fileId, filename, filetype, blob) { 
-            const div = document.getElementById(fileId); 
-            if (!div) return; 
-            const url = URL.createObjectURL(blob); 
-            let contentHTML = ''; 
-            
-            const msgObj = { text: filetype.startsWith('image/') ? '📷 Foto' : `📄 ${filename}`, sender: senderType === 'sent' ? (myName || 'Anda') : remoteName };
-
-            if (filetype.startsWith('image/')) { 
-                contentHTML = `<img src="${url}" alt="${filename}" id="img-${fileId}" style="cursor: zoom-in;">`; 
-            } else { 
-                contentHTML = `<a href="${url}" download="${filename}" class="file-link">📄 ${filename}</a>`; 
-            } 
-            
-            div.innerHTML = `<div class="msg-content">${contentHTML}</div>`; 
-            appendMeta(div, senderType); 
-            setupLongPress(div, msgObj); 
-
+            const div = document.getElementById(fileId); if (!div) return; 
+            const url = URL.createObjectURL(blob); let contentHTML = ''; const msgObj = { text: filetype.startsWith('image/') ? '📷 Foto' : `📄 ${filename}`, sender: senderType === 'sent' ? (myName || 'Anda') : remoteName };
+            if (filetype.startsWith('image/')) { contentHTML = `<img src="${url}" alt="${filename}" id="img-${fileId}" style="cursor: zoom-in;">`; } else { contentHTML = `<a href="${url}" download="${filename}" class="file-link">📄 ${filename}</a>`; } 
+            div.innerHTML = `<div class="msg-content">${contentHTML}</div>`; appendMeta(div, senderType); setupLongPress(div, msgObj); 
             if (filetype.startsWith('image/')) {
-                const imgElement = div.querySelector(`#img-${fileId}`);
-                imgElement.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; };
-                imgElement.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Mencegah trigger long press
-                    openImageViewer(url, div, msgObj, filename);
-                });
+                const imgElement = div.querySelector(`#img-${fileId}`); imgElement.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; };
+                imgElement.addEventListener('click', (e) => { e.stopPropagation(); openImageViewer(url, div, msgObj, filename); });
             }
-
             chatWindow.scrollTop = chatWindow.scrollHeight; 
         }
         
         function appendMessage(type, dataObj, id = null) { 
             const text = dataObj.text || ""; const replyTo = dataObj.replyTo || null; const div = document.createElement('div'); div.className = `msg ${type}`; if (id) div.id = id; 
-            if (replyTo && type !== 'system') { 
-                const replyDiv = document.createElement('div'); replyDiv.className = 'replied-snippet'; 
-                replyDiv.innerHTML = `<strong>${replyTo.sender}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${replyTo.text}</span>`; 
-                div.appendChild(replyDiv); 
-            } 
+            if (replyTo && type !== 'system') { const replyDiv = document.createElement('div'); replyDiv.className = 'replied-snippet'; replyDiv.innerHTML = `<strong>${replyTo.sender}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${replyTo.text}</span>`; div.appendChild(replyDiv); } 
             const content = document.createElement('div'); content.className = 'msg-content'; content.innerText = text; div.appendChild(content); 
-            if (type !== 'system') { 
-                appendMeta(div, type); 
-                setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || 'Anda') : remoteName }); 
-            } 
+            if (type !== 'system') { appendMeta(div, type); setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || 'Anda') : remoteName }); } 
             chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; 
         }
         
-        function appendMeta(parentDiv, type) { 
-            const meta = document.createElement('div'); meta.className = 'msg-meta'; const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); 
-            const timeSpan = document.createElement('span'); timeSpan.innerText = timeStr; meta.appendChild(timeSpan); 
-            if (type === 'sent') { const tickSpan = document.createElement('span'); tickSpan.className = 'tick'; tickSpan.innerText = '✓'; meta.appendChild(tickSpan); } 
-            parentDiv.appendChild(meta); 
-        }
-        
-        const updateHeight = () => { document.body.style.height = window.visualViewport.height + 'px'; if(document.getElementById('chat-screen').style.display === 'flex') chatWindow.scrollTop = chatWindow.scrollHeight; }; 
-        window.visualViewport.addEventListener('resize', updateHeight); window.visualViewport.addEventListener('scroll', updateHeight);
+        function appendMeta(parentDiv, type) { const meta = document.createElement('div'); meta.className = 'msg-meta'; const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); const timeSpan = document.createElement('span'); timeSpan.innerText = timeStr; meta.appendChild(timeSpan); if (type === 'sent') { const tickSpan = document.createElement('span'); tickSpan.className = 'tick'; tickSpan.innerText = '✓'; meta.appendChild(tickSpan); } parentDiv.appendChild(meta); }
+        const updateHeight = () => { document.body.style.height = window.visualViewport.height + 'px'; if(document.getElementById('chat-screen').style.display === 'flex') chatWindow.scrollTop = chatWindow.scrollHeight; }; window.visualViewport.addEventListener('resize', updateHeight); window.visualViewport.addEventListener('scroll', updateHeight);
     </script>
 </body>
 </html>
