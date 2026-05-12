@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="manifest" href="./manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>P2P Secure Chat (IPv6 Ready)</title>
+    <title>P2P Secure Chat</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
@@ -56,7 +56,7 @@
         }
     
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; background-color: var(--bg-deep); color: var(--text-main); font-family: 'Roboto', sans-serif; overflow: hidden; transition: background-color 0.3s; }
+        html, body { height: 100%; background-color: var(--bg-deep); color: var(--text-main); font-family: 'Roboto', sans-serif; overflow: hidden; transition: background-color 0.3s; overscroll-behavior: none; }
         
         button { font-family: 'Roboto', sans-serif; }
     
@@ -117,7 +117,9 @@
         .img-modal-btn:hover { background: var(--dropdown-hover); }
         .img-close-icon { position: absolute; top: -12px; right: -12px; background: var(--bg-panel); color: var(--text-main); border: 2px solid var(--bg-deep); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px var(--shadow); z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .img-close-icon:hover { background: var(--input-bg); transform: scale(1.1); }
-    
+        
+        #enlarged-img { max-width: 100%; max-height: 75vh; border-radius: 8px; object-fit: contain; background: rgba(0,0,0,0.5); box-shadow: 0 4px 20px rgba(0,0,0,0.5); touch-action: none; transition: transform 0.05s linear; transform-origin: center center; }
+
         /* Login Screen */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; position: relative; }
         .top-right-menu { position: absolute; top: 15px; right: 15px; z-index: 1000; display: flex; align-items: center; gap: 8px; }
@@ -201,74 +203,73 @@
 
     <div id="account-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3>Pengaturan Akun</h3>
+            <h3 data-i18n="settingsAccount">Pengaturan Akun</h3>
             <div class="avatar-edit-container">
-                <!-- Avatar area is now clickable -->
-                <div class="avatar-preview-large" id="modal-avatar-preview" onclick="document.getElementById('avatar-input').click()" title="Klik untuk mengubah foto">
+                <div class="avatar-preview-large" id="modal-avatar-preview" onclick="document.getElementById('avatar-input').click()">
                     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
                 </div>
                 <input type="file" id="avatar-input" accept="image/*" style="display: none;">
             </div>
             
             <div class="modal-input-group">
-                <label for="modal-name-input">NAMA TAMPILAN</label>
-                <input type="text" id="modal-name-input" placeholder="Masukkan nama Anda..." autocomplete="off">
+                <label for="modal-name-input" data-i18n="displayName">NAMA TAMPILAN</label>
+                <input type="text" id="modal-name-input" data-i18n-placeholder="namePlaceholder" placeholder="Masukkan nama Anda..." autocomplete="off">
             </div>
 
             <div class="my-id-box">
-                <p>ID JARINGAN ANDA (KLIK UNTUK COPY)</p>
-                <span id="my-id" class="id-badge" title="Klik untuk Copy">Connecting...</span>
+                <p data-i18n="yourNetworkId">ID JARINGAN ANDA (KLIK UNTUK COPY)</p>
+                <span id="my-id" class="id-badge" data-i18n="connectingStatus">Connecting...</span>
             </div>
 
             <div class="modal-actions">
-                <button id="close-modal-btn">Batal</button>
-                <button id="save-account-btn">Simpan</button>
+                <button id="close-modal-btn" data-i18n="cancel">Batal</button>
+                <button id="save-account-btn" data-i18n="save">Simpan</button>
             </div>
         </div>
     </div>
 
     <div id="log-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 400px; width: 95%;">
-            <h3>Log Diagnostik Koneksi</h3>
+            <h3 data-i18n="logTitle">Log Diagnostik Koneksi</h3>
             <div id="log-container" class="log-container"></div>
             <div style="display: flex; gap: 8px;">
-                <button id="clear-log-btn" style="flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: var(--danger); color: white;">Hapus Log</button>
-                <button id="close-log-btn" style="flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: var(--input-bg); color: var(--text-main);">Tutup</button>
+                <button id="clear-log-btn" data-i18n="clearLog" style="flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: var(--danger); color: white;">Hapus Log</button>
+                <button id="close-log-btn" data-i18n="close" style="flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: var(--input-bg); color: var(--text-main);">Tutup</button>
             </div>
         </div>
     </div>
 
     <div id="image-viewer-modal" class="modal-overlay">
-        <div class="modal-content" style="background: transparent; box-shadow: none; max-width: 95vw; padding: 0;">
+        <div class="modal-content" style="background: transparent; box-shadow: none; max-width: 100vw; max-height: 100vh; padding: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;">
             <div style="position: relative; display: inline-block;">
-                <!-- Close Icon Replace "Tutup" button -->
                 <button id="img-close-icon" class="img-close-icon">✕</button>
-                <img id="enlarged-img" src="" style="max-width: 100%; max-height: 75vh; border-radius: 8px; object-fit: contain; background: rgba(0,0,0,0.5); box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                <img id="enlarged-img" src="">
             </div>
             <div style="display: flex; gap: 8px; margin-top: 15px; justify-content: center; flex-wrap: wrap;">
-                <button id="img-save-btn" class="img-modal-btn">Simpan</button>
-                <button id="img-reply-btn" class="img-modal-btn">Balas</button>
-                <button id="img-delete-btn" class="img-modal-btn" style="color: var(--danger);">Hapus</button>
+                <button id="img-save-btn" class="img-modal-btn" data-i18n="saveImg">Simpan</button>
+                <button id="img-reply-btn" class="img-modal-btn" data-i18n="reply">Balas</button>
+                <button id="img-delete-btn" class="img-modal-btn" style="color: var(--danger);" data-i18n="delete">Hapus</button>
             </div>
         </div>
     </div>
 
     <div id="msg-action-overlay" class="modal-overlay">
         <div class="msg-menu-content">
-            <button id="msg-reply-btn">Balas</button>
-            <button id="msg-copy-btn">Salin</button>
-            <button id="msg-delete-btn">Hapus di saya</button>
+            <button id="msg-reply-btn" data-i18n="reply">Balas</button>
+            <button id="msg-copy-btn" data-i18n="copy">Salin</button>
+            <button id="msg-delete-btn" data-i18n="deleteMe">Hapus di saya</button>
         </div>
     </div>
 
     <div id="login-screen">
         <div class="top-right-menu">
-            <button class="account-btn" style="background: var(--input-bg); border: none; color: var(--text-main); padding: 8px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px;">👤 Akun</button>
+            <button id="lang-toggle-btn" style="background: transparent; border: 2px solid var(--input-bg); color: var(--text-main); padding: 6px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px;">EN</button>
+            <button class="account-btn" style="background: var(--input-bg); border: none; color: var(--text-main); padding: 8px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px;">👤 <span data-i18n="accountMenu">Akun</span></button>
             <button id="menu-toggle-btn" class="menu-btn">⋮</button>
             <div id="dropdown-menu" class="dropdown">
-                <button id="theme-btn">Ganti Tema</button>
-                <button id="log-btn">Log Sistem</button>
-                <button id="cache-btn">Hapus Cache</button>
+                <button id="theme-btn" data-i18n="theme">Ganti Tema</button>
+                <button id="log-btn" data-i18n="syslog">Log Sistem</button>
+                <button id="cache-btn" data-i18n="clearcache">Hapus Cache</button>
             </div>
         </div>
         
@@ -276,56 +277,53 @@
             <h1>P2P SECURE CHAT</h1>
             
             <div id="role-selection">
-                <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Pilih peran Anda untuk memulai:</p>
-                <!-- Role Buttons "Saya" removed -->
+                <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;" data-i18n="chooseRole">Pilih peran Anda untuk memulai:</p>
                 <button class="role-btn" onclick="selectRole('sender')">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    Pengirim
+                    <span data-i18n="roleSender">Pengirim</span>
                 </button>
                 <button class="role-btn" onclick="selectRole('receiver')">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    Penerima
+                    <span data-i18n="roleReceiver">Penerima</span>
                 </button>
             </div>
 
             <div id="sender-ui" style="display: none;">
                 <div class="input-group">
-                    <label for="remote-id">MASUKKAN ID PENERIMA</label>
-                    <input type="text" id="remote-id" placeholder="Tempel ID Teman di sini">
+                    <label for="remote-id" data-i18n="inputReceiverID">MASUKKAN ID PENERIMA</label>
+                    <input type="text" id="remote-id" data-i18n-placeholder="pasteIdPlaceholder" placeholder="Tempel ID Teman di sini">
                 </div>
-                <button id="connect-btn" onclick="connectToPeer()">Mulai Chat</button>
-                <button class="back-btn" onclick="resetRole()">Kembali</button>
+                <button id="connect-btn" onclick="connectToPeer()" data-i18n="startChat">Mulai Chat</button>
+                <button class="back-btn" onclick="resetRole()" data-i18n="backBtn">Kembali</button>
             </div>
 
             <div id="receiver-ui" style="display: none;">
                 <div style="background: var(--input-bg); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
-                    <p style="font-weight: bold; color: var(--accent); margin-bottom: 10px;">⏳ Menunggu Koneksi Masuk...</p>
-                    <p style="font-size: 12px; color: var(--text-dim);">Berikan ID Anda ke Pengirim:</p>
-                    <div id="my-id-display" class="id-badge" style="margin-top: 5px; background: rgba(0, 168, 132, 0.1); cursor: pointer;" title="Klik untuk Copy">Loading...</div>
+                    <p style="font-weight: bold; color: var(--accent); margin-bottom: 10px;" data-i18n="waitingConn">⏳ Menunggu Koneksi Masuk...</p>
+                    <p style="font-size: 12px; color: var(--text-dim);" data-i18n="giveIdText">Berikan ID Anda ke Pengirim:</p>
+                    <div id="my-id-display" class="id-badge" style="margin-top: 5px; background: rgba(0, 168, 132, 0.1); cursor: pointer;" data-i18n="loading">Loading...</div>
                 </div>
                 <div id="receiver-log" class="log-container" style="height: 120px; margin-bottom: 5px; font-size: 11px;"></div>
-                <button class="back-btn" onclick="resetRole()">Kembali</button>
+                <button class="back-btn" onclick="resetRole()" data-i18n="backBtn">Kembali</button>
             </div>
 
-            <!-- Connected UI Mode (Replaces Role Selection when hitting Back during active chat) -->
             <div id="connected-ui" style="display: none; text-align: center;">
                 <div style="background: var(--input-bg); padding: 24px; border-radius: 16px; margin-bottom: 20px;">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom: 10px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    <p style="color: var(--text-main); font-size: 16px; line-height: 1.5;">Anda telah terhubung dengan<br><strong id="connected-friend-name" style="color: var(--accent); font-size: 20px;">Teman</strong></p>
+                    <p style="color: var(--text-main); font-size: 16px; line-height: 1.5;"><span data-i18n="connectedWith">Anda telah terhubung dengan</span><br><strong id="connected-friend-name" style="color: var(--accent); font-size: 20px;">Teman</strong></p>
                 </div>
-                <button id="return-chat-btn" class="role-btn" style="background: var(--accent); color: var(--md-on-primary); border: none;">Kembali ke Chat</button>
-                <button onclick="disconnectPeer()" style="width: 100%; padding: 16px; margin-top: 5px; border-radius: 100px; border: none; background: transparent; color: var(--danger); font-weight: 500; font-size: 16px; cursor: pointer; transition: 0.2s;">Putus Koneksi</button>
+                <button id="return-chat-btn" class="role-btn" style="background: var(--accent); color: var(--md-on-primary); border: none;" data-i18n="returnChat">Kembali ke Chat</button>
+                <button onclick="disconnectPeer()" style="width: 100%; padding: 16px; margin-top: 5px; border-radius: 100px; border: none; background: transparent; color: var(--danger); font-weight: 500; font-size: 16px; cursor: pointer; transition: 0.2s;" data-i18n="disconnect">Putus Koneksi</button>
             </div>
 
-            <div id="login-status" class="status-text">Menyiapkan jaringan...</div>
-            <button id="refresh-network-btn" onclick="window.location.reload()">🔄 Refresh Jaringan</button>
+            <div id="login-status" class="status-text" data-i18n="setupNet">Menyiapkan jaringan...</div>
+            <button id="refresh-network-btn" onclick="window.location.reload()" data-i18n="refreshNet">🔄 Refresh Jaringan</button>
         </div>
     </div>
 
     <div id="chat-screen">
         <header>
             <div class="header-left">
-                <!-- Back Arrow Icon Button -->
                 <button id="chat-back-btn" class="icon-btn" style="margin-right: 4px; padding: 8px;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 </button>
@@ -334,19 +332,19 @@
                 </div>
                 <div class="header-info">
                     <span class="header-title" id="chat-title">Teman</span>
-                    <span class="header-status">Terhubung</span>
+                    <span class="header-status" data-i18n="connectedStatus">Terhubung</span>
                 </div>
             </div>
             <div class="header-actions">
                 <div style="position: relative;">
                     <button id="menu-toggle-chat-btn" class="menu-btn">⋮</button>
                     <div id="dropdown-menu-chat" class="dropdown" style="top: 35px;">
-                        <button id="mute-btn">Bisukan Notifikasi</button>
-                        <button id="search-btn">Cari</button>
-                        <button class="account-btn">Akun</button>
-                        <button id="theme-chat-btn">Ganti Tema</button>
-                        <button id="clear-chat-btn">Hapus Chat</button>
-                        <button id="disconnect-menu-btn" style="color: var(--danger); font-weight: bold;" onclick="disconnectPeer()">Putus Koneksi</button>
+                        <button id="mute-btn" data-i18n="mute">Bisukan Notifikasi</button>
+                        <button id="search-btn" data-i18n="search">Cari</button>
+                        <button class="account-btn"><span data-i18n="accountMenu">Akun</span></button>
+                        <button id="theme-chat-btn" data-i18n="theme">Ganti Tema</button>
+                        <button id="clear-chat-btn" data-i18n="clearChat">Hapus Chat</button>
+                        <button id="disconnect-menu-btn" style="color: var(--danger); font-weight: bold;" onclick="disconnectPeer()" data-i18n="disconnect">Putus Koneksi</button>
                     </div>
                 </div>
             </div>
@@ -354,7 +352,7 @@
 
         <div id="chat-window"></div>
         
-        <div id="typing-indicator"><span id="typer-name">Teman</span> sedang mengetik...</div>
+        <div id="typing-indicator"><span id="typer-name">Teman</span> <span data-i18n="typing">sedang mengetik...</span></div>
 
         <footer>
             <div id="reply-preview-container">
@@ -365,17 +363,101 @@
                 </div>
             </div>
             <input type="file" id="file-input" style="display: none;">
-            <button class="icon-btn" onclick="document.getElementById('file-input').click()" title="Lampirkan File">
+            <button class="icon-btn" onclick="document.getElementById('file-input').click()">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </button>
             <div class="input-wrapper">
-                <input type="text" id="message-input" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                <input type="text" id="message-input" data-i18n-placeholder="typeMessage" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
             </div>
             <button id="send-btn" onclick="sendMessage()">➤</button>
         </footer>
     </div>
 
     <script>
+        // === TRANSLATION & I18N SYSTEM ===
+        const i18n = {
+            id: {
+                accountMenu: "Akun", theme: "Ganti Tema", syslog: "Log Sistem", clearcache: "Hapus Cache", langToggle: "EN",
+                chooseRole: "Pilih peran Anda untuk memulai:", roleSender: "Pengirim", roleReceiver: "Penerima",
+                inputReceiverID: "MASUKKAN ID PENERIMA", pasteIdPlaceholder: "Tempel ID Teman di sini", startChat: "Mulai Chat", backBtn: "Kembali",
+                waitingConn: "⏳ Menunggu Koneksi Masuk...", giveIdText: "Berikan ID Anda ke Pengirim:", loading: "Loading...",
+                sysReady: "Sistem P2P siap digunakan.", setupNet: "Menyiapkan jaringan...", refreshNet: "🔄 Refresh Jaringan", copied: "Tersalin!",
+                connectedWith: "Anda telah terhubung dengan", returnChat: "Kembali ke Chat", disconnect: "Putus Koneksi",
+                typing: "sedang mengetik...", typeMessage: "Ketik pesan...", settingsAccount: "Pengaturan Akun", displayName: "NAMA TAMPILAN", namePlaceholder: "Masukkan nama Anda...",
+                yourNetworkId: "ID JARINGAN ANDA (KLIK UNTUK COPY)", cancel: "Batal", save: "Simpan", logTitle: "Log Diagnostik Koneksi", clearLog: "Hapus Log", close: "Tutup",
+                saveImg: "Simpan", reply: "Balas", delete: "Hapus", deleteMe: "Hapus di saya", copy: "Salin",
+                mute: "Bisukan Notifikasi", unmute: "Aktifkan Notifikasi", search: "Cari", clearChat: "Hapus Chat", photo: "📷 Foto", document: "📄 Dokumen",
+                connecting: "Mencari...", connectingStatus: "Connecting...", connectedStatus: "Terhubung",
+                alertLargeProfile: "Ukuran foto profil terlalu besar! Maksimal 2MB.", alertCache: "Hapus semua cache dan mulai ulang? (Ini juga akan mereset ID Jaringan Anda)",
+                promptSearch: "Masukkan kata kunci pencarian:", confirmClearChat: "Bersihkan layar percakapan?",
+                errNoId: "Masukkan ID!", errSelf: "Tidak bisa dengan diri sendiri!", errTimeout: "Waktu habis! Pastikan IPv6 aktif.",
+                errActiveTab: "ID aktif di tab lain. Refresh...", errOffline: "ID Teman offline.", fileTooLarge: "Maksimal 15MB.",
+                process: "Memproses...", sending: "Mengirim...", finishing: "Menyelesaikan...", you: "Anda", logCleared: "Log diagnostik telah dibersihkan."
+            },
+            en: {
+                accountMenu: "Account", theme: "Change Theme", syslog: "System Log", clearcache: "Clear Cache", langToggle: "ID",
+                chooseRole: "Select your role to start:", roleSender: "Sender", roleReceiver: "Receiver",
+                inputReceiverID: "ENTER RECEIVER ID", pasteIdPlaceholder: "Paste Friend's ID here", startChat: "Start Chat", backBtn: "Back",
+                waitingConn: "⏳ Waiting for Connection...", giveIdText: "Give your ID to the Sender:", loading: "Loading...",
+                sysReady: "P2P System is ready.", setupNet: "Setting up network...", refreshNet: "🔄 Refresh Network", copied: "Copied!",
+                connectedWith: "You are connected with", returnChat: "Return to Chat", disconnect: "Disconnect",
+                typing: "is typing...", typeMessage: "Type a message...", settingsAccount: "Account Settings", displayName: "DISPLAY NAME", namePlaceholder: "Enter your name...",
+                yourNetworkId: "YOUR NETWORK ID (CLICK TO COPY)", cancel: "Cancel", save: "Save", logTitle: "Diagnostic Log", clearLog: "Clear Log", close: "Close",
+                saveImg: "Save", reply: "Reply", delete: "Delete", deleteMe: "Delete for me", copy: "Copy",
+                mute: "Mute Notifications", unmute: "Unmute Notifications", search: "Search", clearChat: "Clear Chat", photo: "📷 Photo", document: "📄 Document",
+                connecting: "Connecting...", connectingStatus: "Connecting...", connectedStatus: "Connected",
+                alertLargeProfile: "Profile photo too large! Max 2MB.", alertCache: "Clear all cache and restart? (This resets Network ID)",
+                promptSearch: "Enter search keyword:", confirmClearChat: "Clear conversation screen?",
+                errNoId: "Enter an ID!", errSelf: "Cannot connect to yourself!", errTimeout: "Timeout! Ensure IPv6 is active.",
+                errActiveTab: "ID active in another tab. Refresh...", errOffline: "Friend is offline.", fileTooLarge: "Max 15MB.",
+                process: "Processing...", sending: "Sending...", finishing: "Finishing...", you: "You", logCleared: "Diagnostic log cleared."
+            }
+        };
+
+        let currentLang = localStorage.getItem('app-lang') || 'id';
+        function t(key) { return i18n[currentLang][key] || key; }
+
+        function updateUIText() {
+            document.querySelectorAll('[data-i18n]').forEach(el => el.innerText = t(el.getAttribute('data-i18n')));
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = t(el.getAttribute('data-i18n-placeholder')));
+            document.getElementById('lang-toggle-btn').innerText = t('langToggle');
+            if (isMuted) document.getElementById('mute-btn').innerText = t('unmute');
+        }
+
+        document.getElementById('lang-toggle-btn').addEventListener('click', () => {
+            currentLang = currentLang === 'id' ? 'en' : 'id';
+            localStorage.setItem('app-lang', currentLang);
+            updateUIText();
+        });
+
+        // === ANTI-SWIPE BACK (HISTORY API TRAP) ===
+        window.history.pushState({ page: 'login' }, '', window.location.href);
+        window.history.pushState({ page: 'login' }, '', window.location.href);
+
+        window.addEventListener('popstate', (e) => {
+            // Selalu kembalikan state untuk mencegah keluar aplikasi secara tidak sengaja
+            window.history.pushState({ page: 'login' }, '', window.location.href);
+
+            if (document.getElementById('chat-screen').style.display === 'flex') {
+                document.getElementById('chat-screen').style.display = 'none';
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('role-selection').style.display = 'none';
+                document.getElementById('sender-ui').style.display = 'none';
+                document.getElementById('receiver-ui').style.display = 'none';
+                document.getElementById('connected-ui').style.display = 'block';
+            }
+        });
+
+        document.getElementById('chat-back-btn').addEventListener('click', () => {
+            window.history.back(); // Ini akan memicu popstate di atas
+        });
+
+        document.getElementById('return-chat-btn').addEventListener('click', () => {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('chat-screen').style.display = 'flex';
+            document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
+        });
+
         let incomingFiles = {};
         const CHUNK_SIZE = 64 * 1024; 
         let connectTimeout; 
@@ -402,7 +484,7 @@
         document.getElementById('avatar-input').addEventListener('change', (e) => { 
             const file = e.target.files[0]; 
             if (!file) return; 
-            if (file.size > 2 * 1024 * 1024) return alert("Ukuran foto profil terlalu besar! Maksimal 2MB."); 
+            if (file.size > 2 * 1024 * 1024) return alert(t('alertLargeProfile')); 
             const reader = new FileReader(); 
             reader.onload = function(evt) { 
                 myAvatarBase64 = evt.target.result; 
@@ -424,7 +506,7 @@
         document.getElementById('menu-toggle-btn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('dropdown-menu').classList.toggle('show'); });
         document.getElementById('menu-toggle-chat-btn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('dropdown-menu-chat').classList.toggle('show'); });
         document.addEventListener('click', (e) => { 
-            if (!accountModal.contains(e.target) && !e.target.classList.contains('account-btn')) { 
+            if (!accountModal.contains(e.target) && !e.target.closest('.account-btn')) { 
                 document.getElementById('dropdown-menu').classList.remove('show'); 
                 document.getElementById('dropdown-menu-chat').classList.remove('show'); 
             } 
@@ -441,7 +523,7 @@
         document.getElementById('theme-chat-btn').addEventListener('click', toggleTheme);
 
         document.getElementById('cache-btn').addEventListener('click', async () => { 
-            if (confirm("Hapus semua cache dan mulai ulang? (Ini juga akan mereset ID Jaringan Anda)")) { 
+            if (confirm(t('alertCache'))) { 
                 localStorage.clear(); 
                 if ('serviceWorker' in navigator) { try { const regs = await navigator.serviceWorker.getRegistrations(); for (let reg of regs) await reg.unregister(); } catch(e) {} } 
                 if ('caches' in window) { try { const keys = await caches.keys(); for (let key of keys) await caches.delete(key); } catch(e) {} } 
@@ -451,39 +533,19 @@
         
         document.getElementById('mute-btn').addEventListener('click', () => { 
             isMuted = !isMuted; 
-            document.getElementById('mute-btn').innerText = isMuted ? "Aktifkan Notifikasi" : "Bisukan Notifikasi"; 
+            document.getElementById('mute-btn').innerText = isMuted ? t('unmute') : t('mute'); 
             document.getElementById('dropdown-menu-chat').classList.remove('show'); 
         });
         
         document.getElementById('search-btn').addEventListener('click', () => { 
             document.getElementById('dropdown-menu-chat').classList.remove('show'); 
-            const keyword = prompt("Masukkan kata kunci pencarian:"); 
+            const keyword = prompt(t('promptSearch')); 
             if (keyword) window.find(keyword); 
         });
         
         document.getElementById('clear-chat-btn').addEventListener('click', () => { 
-            if (confirm("Bersihkan layar percakapan?")) { document.getElementById('chat-window').innerHTML = ''; } 
+            if (confirm(t('confirmClearChat'))) { document.getElementById('chat-window').innerHTML = ''; } 
             document.getElementById('dropdown-menu-chat').classList.remove('show'); 
-        });
-
-        // Halaman Chat -> Halaman Login (Connected UI)
-        document.getElementById('chat-back-btn').addEventListener('click', () => {
-            document.getElementById('chat-screen').style.display = 'none';
-            document.getElementById('login-screen').style.display = 'flex';
-            document.getElementById('role-selection').style.display = 'none';
-            document.getElementById('sender-ui').style.display = 'none';
-            document.getElementById('receiver-ui').style.display = 'none';
-            
-            document.getElementById('connected-ui').style.display = 'block';
-            document.getElementById('connected-friend-name').innerText = remoteName;
-            document.getElementById('login-status').style.display = 'none';
-        });
-
-        // Halaman Login (Connected UI) -> Halaman Chat
-        document.getElementById('return-chat-btn').addEventListener('click', () => {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('chat-screen').style.display = 'flex';
-            document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
         });
 
         // === SISTEM TINDAKAN PESAN ===
@@ -525,7 +587,7 @@
         });
         
         document.getElementById('msg-copy-btn').addEventListener('click', () => { 
-            navigator.clipboard.writeText(selectedMsgObj.text).catch(e => console.log('Gagal salin', e)); 
+            navigator.clipboard.writeText(selectedMsgObj.text).catch(e => console.log('Copy failed', e)); 
             msgActionOverlay.classList.remove('show'); 
         });
         
@@ -536,17 +598,54 @@
         
         function cancelReply() { activeReply = null; document.getElementById('reply-preview-container').style.display = 'none'; }
 
-        // === MODAL IMAGE VIEWER ===
+        // === MODAL IMAGE VIEWER & PINCH TO ZOOM ===
         let currentEnlargedFile = null;
+        const enlargedImg = document.getElementById('enlarged-img');
+        
         function openImageViewer(imgSrc, msgDiv, msgObj, filename) {
-            document.getElementById('enlarged-img').src = imgSrc;
+            enlargedImg.src = imgSrc;
+            enlargedImg.style.transform = `translate(0px, 0px) scale(1)`; // reset transform
             selectedMsgDiv = msgDiv;
             selectedMsgObj = msgObj;
             currentEnlargedFile = { src: imgSrc, name: filename };
             document.getElementById('image-viewer-modal').classList.add('show');
         }
 
-        // Close X Icon Listener
+        // Zoom Logic
+        let initialDistance = null, currentScale = 1, startX = 0, startY = 0, translateX = 0, translateY = 0, lastTranslateX = 0, lastTranslateY = 0;
+
+        enlargedImg.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                initialDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+            } else if (e.touches.length === 1 && currentScale > 1) {
+                startX = e.touches[0].pageX - lastTranslateX;
+                startY = e.touches[0].pageY - lastTranslateY;
+            }
+        });
+
+        enlargedImg.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2 && initialDistance) {
+                e.preventDefault();
+                const currentDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+                currentScale = Math.max(1, Math.min((currentDistance / initialDistance) * currentScale, 5));
+                enlargedImg.style.transform = `translate(${lastTranslateX}px, ${lastTranslateY}px) scale(${currentScale})`;
+            } else if (e.touches.length === 1 && currentScale > 1) {
+                e.preventDefault();
+                translateX = e.touches[0].pageX - startX;
+                translateY = e.touches[0].pageY - startY;
+                enlargedImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+            }
+        }, { passive: false });
+
+        enlargedImg.addEventListener('touchend', (e) => {
+            initialDistance = null;
+            if (e.touches.length < 2) { lastTranslateX = translateX; lastTranslateY = translateY; }
+            if (currentScale <= 1.05) { 
+                currentScale = 1; translateX = 0; translateY = 0; lastTranslateX = 0; lastTranslateY = 0;
+                enlargedImg.style.transform = `translate(0px, 0px) scale(1)`;
+            }
+        });
+
         document.getElementById('img-close-icon').addEventListener('click', () => { document.getElementById('image-viewer-modal').classList.remove('show'); });
         document.getElementById('img-save-btn').addEventListener('click', () => {
             const a = document.createElement('a'); a.href = currentEnlargedFile.src; a.download = currentEnlargedFile.name || 'image.png';
@@ -555,7 +654,7 @@
         document.getElementById('img-reply-btn').addEventListener('click', () => {
             activeReply = selectedMsgObj; 
             document.getElementById('reply-preview-name').innerText = activeReply.sender; 
-            document.getElementById('reply-preview-text').innerText = "📷 Foto"; 
+            document.getElementById('reply-preview-text').innerText = t('photo'); 
             document.getElementById('reply-preview-container').style.display = 'block'; 
             document.getElementById('message-input').focus(); 
             document.getElementById('image-viewer-modal').classList.remove('show');
@@ -574,12 +673,11 @@
             document.getElementById('log-modal').classList.remove('show'); 
         });
         
-        // Hapus Log Function
         document.getElementById('clear-log-btn').addEventListener('click', () => {
             document.getElementById('log-container').innerHTML = '';
             const receiverLog = document.getElementById('receiver-log');
             if(receiverLog) receiverLog.innerHTML = '';
-            logDebug("Log diagnostik telah dibersihkan.", "system");
+            logDebug(t('logCleared'), "system");
         });
 
         function logDebug(message, type = 'system') {
@@ -603,7 +701,7 @@
         function selectRole(role) {
             document.getElementById('role-selection').style.display = 'none';
             if (role === 'sender') { document.getElementById('sender-ui').style.display = 'block'; } 
-            else { document.getElementById('receiver-ui').style.display = 'block'; document.getElementById('my-id-display').innerText = peer.id || 'Loading...'; }
+            else { document.getElementById('receiver-ui').style.display = 'block'; document.getElementById('my-id-display').innerText = peer.id || t('loading'); }
         }
         
         function resetRole() {
@@ -615,9 +713,9 @@
         }
 
         document.getElementById('my-id-display').addEventListener('click', function() {
-            if (this.innerText === 'Loading...' || this.innerText === 'Tersalin!') return;
+            if (this.innerText === t('loading') || this.innerText === t('copied')) return;
             navigator.clipboard.writeText(this.innerText).then(() => {
-                const original = this.innerText; this.innerText = 'Tersalin!'; this.style.color = '#53bdeb';
+                const original = this.innerText; this.innerText = t('copied'); this.style.color = '#53bdeb';
                 setTimeout(() => { this.innerText = original; this.style.color = 'inherit'; }, 2000);
             });
         });
@@ -645,21 +743,21 @@
         const chatTitle = document.getElementById('chat-title');
         const typerNameSpan = document.getElementById('typer-name');
         const chatHeaderAvatar = document.getElementById('chat-header-avatar');
-        let remoteName = "Teman";
+        let remoteName = "Friend";
 
         peer.on('open', id => { 
             if (!savedPeerId) { localStorage.setItem('my-peer-id', id); savedPeerId = id; }
             document.getElementById('my-id').innerText = id;
             document.getElementById('my-id-display').innerText = id;
-            document.getElementById('login-status').innerText = "Sistem P2P siap digunakan."; 
+            document.getElementById('login-status').innerText = t('sysReady'); 
             document.getElementById('login-status').style.color = "var(--accent)"; 
-            logDebug(`Sistem Siap. ID Anda: ${id}`, 'success');
+            logDebug(`System Ready. ID: ${id}`, 'success');
         });
         
         document.getElementById('my-id').addEventListener('click', function() { 
-            if (this.innerText === 'Connecting...' || this.innerText === 'Tersalin!') return; 
+            if (this.innerText === 'Connecting...' || this.innerText === t('copied')) return; 
             navigator.clipboard.writeText(this.innerText).then(() => { 
-                this.innerText = 'Tersalin!'; this.style.color = '#53bdeb'; 
+                this.innerText = t('copied'); this.style.color = '#53bdeb'; 
                 setTimeout(() => { this.innerText = peer.id; this.style.color = 'var(--accent)'; }, 2000); 
             }); 
         });
@@ -670,8 +768,8 @@
             document.getElementById('login-status').style.color = "var(--danger)"; 
             document.getElementById('refresh-network-btn').style.display = 'block'; 
             logDebug(`PeerJS Error: ${err.type}`, 'error');
-            if (err.type === 'unavailable-id') { localStorage.removeItem('my-peer-id'); alert('ID aktif di tab lain. Refresh...'); window.location.reload(); } 
-            else if(err.type === 'peer-unavailable') { alert('ID Teman offline.'); document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false; } 
+            if (err.type === 'unavailable-id') { localStorage.removeItem('my-peer-id'); alert(t('errActiveTab')); window.location.reload(); } 
+            else if(err.type === 'peer-unavailable') { alert(t('errOffline')); document.getElementById('connect-btn').innerText = t('startChat'); document.getElementById('connect-btn').disabled = false; } 
         });
 
         function monitorICE(connection) {
@@ -679,12 +777,12 @@
                 if(connection && connection.peerConnection) {
                     connection.peerConnection.addEventListener('iceconnectionstatechange', () => {
                         const state = connection.peerConnection.iceConnectionState;
-                        logDebug(`Status Jaringan WebRTC: <b>${state.toUpperCase()}</b>`);
+                        logDebug(`WebRTC ICE: <b>${state.toUpperCase()}</b>`);
                         if(state === 'failed' || state === 'disconnected') {
-                            logDebug('Gagal koneksi. Pastikan IPv6 aktif di kedua perangkat.', 'error');
+                            logDebug('Connection failed.', 'error');
                             document.getElementById('message-input').disabled = true;
                         } else if (state === 'connected' || state === 'completed') {
-                            logDebug('Jalur P2P berhasil diamankan!', 'success');
+                            logDebug('P2P Path Secured!', 'success');
                             document.getElementById('message-input').disabled = false;
                         }
                     });
@@ -695,29 +793,29 @@
         peer.on('connection', connection => { 
             if(conn) conn.close(); conn = connection; 
             document.getElementById('login-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex'; chatWindow.innerHTML = '';
-            logDebug('Menerima koneksi masuk...', 'success'); monitorICE(conn); setupConn(); 
+            logDebug('Incoming connection...', 'success'); monitorICE(conn); setupConn(); 
         });
 
         function connectToPeer() {
             const rId = document.getElementById('remote-id').value.trim();
-            if(!rId || rId === peer.id) return alert(!rId ? "Masukkan ID!" : "Tidak bisa dengan diri sendiri!");
-            document.getElementById('connect-btn').innerText = "Mencari..."; document.getElementById('connect-btn').disabled = true;
-            logDebug(`Menghubungkan ke: ${rId}`);
+            if(!rId || rId === peer.id) return alert(!rId ? t('errNoId') : t('errSelf'));
+            document.getElementById('connect-btn').innerText = t('connecting'); document.getElementById('connect-btn').disabled = true;
+            logDebug(`Connecting to: ${rId}`);
             conn = peer.connect(rId); monitorICE(conn); setupConn();
             clearTimeout(connectTimeout);
             connectTimeout = setTimeout(() => {
-                if (conn && !conn.open) { alert("Waktu habis! Pastikan IPv6 aktif."); if(conn) conn.close(); resetUI(); }
+                if (conn && !conn.open) { alert(t('errTimeout')); if(conn) conn.close(); resetUI(); }
             }, 15000);
         }
 
         function setupConn() {
             conn.on('open', () => {
                 clearTimeout(connectTimeout); document.getElementById('login-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex';
-                logDebug('Handshake berhasil!', 'success');
+                logDebug('Handshake success!', 'success');
                 conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 });
             });
             conn.on('data', data => {
-                if (data && data.type === 'profile') { remoteName = data.name || "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = data.avatar ? `<img src="${data.avatar}" alt="Avatar">` : defaultSvgAvatar; } 
+                if (data && data.type === 'profile') { remoteName = data.name || t('friend'); chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = data.avatar ? `<img src="${data.avatar}" alt="Avatar">` : defaultSvgAvatar; } 
                 else if (data && data.type === 'ack') { const msgElement = document.getElementById(data.msgId); if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } } } 
                 else if (data && data.type === 'text') { conn.send({ type: 'ack', msgId: data.id }); playNotification(); hideTyping(); appendMessage('received', data, data.id); } 
                 else if (data && data.type === 'typing') { data.isTyping ? showTyping() : hideTyping(); } 
@@ -725,7 +823,7 @@
                 else if (data && data.type === 'file-chunk') { const fileData = incomingFiles[data.fileId]; if (fileData) { fileData.chunks.push(data.data); fileData.receivedSize += data.data.byteLength; updateFileProgress(data.fileId, Math.round((fileData.receivedSize / fileData.metadata.filesize) * 100)); } } 
                 else if (data && data.type === 'file-end') { const fileData = incomingFiles[data.fileId]; if (fileData) { finalizeFileMessage('received', data.fileId, fileData.metadata.filename, fileData.metadata.filetype, new Blob(fileData.chunks, { type: fileData.metadata.filetype })); delete incomingFiles[data.fileId]; conn.send({ type: 'ack', msgId: data.fileId }); playNotification(); hideTyping(); } }
             });
-            conn.on('close', () => { logDebug('Koneksi ditutup.', 'error'); setTimeout(resetUI, 1000); });
+            conn.on('close', () => { logDebug('Connection closed.', 'error'); setTimeout(resetUI, 1000); });
         }
 
         function showTyping() { document.getElementById('typing-indicator').style.display = 'block'; chatWindow.scrollTop = chatWindow.scrollHeight; }
@@ -742,10 +840,10 @@
             document.getElementById('chat-screen').style.display = 'none'; 
             document.getElementById('login-screen').style.display = 'flex'; 
             document.getElementById('remote-id').value = ''; 
-            document.getElementById('connect-btn').innerText = "Mulai Chat"; 
+            document.getElementById('connect-btn').innerText = t('startChat'); 
             document.getElementById('connect-btn').disabled = false; 
             resetRole();
-            remoteName = "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = defaultSvgAvatar; hideTyping(); cancelReply();
+            remoteName = t('friend'); chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = defaultSvgAvatar; hideTyping(); cancelReply();
         }
 
         // === PENGIRIMAN PESAN ===
@@ -762,7 +860,7 @@
 
         function processFile(file) {
             if (!file || !conn || !conn.open) return;
-            if (file.size > 15 * 1024 * 1024) return alert("Maksimal 15MB.");
+            if (file.size > 15 * 1024 * 1024) return alert(t('fileTooLarge'));
             const fileId = 'file-' + Date.now(); renderFileProgress('sent', fileId, file.name, 0);
             conn.send({ type: 'file-start', fileId: fileId, filename: file.name, filetype: file.type, filesize: file.size });
             let offset = 0; const reader = new FileReader();
@@ -777,12 +875,12 @@
 
         document.getElementById('file-input').addEventListener('change', (e) => { processFile(e.target.files[0]); e.target.value = ''; });
 
-        function renderFileProgress(senderType, fileId, filename, progress) { const div = document.createElement('div'); div.className = `msg ${senderType}`; div.id = fileId; div.innerHTML = `<div class="msg-content"><div style="font-weight:bold; font-size:13px; margin-bottom:5px;">📄 ${filename}</div><div class="progress-wrapper"><div class="progress-bar" id="pb-${fileId}" style="width: ${progress}%"></div></div><div class="progress-text" id="pt-${fileId}">${progress}% Memproses...</div></div>`; chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; }
-        function updateFileProgress(fileId, progress) { const pb = document.getElementById(`pb-${fileId}`); const pt = document.getElementById(`pt-${fileId}`); if (pb && pt) { pb.style.width = `${progress}%`; pt.innerText = progress === 100 ? "Menyelesaikan..." : `${progress}% Mengirim...`; } }
+        function renderFileProgress(senderType, fileId, filename, progress) { const div = document.createElement('div'); div.className = `msg ${senderType}`; div.id = fileId; div.innerHTML = `<div class="msg-content"><div style="font-weight:bold; font-size:13px; margin-bottom:5px;">📄 ${filename}</div><div class="progress-wrapper"><div class="progress-bar" id="pb-${fileId}" style="width: ${progress}%"></div></div><div class="progress-text" id="pt-${fileId}">${progress}% ${t('process')}</div></div>`; chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; }
+        function updateFileProgress(fileId, progress) { const pb = document.getElementById(`pb-${fileId}`); const pt = document.getElementById(`pt-${fileId}`); if (pb && pt) { pb.style.width = `${progress}%`; pt.innerText = progress === 100 ? t('finishing') : `${progress}% ${t('sending')}`; } }
         
         function finalizeFileMessage(senderType, fileId, filename, filetype, blob) { 
             const div = document.getElementById(fileId); if (!div) return; 
-            const url = URL.createObjectURL(blob); let contentHTML = ''; const msgObj = { text: filetype.startsWith('image/') ? '📷 Foto' : `📄 ${filename}`, sender: senderType === 'sent' ? (myName || 'Anda') : remoteName };
+            const url = URL.createObjectURL(blob); let contentHTML = ''; const msgObj = { text: filetype.startsWith('image/') ? t('photo') : `📄 ${filename}`, sender: senderType === 'sent' ? (myName || t('you')) : remoteName };
             if (filetype.startsWith('image/')) { contentHTML = `<img src="${url}" alt="${filename}" id="img-${fileId}" style="cursor: zoom-in;">`; } else { contentHTML = `<a href="${url}" download="${filename}" class="file-link">📄 ${filename}</a>`; } 
             div.innerHTML = `<div class="msg-content">${contentHTML}</div>`; appendMeta(div, senderType); setupLongPress(div, msgObj); 
             if (filetype.startsWith('image/')) {
@@ -796,12 +894,15 @@
             const text = dataObj.text || ""; const replyTo = dataObj.replyTo || null; const div = document.createElement('div'); div.className = `msg ${type}`; if (id) div.id = id; 
             if (replyTo && type !== 'system') { const replyDiv = document.createElement('div'); replyDiv.className = 'replied-snippet'; replyDiv.innerHTML = `<strong>${replyTo.sender}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${replyTo.text}</span>`; div.appendChild(replyDiv); } 
             const content = document.createElement('div'); content.className = 'msg-content'; content.innerText = text; div.appendChild(content); 
-            if (type !== 'system') { appendMeta(div, type); setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || 'Anda') : remoteName }); } 
+            if (type !== 'system') { appendMeta(div, type); setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || t('you')) : remoteName }); } 
             chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; 
         }
         
         function appendMeta(parentDiv, type) { const meta = document.createElement('div'); meta.className = 'msg-meta'; const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); const timeSpan = document.createElement('span'); timeSpan.innerText = timeStr; meta.appendChild(timeSpan); if (type === 'sent') { const tickSpan = document.createElement('span'); tickSpan.className = 'tick'; tickSpan.innerText = '✓'; meta.appendChild(tickSpan); } parentDiv.appendChild(meta); }
         const updateHeight = () => { document.body.style.height = window.visualViewport.height + 'px'; if(document.getElementById('chat-screen').style.display === 'flex') chatWindow.scrollTop = chatWindow.scrollHeight; }; window.visualViewport.addEventListener('resize', updateHeight); window.visualViewport.addEventListener('scroll', updateHeight);
+        
+        // Initialize Language
+        updateUIText();
     </script>
 </body>
 </html>
