@@ -46,7 +46,7 @@
             --modal-overlay: rgba(0,0,0,0.4);
         }
 
-        /* Styling khusus untuk Log Sistem */
+        /* Log Sistem */
         .log-entry { margin-bottom: 8px; padding: 8px; border-radius: 6px; border-left: 4px solid var(--text-dim); background: rgba(0,0,0,0.2); font-family: monospace; font-size: 12px; color: var(--text-main); word-wrap: break-word; }
         .log-entry.error { border-left-color: var(--danger); background: rgba(234, 0, 56, 0.1); }
         .log-entry.success { border-left-color: var(--accent); background: rgba(0, 168, 132, 0.1); }
@@ -94,17 +94,26 @@
         .msg-menu-content button:last-child { border-bottom: none; color: var(--danger); }
         .msg-menu-content button:hover { background: var(--dropdown-hover); }
 
+        /* Login Screen */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; position: relative; }
-        .top-right-menu { position: absolute; top: 15px; right: 15px; z-index: 1000; }
+        .top-right-menu { position: absolute; top: 15px; right: 15px; z-index: 1000; display: flex; align-items: center; gap: 8px; }
         .login-card { background: var(--bg-panel); padding: 30px 20px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px var(--shadow); }
         .login-card h1 { font-size: 22px; margin-bottom: 25px; color: var(--text-main); }
+        
+        /* Opsi Peran */
+        .role-btn { width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 8px; border: 1px solid var(--accent); background: transparent; color: var(--text-main); font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .role-btn:hover { background: rgba(0, 168, 132, 0.1); }
+        .back-btn { background: none; border: none; color: var(--text-dim); text-decoration: underline; cursor: pointer; margin-top: 15px; font-size: 14px; }
+        
         .input-group { text-align: left; margin-bottom: 15px; }
         .input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; padding-left: 5px; font-weight: bold; }
         .login-card input { width: 100%; padding: 15px; border-radius: 8px; border: none; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; text-align: center; }
         .login-card button#connect-btn { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; font-size: 16px; background: var(--accent); color: #ffffff; cursor: pointer; transition: 0.2s; margin-top: 10px;}
         .login-card button#connect-btn:disabled { background: var(--text-dim); cursor: not-allowed; }
         .status-text { margin-top: 15px; font-size: 12px; color: var(--text-dim); }
+        #refresh-network-btn { width: 100%; padding: 12px; margin-top: 15px; background: var(--danger); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: none; }
 
+        /* Chat Screen */
         #chat-screen { display: none; flex-direction: column; height: 100%; position: relative; }
         header { flex-shrink: 0; background-color: var(--bg-panel); padding: 10px 15px; border-bottom: 1px solid rgba(134,150,160,0.1); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         .header-left { display: flex; align-items: center; gap: 12px; }
@@ -116,7 +125,6 @@
         .header-title { font-weight: bold; font-size: 16px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;}
         .header-status { font-size: 12px; color: var(--accent); }
         .header-actions { display: flex; align-items: center; gap: 5px; position: relative; }
-        #disconnect-btn { background: var(--danger); color: white; padding: 6px 10px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; font-size: 13px;}
 
         #chat-window { flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background-color: var(--bg-deep); background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: 400px; }
         body:not(.light-theme) #chat-window { background-blend-mode: multiply; }
@@ -130,7 +138,7 @@
         .msg.system { align-self: center; background: rgba(0,0,0,0.5); color: #fff; font-size: 11px; padding: 6px 12px; border-radius: 6px; text-align: center; }
 
         .msg-content { display: inline; white-space: pre-wrap; word-wrap: break-word; }
-        .msg img { max-width: 100%; max-height: 300px; border-radius: 6px; display: block; margin-top: 5px; }
+        .msg img { max-width: 100%; max-height: 300px; border-radius: 6px; display: block; margin-top: 5px; cursor: pointer; }
         .file-link { color: #53bdeb; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 5px; }
 
         .progress-wrapper { width: 150px; background: rgba(134,150,160,0.2); border-radius: 4px; margin-top: 5px; height: 8px; overflow: hidden; position: relative; }
@@ -157,9 +165,13 @@
 
         .input-wrapper { flex: 1; background: var(--input-bg); border-radius: 24px; display: flex; align-items: center; padding: 0 12px; }
         #message-input { flex: 1; background: transparent; border: none; color: var(--text-main); padding: 12px 5px; font-size: 16px; outline: none; }
-        .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-dim); transition: 0.2s; }
+        .icon-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-dim); transition: 0.2s; display: flex; align-items: center; justify-content: center;}
         .icon-btn:hover { color: var(--accent); }
         #send-btn { width: 42px; height: 42px; background: var(--accent); border: none; border-radius: 50%; color: #ffffff; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; margin-left: 4px; }
+        
+        /* Tombol Modal Image */
+        .img-modal-btn { background: var(--bg-panel); color: var(--text-main); border: 1px solid rgba(134, 150, 160, 0.2); padding: 10px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; flex: 1; text-align: center;}
+        .img-modal-btn:hover { background: var(--dropdown-hover); }
     </style>
 </head>
 <body>
@@ -195,9 +207,20 @@
     <div id="log-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 400px; width: 95%;">
             <h3>Log Diagnostik Koneksi</h3>
-            <div id="log-container" class="log-container">
-                </div>
+            <div id="log-container" class="log-container"></div>
             <button id="close-log-btn" style="width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: var(--input-bg); color: var(--text-main);">Tutup</button>
+        </div>
+    </div>
+
+    <div id="image-viewer-modal" class="modal-overlay">
+        <div class="modal-content" style="background: transparent; box-shadow: none; max-width: 95vw; padding: 0;">
+            <img id="enlarged-img" src="" style="max-width: 100%; max-height: 75vh; border-radius: 8px; object-fit: contain; background: rgba(0,0,0,0.5);">
+            <div style="display: flex; gap: 8px; margin-top: 15px; justify-content: center; flex-wrap: wrap;">
+                <button id="img-save-btn" class="img-modal-btn">Simpan</button>
+                <button id="img-reply-btn" class="img-modal-btn">Balas</button>
+                <button id="img-delete-btn" class="img-modal-btn" style="color: var(--danger);">Hapus</button>
+                <button id="img-close-btn" class="img-modal-btn">Tutup</button>
+            </div>
         </div>
     </div>
 
@@ -211,22 +234,51 @@
 
     <div id="login-screen">
         <div class="top-right-menu">
+            <button class="account-btn" style="background: var(--input-bg); border: none; color: var(--text-main); padding: 8px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px;">👤 Akun</button>
             <button id="menu-toggle-btn" class="menu-btn">⋮</button>
             <div id="dropdown-menu" class="dropdown">
-                <button class="account-btn">Akun</button>
                 <button id="theme-btn">Ganti Tema</button>
                 <button id="log-btn">Log Sistem</button>
                 <button id="cache-btn">Hapus Cache</button>
             </div>
         </div>
+        
         <div class="login-card">
             <h1>P2P SECURE CHAT</h1>
-            <div class="input-group">
-                <label for="remote-id">MULAI CHAT BARU</label>
-                <input type="text" id="remote-id" placeholder="Tempel ID Teman di sini">
+            
+            <div id="role-selection">
+                <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Pilih peran Anda untuk memulai:</p>
+                <button class="role-btn" onclick="selectRole('sender')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    Saya Pengirim
+                </button>
+                <button class="role-btn" onclick="selectRole('receiver')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Saya Penerima
+                </button>
             </div>
-            <button id="connect-btn" onclick="connectToPeer()">Mulai Chat</button>
-            <div id="login-status" class="status-text">Menunggu jaringan...</div>
+
+            <div id="sender-ui" style="display: none;">
+                <div class="input-group">
+                    <label for="remote-id">MASUKKAN ID PENERIMA</label>
+                    <input type="text" id="remote-id" placeholder="Tempel ID Teman di sini">
+                </div>
+                <button id="connect-btn" onclick="connectToPeer()">Mulai Chat</button>
+                <button class="back-btn" onclick="resetRole()">Kembali</button>
+            </div>
+
+            <div id="receiver-ui" style="display: none;">
+                <div style="background: var(--input-bg); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
+                    <p style="font-weight: bold; color: var(--accent); margin-bottom: 10px;">⏳ Menunggu Koneksi Masuk...</p>
+                    <p style="font-size: 12px; color: var(--text-dim);">Berikan ID Anda ke Pengirim:</p>
+                    <div id="my-id-display" class="id-badge" style="margin-top: 5px; background: rgba(0, 168, 132, 0.1); cursor: pointer;" title="Klik untuk Copy">Loading...</div>
+                </div>
+                <div id="receiver-log" class="log-container" style="height: 120px; margin-bottom: 5px; font-size: 11px;"></div>
+                <button class="back-btn" onclick="resetRole()">Kembali</button>
+            </div>
+
+            <div id="login-status" class="status-text">Menyiapkan jaringan...</div>
+            <button id="refresh-network-btn" onclick="window.location.reload()">🔄 Refresh Jaringan</button>
         </div>
     </div>
 
@@ -242,7 +294,6 @@
                 </div>
             </div>
             <div class="header-actions">
-                <button id="disconnect-btn" onclick="disconnectPeer()">Putus</button>
                 <div style="position: relative;">
                     <button id="menu-toggle-chat-btn" class="menu-btn">⋮</button>
                     <div id="dropdown-menu-chat" class="dropdown" style="top: 35px;">
@@ -251,13 +302,13 @@
                         <button class="account-btn">Akun</button>
                         <button id="theme-chat-btn">Ganti Tema</button>
                         <button id="clear-chat-btn">Hapus Chat</button>
+                        <button id="disconnect-menu-btn" style="color: var(--danger); font-weight: bold;" onclick="disconnectPeer()">Putus Koneksi</button>
                     </div>
                 </div>
             </div>
         </header>
 
-        <div id="chat-window">
-            </div>
+        <div id="chat-window"></div>
         
         <div id="typing-indicator"><span id="typer-name">Teman</span> sedang mengetik...</div>
 
@@ -270,7 +321,9 @@
                 </div>
             </div>
             <input type="file" id="file-input" style="display: none;">
-            <button class="icon-btn" onclick="document.getElementById('file-input').click()" title="Lampirkan File">📎</button>
+            <button class="icon-btn" onclick="document.getElementById('file-input').click()" title="Lampirkan File">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
             <div class="input-wrapper">
                 <input type="text" id="message-input" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
             </div>
@@ -283,6 +336,7 @@
         const CHUNK_SIZE = 64 * 1024; 
         let connectTimeout; 
 
+        // === MANAJEMEN AKUN ===
         const accountModal = document.getElementById('account-modal');
         const modalNameInput = document.getElementById('modal-name-input');
         const modalAvatarPreview = document.getElementById('modal-avatar-preview');
@@ -291,39 +345,171 @@
         let myName = localStorage.getItem('my-chat-name') || '';
         let myAvatarBase64 = localStorage.getItem('my-chat-avatar') || '';
 
-        function openAccountModal() { modalNameInput.value = myName; modalAvatarPreview.innerHTML = myAvatarBase64 ? `<img src="${myAvatarBase64}" alt="Avatar">` : defaultSvgAvatar; accountModal.classList.add('show'); document.getElementById('dropdown-menu').classList.remove('show'); document.getElementById('dropdown-menu-chat').classList.remove('show'); }
+        function openAccountModal() { 
+            modalNameInput.value = myName; 
+            modalAvatarPreview.innerHTML = myAvatarBase64 ? `<img src="${myAvatarBase64}" alt="Avatar">` : defaultSvgAvatar; 
+            accountModal.classList.add('show'); 
+            document.getElementById('dropdown-menu').classList.remove('show'); 
+            document.getElementById('dropdown-menu-chat').classList.remove('show'); 
+        }
         document.querySelectorAll('.account-btn').forEach(btn => btn.addEventListener('click', openAccountModal));
         document.getElementById('close-modal-btn').addEventListener('click', () => accountModal.classList.remove('show'));
 
-        document.getElementById('avatar-input').addEventListener('change', (e) => { const file = e.target.files[0]; if (!file) return; if (file.size > 2 * 1024 * 1024) return alert("Ukuran foto profil terlalu besar! Maksimal 2MB."); const reader = new FileReader(); reader.onload = function(evt) { myAvatarBase64 = evt.target.result; modalAvatarPreview.innerHTML = `<img src="${myAvatarBase64}" alt="Avatar">`; }; reader.readAsDataURL(file); });
-        document.getElementById('save-account-btn').addEventListener('click', () => { myName = modalNameInput.value.trim(); localStorage.setItem('my-chat-name', myName); localStorage.setItem('my-chat-avatar', myAvatarBase64); accountModal.classList.remove('show'); if (conn && conn.open) conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 }); });
+        document.getElementById('avatar-input').addEventListener('change', (e) => { 
+            const file = e.target.files[0]; 
+            if (!file) return; 
+            if (file.size > 2 * 1024 * 1024) return alert("Ukuran foto profil terlalu besar! Maksimal 2MB."); 
+            const reader = new FileReader(); 
+            reader.onload = function(evt) { 
+                myAvatarBase64 = evt.target.result; 
+                modalAvatarPreview.innerHTML = `<img src="${myAvatarBase64}" alt="Avatar">`; 
+            }; 
+            reader.readAsDataURL(file); 
+        });
+        
+        document.getElementById('save-account-btn').addEventListener('click', () => { 
+            myName = modalNameInput.value.trim(); 
+            localStorage.setItem('my-chat-name', myName); 
+            localStorage.setItem('my-chat-avatar', myAvatarBase64); 
+            accountModal.classList.remove('show'); 
+            if (conn && conn.open) conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 }); 
+        });
 
+        // === MANAJEMEN UI UMUM & TEMA ===
         let isMuted = false;
         document.getElementById('menu-toggle-btn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('dropdown-menu').classList.toggle('show'); });
         document.getElementById('menu-toggle-chat-btn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('dropdown-menu-chat').classList.toggle('show'); });
-        document.addEventListener('click', (e) => { if (!accountModal.contains(e.target) && !e.target.classList.contains('account-btn')) { document.getElementById('dropdown-menu').classList.remove('show'); document.getElementById('dropdown-menu-chat').classList.remove('show'); } });
+        document.addEventListener('click', (e) => { 
+            if (!accountModal.contains(e.target) && !e.target.classList.contains('account-btn')) { 
+                document.getElementById('dropdown-menu').classList.remove('show'); 
+                document.getElementById('dropdown-menu-chat').classList.remove('show'); 
+            } 
+        });
 
         if (localStorage.getItem('app-theme') === 'light') document.body.classList.add('light-theme');
-        function toggleTheme() { document.body.classList.toggle('light-theme'); localStorage.setItem('app-theme', document.body.classList.contains('light-theme') ? 'light' : 'dark'); document.getElementById('dropdown-menu').classList.remove('show'); document.getElementById('dropdown-menu-chat').classList.remove('show'); }
-        document.getElementById('theme-btn').addEventListener('click', toggleTheme); document.getElementById('theme-chat-btn').addEventListener('click', toggleTheme);
+        function toggleTheme() { 
+            document.body.classList.toggle('light-theme'); 
+            localStorage.setItem('app-theme', document.body.classList.contains('light-theme') ? 'light' : 'dark'); 
+            document.getElementById('dropdown-menu').classList.remove('show'); 
+            document.getElementById('dropdown-menu-chat').classList.remove('show'); 
+        }
+        document.getElementById('theme-btn').addEventListener('click', toggleTheme); 
+        document.getElementById('theme-chat-btn').addEventListener('click', toggleTheme);
 
-        document.getElementById('cache-btn').addEventListener('click', async () => { if (confirm("Hapus semua cache dan mulai ulang? (Ini juga akan mereset ID Jaringan Anda)")) { localStorage.clear(); if ('serviceWorker' in navigator) { try { const regs = await navigator.serviceWorker.getRegistrations(); for (let reg of regs) await reg.unregister(); } catch(e) {} } if ('caches' in window) { try { const keys = await caches.keys(); for (let key of keys) await caches.delete(key); } catch(e) {} } window.location.reload(true); } });
-        document.getElementById('mute-btn').addEventListener('click', () => { isMuted = !isMuted; document.getElementById('mute-btn').innerText = isMuted ? "Aktifkan Notifikasi" : "Bisukan Notifikasi"; document.getElementById('dropdown-menu-chat').classList.remove('show'); });
-        document.getElementById('search-btn').addEventListener('click', () => { document.getElementById('dropdown-menu-chat').classList.remove('show'); const keyword = prompt("Masukkan kata kunci pencarian:"); if (keyword) window.find(keyword); });
-        document.getElementById('clear-chat-btn').addEventListener('click', () => { if (confirm("Bersihkan layar percakapan?")) { document.getElementById('chat-window').innerHTML = ''; } document.getElementById('dropdown-menu-chat').classList.remove('show'); });
+        document.getElementById('cache-btn').addEventListener('click', async () => { 
+            if (confirm("Hapus semua cache dan mulai ulang? (Ini juga akan mereset ID Jaringan Anda)")) { 
+                localStorage.clear(); 
+                if ('serviceWorker' in navigator) { try { const regs = await navigator.serviceWorker.getRegistrations(); for (let reg of regs) await reg.unregister(); } catch(e) {} } 
+                if ('caches' in window) { try { const keys = await caches.keys(); for (let key of keys) await caches.delete(key); } catch(e) {} } 
+                window.location.reload(true); 
+            } 
+        });
+        
+        document.getElementById('mute-btn').addEventListener('click', () => { 
+            isMuted = !isMuted; 
+            document.getElementById('mute-btn').innerText = isMuted ? "Aktifkan Notifikasi" : "Bisukan Notifikasi"; 
+            document.getElementById('dropdown-menu-chat').classList.remove('show'); 
+        });
+        
+        document.getElementById('search-btn').addEventListener('click', () => { 
+            document.getElementById('dropdown-menu-chat').classList.remove('show'); 
+            const keyword = prompt("Masukkan kata kunci pencarian:"); 
+            if (keyword) window.find(keyword); 
+        });
+        
+        document.getElementById('clear-chat-btn').addEventListener('click', () => { 
+            if (confirm("Bersihkan layar percakapan?")) { document.getElementById('chat-window').innerHTML = ''; } 
+            document.getElementById('dropdown-menu-chat').classList.remove('show'); 
+        });
 
+        // === SISTEM TINDAKAN PESAN (REPLY/COPY/DELETE) ===
         const msgActionOverlay = document.getElementById('msg-action-overlay');
         let activeReply = null; let selectedMsgDiv = null; let selectedMsgObj = null;
 
-        function setupLongPress(element, msgObj) { let pressTimer; let isTouching = false; const start = (e) => { if (e.type === 'touchstart') isTouching = true; if (e.type === 'mousedown' && isTouching) return; pressTimer = setTimeout(() => openMsgMenu(element, msgObj), 600); }; const end = () => clearTimeout(pressTimer); element.addEventListener('touchstart', start, {passive: true}); element.addEventListener('touchend', end); element.addEventListener('touchmove', end); element.addEventListener('mousedown', start); element.addEventListener('mouseup', end); element.addEventListener('mouseleave', end); element.addEventListener('contextmenu', (e) => { e.preventDefault(); openMsgMenu(element, msgObj); }); }
-        function openMsgMenu(element, obj) { selectedMsgDiv = element; selectedMsgObj = obj; if (navigator.vibrate) navigator.vibrate(50); msgActionOverlay.classList.add('show'); }
+        function setupLongPress(element, msgObj) { 
+            let pressTimer; let isTouching = false; 
+            const start = (e) => { 
+                if (e.type === 'touchstart') isTouching = true; 
+                if (e.type === 'mousedown' && isTouching) return; 
+                pressTimer = setTimeout(() => openMsgMenu(element, msgObj), 600); 
+            }; 
+            const end = () => clearTimeout(pressTimer); 
+            element.addEventListener('touchstart', start, {passive: true}); 
+            element.addEventListener('touchend', end); 
+            element.addEventListener('touchmove', end); 
+            element.addEventListener('mousedown', start); 
+            element.addEventListener('mouseup', end); 
+            element.addEventListener('mouseleave', end); 
+            element.addEventListener('contextmenu', (e) => { e.preventDefault(); openMsgMenu(element, msgObj); }); 
+        }
+        
+        function openMsgMenu(element, obj) { 
+            selectedMsgDiv = element; 
+            selectedMsgObj = obj; 
+            if (navigator.vibrate) navigator.vibrate(50); 
+            msgActionOverlay.classList.add('show'); 
+        }
         msgActionOverlay.addEventListener('click', function(e) { if(e.target === this) this.classList.remove('show'); });
-        document.getElementById('msg-reply-btn').addEventListener('click', () => { activeReply = selectedMsgObj; document.getElementById('reply-preview-name').innerText = activeReply.sender; document.getElementById('reply-preview-text').innerText = activeReply.text; document.getElementById('reply-preview-container').style.display = 'block'; document.getElementById('message-input').focus(); msgActionOverlay.classList.remove('show'); });
-        document.getElementById('msg-copy-btn').addEventListener('click', () => { navigator.clipboard.writeText(selectedMsgObj.text).catch(e => console.log('Gagal salin', e)); msgActionOverlay.classList.remove('show'); });
-        document.getElementById('msg-delete-btn').addEventListener('click', () => { if (selectedMsgDiv) selectedMsgDiv.remove(); msgActionOverlay.classList.remove('show'); });
+        
+        document.getElementById('msg-reply-btn').addEventListener('click', () => { 
+            activeReply = selectedMsgObj; 
+            document.getElementById('reply-preview-name').innerText = activeReply.sender; 
+            document.getElementById('reply-preview-text').innerText = activeReply.text; 
+            document.getElementById('reply-preview-container').style.display = 'block'; 
+            document.getElementById('message-input').focus(); 
+            msgActionOverlay.classList.remove('show'); 
+        });
+        
+        document.getElementById('msg-copy-btn').addEventListener('click', () => { 
+            navigator.clipboard.writeText(selectedMsgObj.text).catch(e => console.log('Gagal salin', e)); 
+            msgActionOverlay.classList.remove('show'); 
+        });
+        
+        document.getElementById('msg-delete-btn').addEventListener('click', () => { 
+            if (selectedMsgDiv) selectedMsgDiv.remove(); 
+            msgActionOverlay.classList.remove('show'); 
+        });
+        
         function cancelReply() { activeReply = null; document.getElementById('reply-preview-container').style.display = 'none'; }
 
-        // --- EVENT LISTENER MODAL LOG ---
+        // === MODAL IMAGE VIEWER ===
+        let currentEnlargedFile = null;
+        function openImageViewer(imgSrc, msgDiv, msgObj, filename) {
+            document.getElementById('enlarged-img').src = imgSrc;
+            selectedMsgDiv = msgDiv;
+            selectedMsgObj = msgObj;
+            currentEnlargedFile = { src: imgSrc, name: filename };
+            document.getElementById('image-viewer-modal').classList.add('show');
+        }
+
+        document.getElementById('img-close-btn').addEventListener('click', () => {
+            document.getElementById('image-viewer-modal').classList.remove('show');
+        });
+
+        document.getElementById('img-save-btn').addEventListener('click', () => {
+            const a = document.createElement('a');
+            a.href = currentEnlargedFile.src;
+            a.download = currentEnlargedFile.name || 'image.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+
+        document.getElementById('img-reply-btn').addEventListener('click', () => {
+            activeReply = selectedMsgObj; 
+            document.getElementById('reply-preview-name').innerText = activeReply.sender; 
+            document.getElementById('reply-preview-text').innerText = "📷 Foto"; 
+            document.getElementById('reply-preview-container').style.display = 'block'; 
+            document.getElementById('message-input').focus(); 
+            document.getElementById('image-viewer-modal').classList.remove('show');
+        });
+
+        document.getElementById('img-delete-btn').addEventListener('click', () => {
+            if (selectedMsgDiv) selectedMsgDiv.remove(); 
+            document.getElementById('image-viewer-modal').classList.remove('show');
+        });
+
+        // === SISTEM LOG & NOTIFIKASI ===
         document.getElementById('log-btn').addEventListener('click', () => { 
             document.getElementById('log-modal').classList.add('show'); 
             document.getElementById('dropdown-menu').classList.remove('show'); 
@@ -332,7 +518,6 @@
             document.getElementById('log-modal').classList.remove('show'); 
         });
 
-        // --- SISTEM DIAGNOSTIK VISUAL (BARU) ---
         function logDebug(message, type = 'system') {
             const container = document.getElementById('log-container');
             const div = document.createElement('div');
@@ -341,11 +526,49 @@
             div.innerHTML = `[${time}] ${message}`;
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
+
+            // Tampilkan juga di log penerima jika sedang di menu penerima
+            const receiverLog = document.getElementById('receiver-log');
+            if (receiverLog && document.getElementById('receiver-ui').style.display !== 'none') {
+                const recDiv = div.cloneNode(true);
+                receiverLog.appendChild(recDiv);
+                receiverLog.scrollTop = receiverLog.scrollHeight;
+            }
         }
 
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
         function playNotification() { if (!isMuted) notificationSound.play().catch(() => {}); }
 
+        // === LOGIKA PILIH PERAN (LOGIN BARU) ===
+        function selectRole(role) {
+            document.getElementById('role-selection').style.display = 'none';
+            if (role === 'sender') {
+                document.getElementById('sender-ui').style.display = 'block';
+            } else {
+                document.getElementById('receiver-ui').style.display = 'block';
+                document.getElementById('my-id-display').innerText = peer.id || 'Loading...';
+            }
+        }
+        
+        function resetRole() {
+            document.getElementById('sender-ui').style.display = 'none';
+            document.getElementById('receiver-ui').style.display = 'none';
+            document.getElementById('role-selection').style.display = 'block';
+        }
+
+        // Copy ID pada halaman receiver
+        document.getElementById('my-id-display').addEventListener('click', function() {
+            if (this.innerText === 'Loading...' || this.innerText === 'Tersalin!') return;
+            navigator.clipboard.writeText(this.innerText).then(() => {
+                const original = this.innerText;
+                this.innerText = 'Tersalin!';
+                this.style.color = '#53bdeb';
+                setTimeout(() => { this.innerText = original; this.style.color = 'inherit'; }, 2000);
+            });
+        });
+
+
+        // === KONEKSI PEERJS ===
         let savedPeerId = localStorage.getItem('my-peer-id');
         
         const peerConfig = { 
@@ -382,21 +605,27 @@
 
         peer.on('open', id => { 
             if (!savedPeerId) { localStorage.setItem('my-peer-id', id); savedPeerId = id; }
-            document.getElementById('my-id').innerText = id; 
-            document.getElementById('login-status').innerText = "Sistem siap. (Lihat ID Anda di Menu Akun)"; 
+            document.getElementById('my-id').innerText = id;
+            document.getElementById('my-id-display').innerText = id;
+            document.getElementById('login-status').innerText = "Sistem siap digunakan."; 
             document.getElementById('login-status').style.color = "var(--accent)"; 
-            logDebug(`Sistem Siap. Peer ID: ${id}`, 'success');
+            logDebug(`Sistem Siap. ID Anda: ${id}`, 'success');
         });
         
         document.getElementById('my-id').addEventListener('click', function() { 
             if (this.innerText === 'Connecting...' || this.innerText === 'Tersalin!') return; 
-            navigator.clipboard.writeText(this.innerText).then(() => { this.innerText = 'Tersalin!'; this.style.color = '#53bdeb'; setTimeout(() => { this.innerText = peer.id; this.style.color = 'var(--accent)'; }, 2000); }); 
+            navigator.clipboard.writeText(this.innerText).then(() => { 
+                this.innerText = 'Tersalin!'; 
+                this.style.color = '#53bdeb'; 
+                setTimeout(() => { this.innerText = peer.id; this.style.color = 'var(--accent)'; }, 2000); 
+            }); 
         });
         
         peer.on('error', (err) => { 
             clearTimeout(connectTimeout); 
             document.getElementById('login-status').innerText = '⚠ ERROR: ' + err.type; 
             document.getElementById('login-status').style.color = "var(--danger)"; 
+            document.getElementById('refresh-network-btn').style.display = 'block'; // Tampilkan tombol refresh
             
             logDebug(`PeerJS Error: ${err.type}`, 'error');
             
@@ -430,17 +659,19 @@
             }, 1000);
         }
 
+        // Penerima mendapatkan koneksi masuk
         peer.on('connection', connection => { 
             if(conn) conn.close(); 
             conn = connection; 
             document.getElementById('login-screen').style.display = 'none'; 
             document.getElementById('chat-screen').style.display = 'flex';
             chatWindow.innerHTML = '';
-            logDebug('Menerima koneksi masuk dari teman...');
+            logDebug('Menerima koneksi masuk dari teman...', 'success');
             monitorICE(conn);
             setupConn(); 
         });
 
+        // Pengirim menekan tombol hubungkan
         function connectToPeer() {
             const rId = document.getElementById('remote-id').value.trim();
             if(!rId || rId === peer.id) return alert(!rId ? "Masukkan ID teman!" : "Tidak bisa chat dengan diri sendiri!");
@@ -513,17 +744,34 @@
 
         function showTyping() { document.getElementById('typing-indicator').style.display = 'block'; chatWindow.scrollTop = chatWindow.scrollHeight; }
         function hideTyping() { document.getElementById('typing-indicator').style.display = 'none'; }
-        function disconnectPeer() { if(conn) conn.close(); resetUI(); }
+        
+        function disconnectPeer() { 
+            if(conn) conn.close(); 
+            document.getElementById('dropdown-menu-chat').classList.remove('show');
+            resetUI(); 
+        }
         
         function resetUI() {
             clearTimeout(connectTimeout);
-            conn = null; document.getElementById('chat-screen').style.display = 'none'; document.getElementById('login-screen').style.display = 'flex'; document.getElementById('remote-id').value = '';
-            document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false;
-            document.getElementById('login-status').innerText = "Sistem siap. (Lihat ID Anda di Menu Akun)"; document.getElementById('login-status').style.color = "var(--text-dim)";
+            conn = null; 
+            document.getElementById('chat-screen').style.display = 'none'; 
+            document.getElementById('login-screen').style.display = 'flex'; 
+            document.getElementById('remote-id').value = '';
+            document.getElementById('connect-btn').innerText = "Mulai Chat"; 
+            document.getElementById('connect-btn').disabled = false;
+            resetRole(); // Kembali ke pilihan menu awal
+            
             remoteName = "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = defaultSvgAvatar; hideTyping(); cancelReply();
         }
 
-        messageInput.addEventListener('input', () => { if (conn && conn.open) { conn.send({ type: 'typing', isTyping: true }); clearTimeout(typingTimeout); typingTimeout = setTimeout(() => { conn.send({ type: 'typing', isTyping: false }); }, 1500); } });
+        // === PENGIRIMAN PESAN & FILE ===
+        messageInput.addEventListener('input', () => { 
+            if (conn && conn.open) { 
+                conn.send({ type: 'typing', isTyping: true }); 
+                clearTimeout(typingTimeout); 
+                typingTimeout = setTimeout(() => { conn.send({ type: 'typing', isTyping: false }); }, 1500); 
+            } 
+        });
 
         function sendMessage() {
             const msg = messageInput.value.trim();
@@ -555,12 +803,72 @@
 
         document.getElementById('file-input').addEventListener('change', (e) => { processFile(e.target.files[0]); e.target.value = ''; });
 
-        function renderFileProgress(senderType, fileId, filename, progress) { const div = document.createElement('div'); div.className = `msg ${senderType}`; div.id = fileId; div.innerHTML = `<div class="msg-content"><div style="font-weight:bold; font-size:13px; margin-bottom:5px;">📄 ${filename}</div><div class="progress-wrapper"><div class="progress-bar" id="pb-${fileId}" style="width: ${progress}%"></div></div><div class="progress-text" id="pt-${fileId}">${progress}% Memproses...</div></div>`; chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; }
-        function updateFileProgress(fileId, progress) { const pb = document.getElementById(`pb-${fileId}`); const pt = document.getElementById(`pt-${fileId}`); if (pb && pt) { pb.style.width = `${progress}%`; pt.innerText = progress === 100 ? "Menyelesaikan..." : `${progress}% Mengirim...`; } }
-        function finalizeFileMessage(senderType, fileId, filename, filetype, blob) { const div = document.getElementById(fileId); if (!div) return; const url = URL.createObjectURL(blob); let contentHTML = ''; if (filetype.startsWith('image/')) { contentHTML = `<img src="${url}" alt="${filename}" onload="chatWindow.scrollTop = chatWindow.scrollHeight">`; } else { contentHTML = `<a href="${url}" download="${filename}" class="file-link">📄 ${filename}</a>`; } div.innerHTML = `<div class="msg-content">${contentHTML}</div>`; appendMeta(div, senderType); setupLongPress(div, { text: `📄 ${filename}`, sender: senderType === 'sent' ? (myName || 'Anda') : remoteName }); chatWindow.scrollTop = chatWindow.scrollHeight; }
-        function appendMessage(type, dataObj, id = null) { const text = dataObj.text || ""; const replyTo = dataObj.replyTo || null; const div = document.createElement('div'); div.className = `msg ${type}`; if (id) div.id = id; if (replyTo && type !== 'system') { const replyDiv = document.createElement('div'); replyDiv.className = 'replied-snippet'; replyDiv.innerHTML = `<strong>${replyTo.sender}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${replyTo.text}</span>`; div.appendChild(replyDiv); } const content = document.createElement('div'); content.className = 'msg-content'; content.innerText = text; div.appendChild(content); if (type !== 'system') { appendMeta(div, type); setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || 'Anda') : remoteName }); } chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; }
-        function appendMeta(parentDiv, type) { const meta = document.createElement('div'); meta.className = 'msg-meta'; const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); const timeSpan = document.createElement('span'); timeSpan.innerText = timeStr; meta.appendChild(timeSpan); if (type === 'sent') { const tickSpan = document.createElement('span'); tickSpan.className = 'tick'; tickSpan.innerText = '✓'; meta.appendChild(tickSpan); } parentDiv.appendChild(meta); }
-        const updateHeight = () => { document.body.style.height = window.visualViewport.height + 'px'; if(document.getElementById('chat-screen').style.display === 'flex') chatWindow.scrollTop = chatWindow.scrollHeight; }; window.visualViewport.addEventListener('resize', updateHeight); window.visualViewport.addEventListener('scroll', updateHeight);
+        function renderFileProgress(senderType, fileId, filename, progress) { 
+            const div = document.createElement('div'); div.className = `msg ${senderType}`; div.id = fileId; 
+            div.innerHTML = `<div class="msg-content"><div style="font-weight:bold; font-size:13px; margin-bottom:5px;">📄 ${filename}</div><div class="progress-wrapper"><div class="progress-bar" id="pb-${fileId}" style="width: ${progress}%"></div></div><div class="progress-text" id="pt-${fileId}">${progress}% Memproses...</div></div>`; 
+            chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; 
+        }
+        
+        function updateFileProgress(fileId, progress) { 
+            const pb = document.getElementById(`pb-${fileId}`); 
+            const pt = document.getElementById(`pt-${fileId}`); 
+            if (pb && pt) { pb.style.width = `${progress}%`; pt.innerText = progress === 100 ? "Menyelesaikan..." : `${progress}% Mengirim...`; } 
+        }
+        
+        function finalizeFileMessage(senderType, fileId, filename, filetype, blob) { 
+            const div = document.getElementById(fileId); 
+            if (!div) return; 
+            const url = URL.createObjectURL(blob); 
+            let contentHTML = ''; 
+            
+            const msgObj = { text: filetype.startsWith('image/') ? '📷 Foto' : `📄 ${filename}`, sender: senderType === 'sent' ? (myName || 'Anda') : remoteName };
+
+            if (filetype.startsWith('image/')) { 
+                contentHTML = `<img src="${url}" alt="${filename}" id="img-${fileId}" style="cursor: zoom-in;">`; 
+            } else { 
+                contentHTML = `<a href="${url}" download="${filename}" class="file-link">📄 ${filename}</a>`; 
+            } 
+            
+            div.innerHTML = `<div class="msg-content">${contentHTML}</div>`; 
+            appendMeta(div, senderType); 
+            setupLongPress(div, msgObj); 
+
+            if (filetype.startsWith('image/')) {
+                const imgElement = div.querySelector(`#img-${fileId}`);
+                imgElement.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; };
+                imgElement.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Mencegah trigger long press
+                    openImageViewer(url, div, msgObj, filename);
+                });
+            }
+
+            chatWindow.scrollTop = chatWindow.scrollHeight; 
+        }
+        
+        function appendMessage(type, dataObj, id = null) { 
+            const text = dataObj.text || ""; const replyTo = dataObj.replyTo || null; const div = document.createElement('div'); div.className = `msg ${type}`; if (id) div.id = id; 
+            if (replyTo && type !== 'system') { 
+                const replyDiv = document.createElement('div'); replyDiv.className = 'replied-snippet'; 
+                replyDiv.innerHTML = `<strong>${replyTo.sender}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${replyTo.text}</span>`; 
+                div.appendChild(replyDiv); 
+            } 
+            const content = document.createElement('div'); content.className = 'msg-content'; content.innerText = text; div.appendChild(content); 
+            if (type !== 'system') { 
+                appendMeta(div, type); 
+                setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || 'Anda') : remoteName }); 
+            } 
+            chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; 
+        }
+        
+        function appendMeta(parentDiv, type) { 
+            const meta = document.createElement('div'); meta.className = 'msg-meta'; const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); 
+            const timeSpan = document.createElement('span'); timeSpan.innerText = timeStr; meta.appendChild(timeSpan); 
+            if (type === 'sent') { const tickSpan = document.createElement('span'); tickSpan.className = 'tick'; tickSpan.innerText = '✓'; meta.appendChild(tickSpan); } 
+            parentDiv.appendChild(meta); 
+        }
+        
+        const updateHeight = () => { document.body.style.height = window.visualViewport.height + 'px'; if(document.getElementById('chat-screen').style.display === 'flex') chatWindow.scrollTop = chatWindow.scrollHeight; }; 
+        window.visualViewport.addEventListener('resize', updateHeight); window.visualViewport.addEventListener('scroll', updateHeight);
     </script>
 </body>
 </html>
