@@ -83,12 +83,11 @@
         
         /* Avatars */
         .avatar-edit-container { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 24px; }
-        .avatar-preview-large { width: 96px; height: 96px; border-radius: 50%; background: var(--avatar-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 8px var(--shadow); }
+        .avatar-preview-large { width: 96px; height: 96px; border-radius: 50%; background: var(--avatar-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 8px var(--shadow); cursor: pointer; transition: opacity 0.2s; }
+        .avatar-preview-large:hover { opacity: 0.8; }
         .avatar-preview-large img { width: 100%; height: 100%; object-fit: cover; }
         .avatar-preview-large svg { width: 50%; height: 50%; fill: var(--avatar-color); }
         body.light-theme .avatar-preview-large svg { fill: var(--avatar-color); }
-        .edit-avatar-btn { background: var(--input-bg); color: var(--text-main); border: none; padding: 10px 20px; border-radius: 100px; cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.2s; }
-        .edit-avatar-btn:hover { background: var(--dropdown-hover); }
     
         /* Inputs */
         .modal-input-group { text-align: left; margin-bottom: 20px; }
@@ -113,11 +112,13 @@
         .msg-menu-content button:last-child { color: var(--danger); }
         .msg-menu-content button:hover { background: var(--dropdown-hover); }
     
-        /* Image Viewer Layout Preserved */
+        /* Image Viewer Layout */
         .img-modal-btn { background: var(--bg-panel); color: var(--text-main); border: none; padding: 12px 20px; border-radius: 100px; font-weight: 500; cursor: pointer; transition: 0.2s; flex: 1; text-align: center; font-size: 14px; }
         .img-modal-btn:hover { background: var(--dropdown-hover); }
+        .img-close-icon { position: absolute; top: -12px; right: -12px; background: var(--bg-panel); color: var(--text-main); border: 2px solid var(--bg-deep); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px var(--shadow); z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .img-close-icon:hover { background: var(--input-bg); transform: scale(1.1); }
     
-        /* Login Screen - STRUCTURAL FIXES */
+        /* Login Screen */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; position: relative; }
         .top-right-menu { position: absolute; top: 15px; right: 15px; z-index: 1000; display: flex; align-items: center; gap: 8px; }
         
@@ -139,7 +140,7 @@
         
         #refresh-network-btn { width: 100%; padding: 14px; margin-top: 20px; background: var(--danger); color: white; border: none; border-radius: 100px; font-weight: 500; cursor: pointer; display: none; }
     
-        /* Chat Screen - STRUCTURAL FIXES */
+        /* Chat Screen */
         #chat-screen { display: none; flex-direction: column; height: 100%; position: relative; }
         header { flex-shrink: 0; background-color: var(--bg-panel); padding: 12px 16px; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px var(--shadow); }
         .header-left { display: flex; align-items: center; gap: 12px; }
@@ -154,7 +155,7 @@
         
         #chat-window { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background-color: var(--bg-deep); }
         
-        /* Messages Structure Maintained */
+        /* Messages Structure */
         .msg { display: inline-block; max-width: 85%; padding: 10px 14px; border-radius: 20px; font-size: 15px; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; line-height: 1.4; }
         .msg::after { content: ""; display: table; clear: both; } 
         .msg.sent { align-self: flex-end; background: var(--bubble-me); color: var(--md-on-primary-container); border-bottom-right-radius: 4px; }
@@ -178,7 +179,7 @@
         
         #typing-indicator { display: none; font-size: 13px; color: var(--text-dim); font-style: italic; padding: 8px 20px; background: var(--bg-deep); }
         
-        /* Footer Structure Preserved */
+        /* Footer Structure */
         footer { flex-shrink: 0; background: var(--bg-panel); padding: 12px 16px; display: flex; gap: 8px; align-items: center; padding-bottom: calc(12px + env(safe-area-inset-bottom)); position: relative; z-index: 10; }
         #reply-preview-container { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background: var(--bg-panel); padding: 12px 16px; z-index: 5; border-radius: 20px 20px 0 0; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); }
         .reply-box { background: var(--input-bg); border-left: 4px solid var(--accent); border-radius: 12px; padding: 12px 16px; position: relative; font-size: 13px; }
@@ -202,11 +203,11 @@
         <div class="modal-content">
             <h3>Pengaturan Akun</h3>
             <div class="avatar-edit-container">
-                <div class="avatar-preview-large" id="modal-avatar-preview">
+                <!-- Avatar area is now clickable -->
+                <div class="avatar-preview-large" id="modal-avatar-preview" onclick="document.getElementById('avatar-input').click()" title="Klik untuk mengubah foto">
                     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
                 </div>
                 <input type="file" id="avatar-input" accept="image/*" style="display: none;">
-                <button class="edit-avatar-btn" onclick="document.getElementById('avatar-input').click()">Ubah Foto</button>
             </div>
             
             <div class="modal-input-group">
@@ -230,18 +231,24 @@
         <div class="modal-content" style="max-width: 400px; width: 95%;">
             <h3>Log Diagnostik Koneksi</h3>
             <div id="log-container" class="log-container"></div>
-            <button id="close-log-btn" style="width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: var(--input-bg); color: var(--text-main);">Tutup</button>
+            <div style="display: flex; gap: 8px;">
+                <button id="clear-log-btn" style="flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: var(--danger); color: white;">Hapus Log</button>
+                <button id="close-log-btn" style="flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; background: var(--input-bg); color: var(--text-main);">Tutup</button>
+            </div>
         </div>
     </div>
 
     <div id="image-viewer-modal" class="modal-overlay">
         <div class="modal-content" style="background: transparent; box-shadow: none; max-width: 95vw; padding: 0;">
-            <img id="enlarged-img" src="" style="max-width: 100%; max-height: 75vh; border-radius: 8px; object-fit: contain; background: rgba(0,0,0,0.5);">
+            <div style="position: relative; display: inline-block;">
+                <!-- Close Icon Replace "Tutup" button -->
+                <button id="img-close-icon" class="img-close-icon">✕</button>
+                <img id="enlarged-img" src="" style="max-width: 100%; max-height: 75vh; border-radius: 8px; object-fit: contain; background: rgba(0,0,0,0.5); box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+            </div>
             <div style="display: flex; gap: 8px; margin-top: 15px; justify-content: center; flex-wrap: wrap;">
                 <button id="img-save-btn" class="img-modal-btn">Simpan</button>
                 <button id="img-reply-btn" class="img-modal-btn">Balas</button>
                 <button id="img-delete-btn" class="img-modal-btn" style="color: var(--danger);">Hapus</button>
-                <button id="img-close-btn" class="img-modal-btn">Tutup</button>
             </div>
         </div>
     </div>
@@ -270,13 +277,14 @@
             
             <div id="role-selection">
                 <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;">Pilih peran Anda untuk memulai:</p>
+                <!-- Role Buttons "Saya" removed -->
                 <button class="role-btn" onclick="selectRole('sender')">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    Saya Pengirim
+                    Pengirim
                 </button>
                 <button class="role-btn" onclick="selectRole('receiver')">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    Saya Penerima
+                    Penerima
                 </button>
             </div>
 
@@ -299,6 +307,16 @@
                 <button class="back-btn" onclick="resetRole()">Kembali</button>
             </div>
 
+            <!-- Connected UI Mode (Replaces Role Selection when hitting Back during active chat) -->
+            <div id="connected-ui" style="display: none; text-align: center;">
+                <div style="background: var(--input-bg); padding: 24px; border-radius: 16px; margin-bottom: 20px;">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom: 10px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <p style="color: var(--text-main); font-size: 16px; line-height: 1.5;">Anda telah terhubung dengan<br><strong id="connected-friend-name" style="color: var(--accent); font-size: 20px;">Teman</strong></p>
+                </div>
+                <button id="return-chat-btn" class="role-btn" style="background: var(--accent); color: var(--md-on-primary); border: none;">Kembali ke Chat</button>
+                <button onclick="disconnectPeer()" style="width: 100%; padding: 16px; margin-top: 5px; border-radius: 100px; border: none; background: transparent; color: var(--danger); font-weight: 500; font-size: 16px; cursor: pointer; transition: 0.2s;">Putus Koneksi</button>
+            </div>
+
             <div id="login-status" class="status-text">Menyiapkan jaringan...</div>
             <button id="refresh-network-btn" onclick="window.location.reload()">🔄 Refresh Jaringan</button>
         </div>
@@ -307,6 +325,10 @@
     <div id="chat-screen">
         <header>
             <div class="header-left">
+                <!-- Back Arrow Icon Button -->
+                <button id="chat-back-btn" class="icon-btn" style="margin-right: 4px; padding: 8px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                </button>
                 <div class="avatar" id="chat-header-avatar">
                     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
                 </div>
@@ -444,6 +466,26 @@
             document.getElementById('dropdown-menu-chat').classList.remove('show'); 
         });
 
+        // Halaman Chat -> Halaman Login (Connected UI)
+        document.getElementById('chat-back-btn').addEventListener('click', () => {
+            document.getElementById('chat-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('role-selection').style.display = 'none';
+            document.getElementById('sender-ui').style.display = 'none';
+            document.getElementById('receiver-ui').style.display = 'none';
+            
+            document.getElementById('connected-ui').style.display = 'block';
+            document.getElementById('connected-friend-name').innerText = remoteName;
+            document.getElementById('login-status').style.display = 'none';
+        });
+
+        // Halaman Login (Connected UI) -> Halaman Chat
+        document.getElementById('return-chat-btn').addEventListener('click', () => {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('chat-screen').style.display = 'flex';
+            document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
+        });
+
         // === SISTEM TINDAKAN PESAN ===
         const msgActionOverlay = document.getElementById('msg-action-overlay');
         let activeReply = null; let selectedMsgDiv = null; let selectedMsgObj = null;
@@ -504,7 +546,8 @@
             document.getElementById('image-viewer-modal').classList.add('show');
         }
 
-        document.getElementById('img-close-btn').addEventListener('click', () => { document.getElementById('image-viewer-modal').classList.remove('show'); });
+        // Close X Icon Listener
+        document.getElementById('img-close-icon').addEventListener('click', () => { document.getElementById('image-viewer-modal').classList.remove('show'); });
         document.getElementById('img-save-btn').addEventListener('click', () => {
             const a = document.createElement('a'); a.href = currentEnlargedFile.src; a.download = currentEnlargedFile.name || 'image.png';
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
@@ -529,6 +572,14 @@
         });
         document.getElementById('close-log-btn').addEventListener('click', () => { 
             document.getElementById('log-modal').classList.remove('show'); 
+        });
+        
+        // Hapus Log Function
+        document.getElementById('clear-log-btn').addEventListener('click', () => {
+            document.getElementById('log-container').innerHTML = '';
+            const receiverLog = document.getElementById('receiver-log');
+            if(receiverLog) receiverLog.innerHTML = '';
+            logDebug("Log diagnostik telah dibersihkan.", "system");
         });
 
         function logDebug(message, type = 'system') {
@@ -558,7 +609,9 @@
         function resetRole() {
             document.getElementById('sender-ui').style.display = 'none';
             document.getElementById('receiver-ui').style.display = 'none';
+            document.getElementById('connected-ui').style.display = 'none';
             document.getElementById('role-selection').style.display = 'block';
+            document.getElementById('login-status').style.display = 'block';
         }
 
         document.getElementById('my-id-display').addEventListener('click', function() {
@@ -569,13 +622,9 @@
             });
         });
 
-
-        // === KONEKSI PEERJS (OPTIMASI IPv6 STUN) ===
+        // === KONEKSI PEERJS ===
         let savedPeerId = localStorage.getItem('my-peer-id');
         
-        // Kita HAPUS server TURN yang mati/lambat, 
-        // dan tambahkan banyak STUN server andal dari Google & Cloudflare
-        // agar WebRTC bisa menemukan kandidat jaringan IPv6.
         const peerConfig = { 
             config: { 
                 'iceServers': [
@@ -681,11 +730,21 @@
 
         function showTyping() { document.getElementById('typing-indicator').style.display = 'block'; chatWindow.scrollTop = chatWindow.scrollHeight; }
         function hideTyping() { document.getElementById('typing-indicator').style.display = 'none'; }
-        function disconnectPeer() { if(conn) conn.close(); document.getElementById('dropdown-menu-chat').classList.remove('show'); resetUI(); }
+        
+        function disconnectPeer() { 
+            if(conn) conn.close(); 
+            document.getElementById('dropdown-menu-chat').classList.remove('show'); 
+            resetUI(); 
+        }
         
         function resetUI() {
-            clearTimeout(connectTimeout); conn = null; document.getElementById('chat-screen').style.display = 'none'; document.getElementById('login-screen').style.display = 'flex'; 
-            document.getElementById('remote-id').value = ''; document.getElementById('connect-btn').innerText = "Mulai Chat"; document.getElementById('connect-btn').disabled = false; resetRole();
+            clearTimeout(connectTimeout); conn = null; 
+            document.getElementById('chat-screen').style.display = 'none'; 
+            document.getElementById('login-screen').style.display = 'flex'; 
+            document.getElementById('remote-id').value = ''; 
+            document.getElementById('connect-btn').innerText = "Mulai Chat"; 
+            document.getElementById('connect-btn').disabled = false; 
+            resetRole();
             remoteName = "Teman"; chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = defaultSvgAvatar; hideTyping(); cancelReply();
         }
 
