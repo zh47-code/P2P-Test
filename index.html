@@ -982,7 +982,8 @@
                 ],
                 iceCandidatePoolSize: 10
             },
-            debug: 2 
+            pingInterval: 5000, // Menjaga ID tetap hidup di server PeerJS
+            debug: 1 // Mengurangi beban log di konsol
         };
 
         const peer = savedPeerId ? new Peer(savedPeerId, peerConfig) : new Peer(peerConfig);
@@ -1084,22 +1085,30 @@
         });
 
         function connectToPeer() {
-            const rId = document.getElementById('remote-id').value.trim();
-            if(!rId || rId === peer.id) return customAlert(!rId ? t('errNoId') : t('errSelf'));
-            
-            document.getElementById('connect-btn').innerText = t('connecting'); document.getElementById('connect-btn').disabled = true;
-            logDebug(`Connecting to: ${rId}`);
-            
-            conn = peer.connect(rId, { reliable: true }); 
-            monitorICE(conn); setupConn();
-            
-            clearTimeout(connectTimeout);
-            connectTimeout = setTimeout(() => {
-                if (conn && !conn.open) { 
-                    customAlert(t('errTimeout'), () => { if(conn) conn.close(); resetUI(); }); 
+                    const rId = document.getElementById('remote-id').value.trim();
+                    if(!rId || rId === peer.id) return customAlert(!rId ? t('errNoId') : t('errSelf'));
+                    
+                    document.getElementById('connect-btn').innerText = t('connecting'); 
+                    document.getElementById('connect-btn').disabled = true;
+                    logDebug(`Connecting to: ${rId}`);
+                    
+                    conn = peer.connect(rId, { reliable: true }); 
+                    monitorICE(conn); 
+                    setupConn();
+                    
+                    // PATCH: Memperpanjang waktu tunggu menjadi 30 detik (30000 ms)
+                    // Karena negosiasi STUN di jaringan seluler Indonesia terkadang butuh waktu lebih lama
+                    clearTimeout(connectTimeout);
+                    connectTimeout = setTimeout(() => {
+                        if (conn && !conn.open) { 
+                            logDebug('Koneksi gagal terhubung dalam 30 detik.', 'error');
+                            customAlert(t('errTimeout'), () => { 
+                                if(conn) conn.close(); 
+                                resetUI(); 
+                            }); 
+                        }
+                    }, 30000); 
                 }
-            }, 15000);
-        }
 
         function setupConn() {
             conn.on('open', () => {
