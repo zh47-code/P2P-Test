@@ -119,7 +119,8 @@
         
         #img-viewer-content { background: transparent; box-shadow: none; max-width: 100vw; max-height: 100vh; padding: 0; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         
-        .img-close-icon { position: absolute; top: -16px; right: -16px; background: var(--bg-panel); color: var(--text-main); border: 2px solid var(--bg-deep); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px var(--shadow); z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        /* FIX BUG 4: Posisi X di Modal, bukan di gambar */
+        .img-close-icon { position: absolute; top: 20px; right: 20px; background: var(--bg-panel); color: var(--text-main); border: 2px solid var(--bg-deep); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px var(--shadow); z-index: 3000; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .img-close-icon:hover { background: var(--input-bg); transform: scale(1.1); }
         
         #enlarged-img { max-width: 100%; max-height: 75vh; border-radius: 8px; object-fit: contain; background: rgba(0,0,0,0.5); box-shadow: 0 4px 20px rgba(0,0,0,0.5); touch-action: manipulation; transform-origin: center center; }
@@ -207,7 +208,7 @@
 <body>
 
     <!-- CUSTOM SYSTEM ALERT MODAL -->
-    <div id="custom-alert-modal" class="modal-overlay" style="z-index: 3000;">
+    <div id="custom-alert-modal" class="modal-overlay" style="z-index: 4000;">
         <div class="modal-content" style="max-width: 320px; padding: 24px; text-align: left;">
             <h3 style="margin-bottom: 12px; font-size: 18px; color: var(--accent);">Peringatan</h3>
             <p id="custom-alert-msg" style="font-size: 15px; margin-bottom: 20px; line-height: 1.5; color: var(--text-main);"></p>
@@ -262,9 +263,9 @@
     </div>
 
     <div id="image-viewer-modal" class="modal-overlay">
+        <button id="img-close-icon" class="img-close-icon">✕</button>
         <div class="modal-content" id="img-viewer-content">
             <div style="position: relative; display: inline-block;">
-                <button id="img-close-icon" class="img-close-icon">✕</button>
                 <img id="enlarged-img" src="">
             </div>
             <div style="display: flex; gap: 8px; margin-top: 25px; justify-content: center; flex-wrap: wrap;">
@@ -429,6 +430,14 @@
     </div>
 
     <script>
+        // === FUNGSI PROTEKSI XSS (ANTI SCRIPT INJECTION) ===
+        function escapeHTML(str) {
+            if (!str) return "";
+            return str.toString().replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
+        }
+
         // === TRANSLATION & I18N SYSTEM ===
         const i18n = {
             id: {
@@ -553,7 +562,6 @@
             const isLight = document.body.classList.contains('light-theme');
             const themeTexts = document.querySelectorAll('.theme-btn-text');
             
-            // Icon Bulan (Untuk pindah ke Gelap) dan Icon Matahari (Untuk pindah ke Terang)
             const moonSvg = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
             const sunSvg = `<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`;
             
@@ -569,7 +577,7 @@
             updateUIText();
         });
 
-        // === ANTI-SWIPE BACK (HISTORY API TRAP) ===
+        // === ANTI-SWIPE BACK ===
         window.history.pushState({ page: 'login' }, '', window.location.href);
         window.history.pushState({ page: 'login' }, '', window.location.href);
 
@@ -750,8 +758,8 @@
         
         document.getElementById('msg-reply-btn').addEventListener('click', () => { 
             activeReply = selectedMsgObj; 
-            document.getElementById('reply-preview-name').innerText = activeReply.sender; 
-            document.getElementById('reply-preview-text').innerText = activeReply.text; 
+            document.getElementById('reply-preview-name').innerText = activeReply.sender; // innerText aman XSS
+            document.getElementById('reply-preview-text').innerText = activeReply.text;   // innerText aman XSS
             document.getElementById('reply-preview-container').style.display = 'block'; 
             document.getElementById('message-input').focus(); 
             msgActionOverlay.classList.remove('show'); 
@@ -930,18 +938,21 @@
             logDebug(t('logCleared'), "system");
         });
 
+        // FIX BUG 2: Proteksi XSS pada Logger (Menggunakan innerText/textContent)
         function logDebug(message, type = 'system') {
             const container = document.getElementById('log-container');
             const div = document.createElement('div');
             div.className = `log-entry ${type}`;
             const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
-            div.innerHTML = `[${time}] ${message}`;
-            container.appendChild(div); container.scrollTop = container.scrollHeight;
+            
+            div.innerText = `[${time}] ${message}`; // Menggunakan innerText untuk mencegah eksekusi tag HTML
+            container.appendChild(div); 
+            container.scrollTop = container.scrollHeight;
 
             const receiverStatus = document.getElementById('receiver-status-text');
             if (receiverStatus && document.getElementById('receiver-ui').style.display !== 'none') {
                 receiverStatus.removeAttribute('data-i18n');
-                receiverStatus.innerHTML = message;
+                receiverStatus.innerText = message; // Proteksi XSS
             }
         }
 
@@ -972,10 +983,9 @@
             });
         });
 
-        // === KONEKSI PEERJS & WEBRTC (OPTIMIZED) ===
+        // === KONEKSI PEERJS & WEBRTC ===
         let savedPeerId = localStorage.getItem('my-peer-id');
         
-        // OPTIMASI 1: Perluasan STUN Servers dan Candidate Pooling
         const peerConfig = { 
             config: { 
                 'iceServers': [
@@ -986,21 +996,20 @@
                     { urls: 'stun:stun4.l.google.com:19302' },
                     { urls: 'stun:stun.cloudflare.com:3478' }
                 ],
-                iceCandidatePoolSize: 10 // Prapengambilan kandidat ICE untuk koneksi lebih cepat
+                iceCandidatePoolSize: 10
             },
-            debug: 2 // Kurangi level debug untuk performa produksi
+            debug: 2 
         };
 
         const peer = savedPeerId ? new Peer(savedPeerId, peerConfig) : new Peer(peerConfig);
         
-        let conn, typingTimeout;
+        let conn;
         const chatWindow = document.getElementById('chat-window');
         const messageInput = document.getElementById('message-input');
         const chatTitle = document.getElementById('chat-title');
         const chatHeaderAvatar = document.getElementById('chat-header-avatar');
         let remoteName = "Friend";
 
-        // OPTIMASI 2: Sistem Keep-Alive (Ping/Pong)
         let pingInterval;
         let lastPongTime = Date.now();
 
@@ -1010,7 +1019,6 @@
             pingInterval = setInterval(() => {
                 if (conn && conn.open) {
                     if (Date.now() - lastPongTime > 15000) {
-                        // Jika 15 detik tidak ada pong, putuskan koneksi
                         logDebug('Koneksi terputus (Ping Timeout).', 'error');
                         customAlert(t('errOffline'));
                         disconnectPeer();
@@ -1018,7 +1026,7 @@
                     }
                     conn.send({ type: 'ping' });
                 }
-            }, 5000); // Ping setiap 5 detik
+            }, 5000);
         }
 
         peer.on('open', id => { 
@@ -1061,19 +1069,17 @@
             } 
         });
 
-        // OPTIMASI 3: Monitor ICE State lebih ketat
         function monitorICE(connection) {
             setTimeout(() => {
                 if(connection && connection.peerConnection) {
                     connection.peerConnection.addEventListener('iceconnectionstatechange', () => {
                         const state = connection.peerConnection.iceConnectionState;
-                        logDebug(`WebRTC ICE: <b>${state.toUpperCase()}</b>`);
+                        logDebug(`WebRTC ICE: ${state.toUpperCase()}`); // Hapus <b> untuk fix XSS
                         
                         if(state === 'failed' || state === 'disconnected' || state === 'closed') {
                             logDebug('WebRTC layer disconnected.', 'error');
                             document.getElementById('message-input').disabled = true;
                             
-                            // Auto disconnect & cleanup jika WebRTC level mati
                             if(document.getElementById('chat-screen').style.display === 'flex') {
                                 customAlert(t('errOffline'));
                                 disconnectPeer();
@@ -1099,7 +1105,6 @@
             document.getElementById('connect-btn').innerText = t('connecting'); document.getElementById('connect-btn').disabled = true;
             logDebug(`Connecting to: ${rId}`);
             
-            // OPTIMASI 4: Pastikan koneksi dikonfigurasi reliable untuk Chat Text/File
             conn = peer.connect(rId, { reliable: true }); 
             monitorICE(conn); setupConn();
             
@@ -1121,13 +1126,11 @@
                 conn.send({ type: 'profile', name: myName || t('anon'), avatar: myAvatarBase64 });
                 updateUIText();
                 
-                // Mulai Interval Ping Pong setelah koneksi terbuka
                 startPingPong();
             });
             conn.on('data', data => {
                 if (!data) return;
                 
-                // Handle Ping/Pong
                 if (data.type === 'ping') {
                     conn.send({ type: 'pong' });
                     return;
@@ -1195,15 +1198,44 @@
             remoteName = t('friend'); chatTitle.innerText = remoteName; chatHeaderAvatar.innerHTML = defaultSvgAvatar; hideTyping(); cancelReply();
         }
 
-        // === PENGIRIMAN PESAN ===
-        messageInput.addEventListener('input', () => { if (conn && conn.open) { conn.send({ type: 'typing', isTyping: true }); clearTimeout(typingTimeout); typingTimeout = setTimeout(() => { conn.send({ type: 'typing', isTyping: false }); }, 1500); } });
+        // FIX BUG 3: Spam Data Channel "Sedang Mengetik..."
+        let typingTimeout;
+        let isTypingSent = false;
+
+        messageInput.addEventListener('input', () => { 
+            if (conn && conn.open) { 
+                if (!isTypingSent) {
+                    conn.send({ type: 'typing', isTyping: true }); 
+                    isTypingSent = true;
+                }
+                clearTimeout(typingTimeout); 
+                typingTimeout = setTimeout(() => { 
+                    conn.send({ type: 'typing', isTyping: false }); 
+                    isTypingSent = false;
+                }, 1500); 
+            } 
+        });
 
         function sendMessage() {
             const msg = messageInput.value.trim();
             if(msg && conn && conn.open) {
-                const msgId = 'msg-' + Date.now(); const msgData = { type: 'text', id: msgId, text: msg, replyTo: activeReply ? { sender: activeReply.sender, text: activeReply.text } : null };
-                conn.send(msgData); conn.send({ type: 'typing', isTyping: false }); clearTimeout(typingTimeout);
-                appendMessage('sent', msgData, msgId); messageInput.value = ''; messageInput.focus(); cancelReply();
+                const msgId = 'msg-' + Date.now(); 
+                const msgData = { 
+                    type: 'text', 
+                    id: msgId, 
+                    text: msg, 
+                    replyTo: activeReply ? { sender: activeReply.sender, text: activeReply.text } : null 
+                };
+                
+                conn.send(msgData); 
+                conn.send({ type: 'typing', isTyping: false }); 
+                clearTimeout(typingTimeout);
+                isTypingSent = false;
+                
+                appendMessage('sent', msgData, msgId); 
+                messageInput.value = ''; 
+                messageInput.focus(); 
+                cancelReply();
             }
         }
 
@@ -1224,12 +1256,29 @@
 
         document.getElementById('file-input').addEventListener('change', (e) => { processFile(e.target.files[0]); e.target.value = ''; });
 
-        function renderFileProgress(senderType, fileId, filename, progress) { const div = document.createElement('div'); div.className = `msg ${senderType}`; div.id = fileId; div.innerHTML = `<div class="msg-content"><div style="font-weight:bold; font-size:13px; margin-bottom:5px;">📄 ${filename}</div><div class="progress-wrapper"><div class="progress-bar" id="pb-${fileId}" style="width: ${progress}%"></div></div><div class="progress-text" id="pt-${fileId}">${progress}% ${t('process')}</div></div>`; chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; }
-        function updateFileProgress(fileId, progress) { const pb = document.getElementById(`pb-${fileId}`); const pt = document.getElementById(`pt-${fileId}`); if (pb && pt) { pb.style.width = `${progress}%`; pt.innerText = progress === 100 ? t('finishing') : `${progress}% ${t('sending')}`; } }
+        function renderFileProgress(senderType, fileId, filename, progress) { 
+            const div = document.createElement('div'); 
+            div.className = `msg ${senderType}`; 
+            div.id = fileId; 
+            const safeFilename = escapeHTML(filename); // FIX BUG 1: XSS File name
+            div.innerHTML = `<div class="msg-content"><div style="font-weight:bold; font-size:13px; margin-bottom:5px;">📄 ${safeFilename}</div><div class="progress-wrapper"><div class="progress-bar" id="pb-${fileId}" style="width: ${progress}%"></div></div><div class="progress-text" id="pt-${fileId}">${progress}% ${t('process')}</div></div>`; 
+            chatWindow.appendChild(div); 
+            chatWindow.scrollTop = chatWindow.scrollHeight; 
+        }
+
+        function updateFileProgress(fileId, progress) { 
+            const pb = document.getElementById(`pb-${fileId}`); 
+            const pt = document.getElementById(`pt-${fileId}`); 
+            if (pb && pt) { 
+                pb.style.width = `${progress}%`; 
+                pt.innerText = progress === 100 ? t('finishing') : `${progress}% ${t('sending')}`; 
+            } 
+        }
         
         function finalizeFileMessage(senderType, fileId, filename, filetype, blob) { 
             const div = document.getElementById(fileId); if (!div) return; 
             const url = URL.createObjectURL(blob); let contentHTML = ''; 
+            const safeFilename = escapeHTML(filename); // FIX BUG 1: XSS Proteksi Nama File
             
             const msgObj = { 
                 text: filetype.startsWith('image/') ? t('photo') : `📄 ${filename}`, 
@@ -1239,21 +1288,50 @@
                 fileName: filename
             };
             
-            if (filetype.startsWith('image/')) { contentHTML = `<img src="${url}" alt="${filename}" id="img-${fileId}" style="cursor: zoom-in;">`; } else { contentHTML = `<a href="${url}" download="${filename}" class="file-link">📄 ${filename}</a>`; } 
-            div.innerHTML = `<div class="msg-content">${contentHTML}</div>`; appendMeta(div, senderType); setupLongPress(div, msgObj); 
+            if (filetype.startsWith('image/')) { 
+                contentHTML = `<img src="${url}" alt="${safeFilename}" id="img-${fileId}" style="cursor: zoom-in;">`; 
+            } else { 
+                contentHTML = `<a href="${url}" download="${safeFilename}" class="file-link">📄 ${safeFilename}</a>`; 
+            } 
+            
+            div.innerHTML = `<div class="msg-content">${contentHTML}</div>`; 
+            appendMeta(div, senderType); 
+            setupLongPress(div, msgObj); 
+            
             if (filetype.startsWith('image/')) {
-                const imgElement = div.querySelector(`#img-${fileId}`); imgElement.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; };
+                const imgElement = div.querySelector(`#img-${fileId}`); 
+                imgElement.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; };
                 imgElement.addEventListener('click', (e) => { e.stopPropagation(); openImageViewer(url, div, msgObj, filename); });
             }
             chatWindow.scrollTop = chatWindow.scrollHeight; 
         }
         
         function appendMessage(type, dataObj, id = null) { 
-            const text = dataObj.text || ""; const replyTo = dataObj.replyTo || null; const div = document.createElement('div'); div.className = `msg ${type}`; if (id) div.id = id; 
-            if (replyTo && type !== 'system') { const replyDiv = document.createElement('div'); replyDiv.className = 'replied-snippet'; replyDiv.innerHTML = `<strong>${replyTo.sender}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${replyTo.text}</span>`; div.appendChild(replyDiv); } 
-            const content = document.createElement('div'); content.className = 'msg-content'; content.innerText = text; div.appendChild(content); 
-            if (type !== 'system') { appendMeta(div, type); setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || t('you')) : remoteName, isMedia: false }); } 
-            chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; 
+            const text = dataObj.text || ""; 
+            const replyTo = dataObj.replyTo || null; 
+            const div = document.createElement('div'); 
+            div.className = `msg ${type}`; 
+            if (id) div.id = id; 
+            
+            if (replyTo && type !== 'system') { 
+                const replyDiv = document.createElement('div'); 
+                replyDiv.className = 'replied-snippet'; 
+                // FIX BUG 1: XSS Di Fitur Reply (Menggunakan escapeHTML)
+                replyDiv.innerHTML = `<strong>${escapeHTML(replyTo.sender)}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${escapeHTML(replyTo.text)}</span>`; 
+                div.appendChild(replyDiv); 
+            } 
+            
+            const content = document.createElement('div'); 
+            content.className = 'msg-content'; 
+            content.innerText = text; // Fix XSS dari pesan biasa (menggunakan innerText)
+            div.appendChild(content); 
+            
+            if (type !== 'system') { 
+                appendMeta(div, type); 
+                setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || t('you')) : remoteName, isMedia: false }); 
+            } 
+            chatWindow.appendChild(div); 
+            chatWindow.scrollTop = chatWindow.scrollHeight; 
         }
         
         function appendMeta(parentDiv, type) { const meta = document.createElement('div'); meta.className = 'msg-meta'; const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); const timeSpan = document.createElement('span'); timeSpan.innerText = timeStr; meta.appendChild(timeSpan); if (type === 'sent') { const tickSpan = document.createElement('span'); tickSpan.className = 'tick'; tickSpan.innerText = '✓'; meta.appendChild(tickSpan); } parentDiv.appendChild(meta); }
