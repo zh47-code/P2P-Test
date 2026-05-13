@@ -69,9 +69,10 @@
         /* Menus & Dropdowns */
         .menu-btn { background: none; border: none; color: var(--text-main); font-size: 24px; font-weight: 500; cursor: pointer; padding: 5px 10px; border-radius: 50%; transition: background 0.2s; }
         .menu-btn:hover { background: var(--dropdown-hover); }
-        .dropdown { position: absolute; top: 45px; right: 0; background: var(--bg-panel); border: none; border-radius: 16px; box-shadow: 0 4px 20px var(--shadow); display: none; flex-direction: column; min-width: 180px; overflow: hidden; z-index: 1000; padding: 8px 0; }
+        .dropdown { position: absolute; top: 45px; right: 0; background: var(--bg-panel); border: none; border-radius: 16px; box-shadow: 0 4px 20px var(--shadow); display: none; flex-direction: column; min-width: 200px; overflow: hidden; z-index: 1000; padding: 8px 0; }
         .dropdown.show { display: flex; }
-        .dropdown button { background: transparent; border: none; color: var(--text-main); padding: 12px 20px; text-align: left; cursor: pointer; font-size: 14px; font-weight: 500; width: 100%; transition: background 0.2s; }
+        .dropdown button { background: transparent; border: none; color: var(--text-main); padding: 12px 20px; text-align: left; cursor: pointer; font-size: 14px; font-weight: 500; width: 100%; transition: background 0.2s; display: flex; align-items: center; gap: 12px; }
+        .dropdown button svg { width: 18px; height: 18px; flex-shrink: 0; }
         .dropdown button:hover { background: var(--dropdown-hover); }
     
         /* Modals */
@@ -101,7 +102,7 @@
         .id-badge:hover { background: var(--dropdown-hover); }
         
         .modal-actions { display: flex; gap: 12px; }
-        .modal-actions button { flex: 1; padding: 14px; border-radius: 100px; border: none; font-weight: 500; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .modal-actions button { flex: 1; padding: 14px; border-radius: 100px; border: none; font-weight: 500; cursor: pointer; font-size: 14px; transition: 0.2s; justify-content: center;}
         #close-modal-btn { background: var(--input-bg); color: var(--text-main); }
         #save-account-btn { background: var(--accent); color: var(--md-on-primary); }
     
@@ -115,7 +116,11 @@
         /* Image Viewer Layout */
         .img-modal-btn { background: var(--bg-panel); color: var(--text-main); border: none; padding: 12px 20px; border-radius: 100px; font-weight: 500; cursor: pointer; transition: 0.2s; flex: 1; text-align: center; font-size: 14px; }
         .img-modal-btn:hover { background: var(--dropdown-hover); }
-        .img-close-icon { position: absolute; top: -12px; right: -12px; background: var(--bg-panel); color: var(--text-main); border: 2px solid var(--bg-deep); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px var(--shadow); z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        
+        /* OVERFLOW VISIBLE agar icon x tidak kepotong batas kotak img */
+        #img-viewer-content { background: transparent; box-shadow: none; max-width: 100vw; max-height: 100vh; padding: 0; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        
+        .img-close-icon { position: absolute; top: -16px; right: -16px; background: var(--bg-panel); color: var(--text-main); border: 2px solid var(--bg-deep); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px var(--shadow); z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .img-close-icon:hover { background: var(--input-bg); transform: scale(1.1); }
         
         #enlarged-img { max-width: 100%; max-height: 75vh; border-radius: 8px; object-fit: contain; background: rgba(0,0,0,0.5); box-shadow: 0 4px 20px rgba(0,0,0,0.5); touch-action: manipulation; transform-origin: center center; }
@@ -124,14 +129,16 @@
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; position: relative; }
         .top-right-menu { position: absolute; top: 15px; right: 15px; z-index: 1000; display: flex; align-items: center; gap: 8px; }
         
-        .login-card { background: var(--bg-panel); padding: 40px 24px; border-radius: 28px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px var(--shadow); }
-        .login-card h1 { font-size: 24px; margin-bottom: 30px; font-weight: 500; color: var(--text-main); }
+        .login-card { background: var(--bg-panel); padding: 40px 24px; border-radius: 28px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px var(--shadow); display: flex; flex-direction: column; align-items: center; }
+        
+        .app-icon-login { width: 72px; height: 72px; border-radius: 18px; margin-bottom: 12px; object-fit: cover; box-shadow: 0 4px 15px var(--shadow); background-color: var(--accent); }
+        .login-card h1 { font-size: 18px; margin-bottom: 30px; font-weight: 700; letter-spacing: 0.5px; color: var(--text-main); }
         
         .role-btn { width: 100%; padding: 16px; margin-bottom: 16px; border-radius: 16px; border: 2px solid var(--input-bg); background: transparent; color: var(--text-main); font-weight: 500; font-size: 16px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 12px; }
         .role-btn:hover { background: var(--input-bg); border-color: var(--accent); }
-        .back-btn { background: none; border: none; color: var(--text-dim); text-decoration: none; cursor: pointer; margin-top: 20px; font-size: 14px; font-weight: 500; }
+        .back-btn { background: none; border: none; color: var(--text-dim); text-decoration: none; cursor: pointer; margin-top: 20px; font-size: 14px; font-weight: 500; width: 100%; }
         
-        .input-group { text-align: left; margin-bottom: 20px; }
+        .input-group { text-align: left; margin-bottom: 20px; width: 100%; }
         .input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; padding-left: 12px; font-weight: 500; }
         .login-card input { width: 100%; padding: 16px; border-radius: 28px; border: 2px solid transparent; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; text-align: center; transition: 0.2s; }
         .login-card input:focus { background: var(--bg-panel); border-color: var(--accent); }
@@ -145,15 +152,15 @@
         /* Chat Screen */
         #chat-screen { display: none; flex-direction: column; height: 100%; position: relative; }
         header { flex-shrink: 0; background-color: var(--bg-panel); padding: 12px 16px; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px var(--shadow); }
-        .header-left { display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 44px; height: 44px; border-radius: 50%; background-color: var(--avatar-bg); display: flex; align-items: center; justify-content: center; color: var(--avatar-color); overflow: hidden; }
+        .header-left { display: flex; align-items: center; gap: 12px; overflow: hidden; }
+        .avatar { width: 44px; height: 44px; border-radius: 50%; background-color: var(--avatar-bg); display: flex; align-items: center; justify-content: center; color: var(--avatar-color); overflow: hidden; flex-shrink: 0;}
         .avatar img { width: 100%; height: 100%; object-fit: cover; }
         .avatar svg { width: 60%; height: 60%; fill: var(--avatar-color); }
         body.light-theme .avatar svg { fill: var(--avatar-color); }
-        .header-info { display: flex; flex-direction: column; }
-        .header-title { font-weight: 500; font-size: 16px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
-        .header-status { font-size: 12px; color: var(--text-dim); transition: color 0.2s; }
-        .header-actions { display: flex; align-items: center; gap: 8px; position: relative; }
+        .header-info { display: flex; flex-direction: column; overflow: hidden; }
+        .header-title { font-weight: 500; font-size: 16px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+        .header-status { font-size: 12px; color: var(--text-dim); transition: color 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .header-actions { display: flex; align-items: center; gap: 4px; position: relative; flex-shrink: 0; }
         
         #chat-window { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background-color: var(--bg-deep); }
         
@@ -172,7 +179,9 @@
         .progress-text { font-size: 11px; color: var(--text-dim); text-align: center; margin-top: 6px; font-weight: 500; }
         
         .msg-meta { float: right; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: inherit; opacity: 0.7; margin: 8px -2px -4px 12px; line-height: 1; }
-        .tick { font-size: 12px; font-weight: bold; opacity: 0.6; }
+        
+        /* Mengatur agar Centang dempet / overlapping */
+        .tick { font-size: 12px; font-weight: bold; opacity: 0.6; letter-spacing: -4px; margin-right: 4px; }
         .tick.read { color: var(--tick-read); opacity: 1; }
         
         .replied-snippet { background: rgba(0,0,0,0.15); border-left: 4px solid var(--accent); border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; font-size: 13px; color: inherit; opacity: 0.9; }
@@ -243,12 +252,12 @@
     </div>
 
     <div id="image-viewer-modal" class="modal-overlay">
-        <div class="modal-content" style="background: transparent; box-shadow: none; max-width: 100vw; max-height: 100vh; padding: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div class="modal-content" id="img-viewer-content">
             <div style="position: relative; display: inline-block;">
                 <button id="img-close-icon" class="img-close-icon">✕</button>
                 <img id="enlarged-img" src="">
             </div>
-            <div style="display: flex; gap: 8px; margin-top: 15px; justify-content: center; flex-wrap: wrap;">
+            <div style="display: flex; gap: 8px; margin-top: 25px; justify-content: center; flex-wrap: wrap;">
                 <button id="img-save-btn" class="img-modal-btn" data-i18n="saveImg">Simpan</button>
                 <button id="img-delete-btn" class="img-modal-btn" style="color: var(--danger);" data-i18n="delete">Hapus</button>
             </div>
@@ -267,19 +276,34 @@
     <div id="login-screen">
         <div class="top-right-menu">
             <button id="lang-toggle-btn" style="background: transparent; border: 2px solid var(--input-bg); color: var(--text-main); padding: 6px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px;">EN</button>
-            <button class="account-btn" style="background: var(--input-bg); border: none; color: var(--text-main); padding: 8px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px;">👤 <span data-i18n="accountMenu">Akun</span></button>
+            <button class="account-btn" style="background: var(--input-bg); border: none; color: var(--text-main); padding: 8px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> 
+                <span data-i18n="accountMenu">Akun</span>
+            </button>
             <button id="menu-toggle-btn" class="menu-btn">⋮</button>
             <div id="dropdown-menu" class="dropdown">
-                <button id="theme-btn" data-i18n="theme">Ganti Tema</button>
-                <button id="log-btn" data-i18n="syslog">Log Sistem</button>
-                <button id="cache-btn" data-i18n="clearcache">Hapus Cache</button>
+                <!-- Dropdown Menus Login dengan Icon MD3 -->
+                <button id="theme-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    <span class="theme-btn-text">Tema Gelap</span>
+                </button>
+                <button id="log-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                    <span data-i18n="syslog">Log Sistem</span>
+                </button>
+                <button id="cache-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <span data-i18n="clearcache">Hapus Cache</span>
+                </button>
             </div>
         </div>
         
         <div class="login-card">
+            <!-- Penambahan Icon Aplikasi di atas Judul -->
+            <img src="icon-192.png" alt="App Icon" class="app-icon-login" onerror="this.style.display='none'"> 
             <h1>P2P SECURE CHAT</h1>
             
-            <div id="role-selection">
+            <div id="role-selection" style="width: 100%;">
                 <p style="margin-bottom: 20px; color: var(--text-dim); font-size: 14px;" data-i18n="chooseRole">Pilih peran Anda untuk memulai:</p>
                 <button class="role-btn" onclick="selectRole('sender')">
                     <!-- Icon Upload/Panah Atas -->
@@ -293,7 +317,7 @@
                 </button>
             </div>
 
-            <div id="sender-ui" style="display: none;">
+            <div id="sender-ui" style="display: none; width: 100%;">
                 <div class="input-group">
                     <label for="remote-id" data-i18n="inputReceiverID">MASUKKAN ID PENERIMA</label>
                     <input type="text" id="remote-id" data-i18n-placeholder="pasteIdPlaceholder" placeholder="Tempel ID Teman di sini">
@@ -302,7 +326,7 @@
                 <button class="back-btn" onclick="resetRole()" data-i18n="backBtn">Kembali</button>
             </div>
 
-            <div id="receiver-ui" style="display: none;">
+            <div id="receiver-ui" style="display: none; width: 100%;">
                 <div style="background: var(--input-bg); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
                     <!-- Status Diagnostik Pengganti Log -->
                     <p id="receiver-status-text" style="font-weight: bold; color: var(--accent); margin-bottom: 10px;" data-i18n="waitingConn">⏳ Menunggu Koneksi Masuk...</p>
@@ -312,7 +336,7 @@
                 <button class="back-btn" onclick="resetRole()" data-i18n="backBtn">Kembali</button>
             </div>
 
-            <div id="connected-ui" style="display: none; text-align: center;">
+            <div id="connected-ui" style="display: none; text-align: center; width: 100%;">
                 <div style="background: var(--input-bg); padding: 24px; border-radius: 16px; margin-bottom: 20px;">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="margin-bottom: 10px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                     <p style="color: var(--text-main); font-size: 16px; line-height: 1.5;"><span data-i18n="connectedWith">Anda telah terhubung dengan</span><br><strong id="connected-friend-name" style="color: var(--accent); font-size: 20px;">Teman</strong></p>
@@ -341,15 +365,38 @@
                 </div>
             </div>
             <div class="header-actions">
+                <!-- Penambahan Tombol Panggilan -->
+                <button id="call-btn" class="icon-btn" onclick="alert(t('callDev'))">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                </button>
                 <div style="position: relative;">
                     <button id="menu-toggle-chat-btn" class="menu-btn">⋮</button>
                     <div id="dropdown-menu-chat" class="dropdown" style="top: 35px;">
-                        <button id="mute-btn" data-i18n="mute">Bisukan Notifikasi</button>
-                        <button id="search-btn" data-i18n="search">Cari</button>
-                        <button class="account-btn"><span data-i18n="accountMenu">Akun</span></button>
-                        <button id="theme-chat-btn" data-i18n="theme">Ganti Tema</button>
-                        <button id="clear-chat-btn" data-i18n="clearChat">Hapus Chat</button>
-                        <button id="disconnect-menu-btn" style="color: var(--danger); font-weight: bold;" onclick="disconnectPeer()" data-i18n="disconnect">Putus Koneksi</button>
+                        <!-- Dropdown Menus Chat dengan Icon MD3 -->
+                        <button id="mute-btn">
+                            <svg id="mute-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                            <span id="mute-btn-text" data-i18n="mute">Bisukan Notifikasi</span>
+                        </button>
+                        <button id="search-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <span data-i18n="search">Cari</span>
+                        </button>
+                        <button class="account-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            <span data-i18n="accountMenu">Akun</span>
+                        </button>
+                        <button id="theme-chat-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                            <span class="theme-btn-text">Tema Gelap</span>
+                        </button>
+                        <button id="clear-chat-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+                            <span data-i18n="clearChat">Hapus Chat</span>
+                        </button>
+                        <button id="disconnect-menu-btn" style="color: var(--danger); font-weight: bold;" onclick="disconnectPeer()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            <span data-i18n="disconnect">Putus Koneksi</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -383,7 +430,7 @@
         // === TRANSLATION & I18N SYSTEM ===
         const i18n = {
             id: {
-                accountMenu: "Akun", theme: "Ganti Tema", syslog: "Log Sistem", clearcache: "Hapus Cache", langToggle: "EN",
+                accountMenu: "Akun", themeLight: "Tema Terang", themeDark: "Tema Gelap", syslog: "Log Sistem", clearcache: "Hapus Cache", langToggle: "EN",
                 chooseRole: "Pilih peran Anda untuk memulai:", roleSender: "Pengirim", roleReceiver: "Penerima",
                 inputReceiverID: "MASUKKAN ID PENERIMA", pasteIdPlaceholder: "Tempel ID Teman di sini", startChat: "Mulai Chat", backBtn: "Kembali",
                 waitingConn: "⏳ Menunggu Koneksi Masuk...", giveIdText: "Berikan ID Anda ke Pengirim:", loading: "Loading...",
@@ -399,10 +446,10 @@
                 errNoId: "Masukkan ID!", errSelf: "Tidak bisa dengan diri sendiri!", errTimeout: "Waktu habis! Pastikan IPv6 aktif.",
                 errActiveTab: "ID aktif di tab lain. Refresh...", errOffline: "ID Teman offline.", fileTooLarge: "Maksimal 15MB.",
                 process: "Memproses...", sending: "Mengirim...", finishing: "Menyelesaikan...", you: "Anda", logCleared: "Log diagnostik telah dibersihkan.",
-                friend: "Teman", anon: "Anonim"
+                friend: "Teman", anon: "Anonim", callDev: "Fitur panggilan suara/video dalam pengembangan."
             },
             en: {
-                accountMenu: "Account", theme: "Change Theme", syslog: "System Log", clearcache: "Clear Cache", langToggle: "ID",
+                accountMenu: "Account", themeLight: "Light Theme", themeDark: "Dark Theme", syslog: "System Log", clearcache: "Clear Cache", langToggle: "ID",
                 chooseRole: "Select your role to start:", roleSender: "Sender", roleReceiver: "Receiver",
                 inputReceiverID: "ENTER RECEIVER ID", pasteIdPlaceholder: "Paste Friend's ID here", startChat: "Start Chat", backBtn: "Back",
                 waitingConn: "⏳ Waiting for Connection...", giveIdText: "Give your ID to the Sender:", loading: "Loading...",
@@ -418,7 +465,7 @@
                 errNoId: "Enter an ID!", errSelf: "Cannot connect to yourself!", errTimeout: "Timeout! Ensure IPv6 is active.",
                 errActiveTab: "ID active in another tab. Refresh...", errOffline: "Friend is offline.", fileTooLarge: "Max 15MB.",
                 process: "Processing...", sending: "Sending...", finishing: "Finishing...", you: "You", logCleared: "Diagnostic log cleared.",
-                friend: "Friend", anon: "Anonymous"
+                friend: "Friend", anon: "Anonymous", callDev: "Voice/Video calling feature is currently in development."
             }
         };
 
@@ -433,7 +480,7 @@
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = t(el.getAttribute('data-i18n-placeholder')));
             
             document.getElementById('lang-toggle-btn').innerText = t('langToggle');
-            document.getElementById('mute-btn').innerText = isMuted ? t('unmute') : t('mute');
+            document.getElementById('mute-btn-text').innerText = isMuted ? t('unmute') : t('mute');
             
             document.getElementById('my-id').innerText = peerInstanceReady ? peer.id : t('connectingStatus');
             document.getElementById('my-id-display').innerText = peerInstanceReady ? peer.id : t('loading');
@@ -452,6 +499,14 @@
                 document.getElementById('modal-connected-name').innerText = remoteName;
                 document.getElementById('connected-friend-name').innerText = remoteName;
             }
+            
+            updateThemeText();
+        }
+        
+        function updateThemeText() {
+            const isLight = document.body.classList.contains('light-theme');
+            const themeTexts = document.querySelectorAll('.theme-btn-text');
+            themeTexts.forEach(el => { el.innerText = isLight ? t('themeDark') : t('themeLight'); });
         }
 
         document.getElementById('lang-toggle-btn').addEventListener('click', () => {
@@ -559,6 +614,7 @@
         function toggleTheme() { 
             document.body.classList.toggle('light-theme'); 
             localStorage.setItem('app-theme', document.body.classList.contains('light-theme') ? 'light' : 'dark'); 
+            updateThemeText();
             document.getElementById('dropdown-menu').classList.remove('show'); 
             document.getElementById('dropdown-menu-chat').classList.remove('show'); 
         }
@@ -576,7 +632,12 @@
         
         document.getElementById('mute-btn').addEventListener('click', () => { 
             isMuted = !isMuted; 
-            document.getElementById('mute-btn').innerText = isMuted ? t('unmute') : t('mute'); 
+            document.getElementById('mute-btn-text').innerText = isMuted ? t('unmute') : t('mute'); 
+            if (isMuted) {
+                document.getElementById('mute-icon').innerHTML = '<path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>';
+            } else {
+                document.getElementById('mute-icon').innerHTML = '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path>';
+            }
             document.getElementById('dropdown-menu-chat').classList.remove('show'); 
         });
         
@@ -660,7 +721,7 @@
         
         function cancelReply() { activeReply = null; document.getElementById('reply-preview-container').style.display = 'none'; }
 
-        // === MODAL IMAGE VIEWER, PAN & ZOOM (300%) ===
+        // === MODAL IMAGE VIEWER, PAN & ZOOM ===
         let currentEnlargedFile = null;
         const enlargedImg = document.getElementById('enlarged-img');
         
@@ -672,6 +733,14 @@
             enlargedImg.style.transition = animate ? 'transform 0.3s ease' : 'none';
             enlargedImg.style.transform = `translate(${transX}px, ${transY}px) scale(${zoomLevel})`;
             enlargedImg.style.cursor = zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default';
+            
+            // Sembunyikan tombol (X) saat zoom lebih dari 100%
+            const closeBtn = document.getElementById('img-close-icon');
+            if (zoomLevel === 1) {
+                closeBtn.style.display = 'flex';
+            } else {
+                closeBtn.style.display = 'none';
+            }
         }
         
         function openImageViewer(imgSrc, msgDiv, msgObj, filename) {
@@ -685,7 +754,6 @@
             document.getElementById('image-viewer-modal').classList.add('show');
         }
 
-        // Logic Double Tap Touch Screen
         enlargedImg.addEventListener('touchend', (e) => {
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTapTime;
@@ -709,7 +777,6 @@
             lastTapTime = currentTime;
         });
 
-        // Touch Dragging (Geser)
         enlargedImg.addEventListener('touchstart', (e) => {
             if (zoomLevel > 1 && e.touches.length === 1) {
                 isDragging = true;
@@ -728,7 +795,6 @@
             }
         }, {passive: false});
 
-        // Mouse Dragging (Geser Desktop)
         enlargedImg.addEventListener('mousedown', (e) => {
             if (zoomLevel > 1) {
                 e.preventDefault();
@@ -753,7 +819,6 @@
             }
         });
 
-        // Double Click Desktop
         enlargedImg.addEventListener('dblclick', (e) => {
             if (zoomLevel === 1) zoomLevel = 1.5;
             else if (zoomLevel === 1.5) zoomLevel = 2;
@@ -784,7 +849,7 @@
                     notificationSound.pause();
                     notificationSound.currentTime = 0;
                     audioUnlocked = true;
-                }).catch(() => {}); // Catch safely to prevent console error on hard blocks
+                }).catch(() => {});
                 document.removeEventListener('click', unlockAudio);
                 document.removeEventListener('touchstart', unlockAudio);
             }
@@ -820,7 +885,6 @@
             div.innerHTML = `[${time}] ${message}`;
             container.appendChild(div); container.scrollTop = container.scrollHeight;
 
-            // Update Receiver Status secara bersih tanpa timestamp
             const receiverStatus = document.getElementById('receiver-status-text');
             if (receiverStatus && document.getElementById('receiver-ui').style.display !== 'none') {
                 receiverStatus.removeAttribute('data-i18n');
@@ -930,7 +994,6 @@
 
         peer.on('connection', connection => { 
             if(conn) conn.close(); conn = connection; 
-            // Halaman Chat TIDAK dibuka di sini lagi. Mencegah layar lompat dini.
             logDebug('Incoming connection...', 'success'); monitorICE(conn); setupConn(); 
         });
 
@@ -949,7 +1012,6 @@
         function setupConn() {
             conn.on('open', () => {
                 clearTimeout(connectTimeout); 
-                // Lompat ke Chat Screen BARU terjadi jika DataChannel sudah aman (Open)
                 document.getElementById('login-screen').style.display = 'none'; 
                 document.getElementById('chat-screen').style.display = 'flex'; 
                 chatWindow.innerHTML = '';
@@ -1074,7 +1136,7 @@
         function appendMeta(parentDiv, type) { const meta = document.createElement('div'); meta.className = 'msg-meta'; const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); const timeSpan = document.createElement('span'); timeSpan.innerText = timeStr; meta.appendChild(timeSpan); if (type === 'sent') { const tickSpan = document.createElement('span'); tickSpan.className = 'tick'; tickSpan.innerText = '✓'; meta.appendChild(tickSpan); } parentDiv.appendChild(meta); }
         const updateHeight = () => { document.body.style.height = window.visualViewport.height + 'px'; if(document.getElementById('chat-screen').style.display === 'flex') chatWindow.scrollTop = chatWindow.scrollHeight; }; window.visualViewport.addEventListener('resize', updateHeight); window.visualViewport.addEventListener('scroll', updateHeight);
         
-        // Initialize Language
+        // Initialize Language & Theme Texts
         updateUIText();
         remoteName = t('friend');
         document.getElementById('connected-friend-name').innerText = remoteName;
