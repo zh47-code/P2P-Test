@@ -606,6 +606,10 @@
         let incomingFiles = {};
         const CHUNK_SIZE = 64 * 1024; 
         let connectTimeout; 
+        
+        // Variabel Anti-Spam
+        let lastMsgTime = 0;
+        let spamCount = 0;
 
         // === MANAJEMEN AKUN ===
         const accountModal = document.getElementById('account-modal');
@@ -974,8 +978,15 @@
         
         function resetRole() {
             activeRole = null; 
-            isCheckingId = false; // PATCH: Matikan proses cek ID jika pengguna menekan "Kembali"
+            isCheckingId = false; 
             
+            // PATCH: Bersihkan sisa upaya koneksi/timer jika pengguna klik "Kembali" di tengah jalan
+            clearTimeout(connectTimeout);
+            if (conn && !conn.open) { 
+                conn.close(); 
+                conn = null; 
+            }
+
             document.getElementById('sender-ui').style.display = 'none';
             document.getElementById('receiver-ui').style.display = 'none';
             document.getElementById('connected-ui').style.display = 'none';
@@ -1045,6 +1056,13 @@
             }, 25000); // 🕒 PATCH: Waktu tunggu diperpanjang menjadi 25 detik untuk memaklumi delay TURN Server
             
             checkConn.on('open', () => {
+                // PATCH ZOMBIE PING: Jika user sudah klik "Kembali" (isCheckingId menjadi false), 
+                // batalkan semua update UI dan langsung tutup koneksi.
+                if (!isCheckingId) {
+                    checkConn.close();
+                    return;
+                }
+
                 clearTimeout(checkTimeout);
                 isCheckingId = false;
                 document.getElementById('check-id-btn').disabled = false;
@@ -1055,7 +1073,6 @@
                 connectBtn.disabled = false;
                 connectBtn.style.opacity = '1';
                 
-                // 🕒 PATCH: Biarkan Pengirim yang menutup koneksi setelah jeda 1 detik agar aman
                 setTimeout(() => checkConn.close(), 1000);
             });
         }
@@ -1137,17 +1154,18 @@
         peer.on('error', (err) => { 
             clearTimeout(connectTimeout); 
             
-            // Pencegatan (Interception) jika error terjadi akibat menekan tombol Cek ID
-            if (isCheckingId && err.type === 'peer-unavailable') {
+            // PATCH: Pencegatan semua jenis error jika sedang dalam mode "Cek ID"
+            if (isCheckingId) {
                 isCheckingId = false;
                 document.getElementById('check-id-btn').disabled = false;
                 
                 const statusText = document.getElementById('check-status-text');
                 statusText.style.color = 'var(--danger)';
-                statusText.innerText = t('checkOffline');
+                // Jika error karena ID offline tampilkan pesan Offline, jika error lain tampilkan Timeout/Error
+                statusText.innerText = (err.type === 'peer-unavailable') ? t('checkOffline') : t('checkTimeout');
                 
                 document.getElementById('connect-btn').disabled = true;
-                return; // Setop disini, tidak perlu memunculkan alert layar penuh
+                return; // Stop di sini agar alert full-screen tidak muncul
             }
 
             document.getElementById('login-status').removeAttribute('data-i18n');
@@ -1193,24 +1211,34 @@
         }
 
         peer.on('connection', connection => { 
-            // FITUR CEK KETERSEDIAAN: Abaikan secara visual jika ini hanya "ping check"
-            if (connection.metadata && connection.metadata.isCheckPing) {
-                // 🕒 PATCH: Biarkan koneksi terbuka 3 detik agar Pengirim (Sender) punya waktu mendeteksi event 'open'
-                setTimeout(() => {
-                    if(connection.open) connection.close();
-                }, 3000);
-                return; // Berhenti di sini, UI Penerima tidak akan melompat
-            }
-
-            // Tolak koneksi utama jika belum standby di layar Penerima
+            // 1. SATPAM PERAN: Tolak SEMUA koneksi jika belum standby di layar Penerima
             if (activeRole !== 'receiver') {
                 logDebug('Menolak koneksi masuk: Anda belum standby di menu Penerima.', 'error');
                 connection.close();
                 return;
             }
 
-            if(conn) conn.close(); conn = connection; 
-            logDebug('Incoming connection...', 'success'); monitorICE(conn); setupConn(); 
+            // 2. SATPAM CEK ID: Abaikan secara visual jika ini hanya "ping check"
+            if (connection.metadata && connection.metadata.isCheckPing) {
+                setTimeout(() => {
+                    if(connection.open) connection.close();
+                }, 3000);
+                return;
+            }
+
+            // 3. SATPAM ANTI-BAJAK: Jika sedang aktif chat dengan orang lain, tolak tamu baru!
+            if (conn && conn.open && conn.peer !== connection.peer) {
+                logDebug(`Menolak koneksi dari ${connection.peer}: Anda sedang dalam percakapan aktif.`, 'error');
+                connection.close();
+                return;
+            }
+
+            // TERIMA KONEKSI
+            if(conn) conn.close(); 
+            conn = connection; 
+            logDebug('Incoming connection...', 'success'); 
+            monitorICE(conn); 
+            setupConn(); 
         });
 
         function connectToPeer() {
@@ -1244,7 +1272,7 @@
                 
                 startPingPong();
             });
-            conn.on('data', data => {
+conn.on('data', data => {
                 if (!data) return;
                 
                 if (data.type === 'ping') {
@@ -1263,12 +1291,56 @@
                     document.getElementById('connected-friend-name').innerText = remoteName; 
                     chatHeaderAvatar.innerHTML = data.avatar ? `<img src="${data.avatar}" alt="Avatar">` : defaultSvgAvatar; 
                 } 
-                else if (data.type === 'ack') { const msgElement = document.getElementById(data.msgId); if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } } } 
-                else if (data.type === 'text') { conn.send({ type: 'ack', msgId: data.id }); playNotification(); hideTyping(); appendMessage('received', data, data.id); } 
-                else if (data.type === 'typing') { data.isTyping ? showTyping() : hideTyping(); } 
-                else if (data.type === 'file-start') { incomingFiles[data.fileId] = { chunks: [], receivedSize: 0, metadata: data }; renderFileProgress('received', data.fileId, data.filename, 0); } 
-                else if (data.type === 'file-chunk') { const fileData = incomingFiles[data.fileId]; if (fileData) { fileData.chunks.push(data.data); fileData.receivedSize += data.data.byteLength; updateFileProgress(data.fileId, Math.round((fileData.receivedSize / fileData.metadata.filesize) * 100)); } } 
-                else if (data.type === 'file-end') { const fileData = incomingFiles[data.fileId]; if (fileData) { finalizeFileMessage('received', data.fileId, fileData.metadata.filename, fileData.metadata.filetype, new Blob(fileData.chunks, { type: fileData.metadata.filetype })); delete incomingFiles[data.fileId]; conn.send({ type: 'ack', msgId: data.fileId }); playNotification(); hideTyping(); } }
+                else if (data.type === 'ack') { 
+                    const msgElement = document.getElementById(data.msgId); 
+                    if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } } 
+                } 
+                else if (data.type === 'text') { 
+                    // 🛡️ PATCH ANTI-SPAM (Rate Limiting)
+                    const now = Date.now();
+                    if (now - lastMsgTime < 500) { // Kurang dari 0.5 detik
+                        spamCount++;
+                        if (spamCount > 4) return; // Abaikan pesan jika terdeteksi spamming (Drop packet)
+                    } else {
+                        spamCount = 0; // Reset counter jika jeda normal
+                    }
+                    lastMsgTime = now;
+
+                    conn.send({ type: 'ack', msgId: data.id }); 
+                    playNotification(); 
+                    hideTyping(); 
+                    appendMessage('received', data, data.id); 
+                } 
+                else if (data.type === 'typing') { 
+                    data.isTyping ? showTyping() : hideTyping(); 
+                } 
+                else if (data.type === 'file-start') { 
+                    // 🛡️ PATCH ANTI-BOM FILE (Tolak file di atas 15MB dari sisi Penerima)
+                    if (data.filesize > 15 * 1024 * 1024) {
+                        logDebug('Menolak kiriman file: Ukuran melebihi batas 15MB.', 'error');
+                        return; // Blokir inisialisasi file
+                    }
+                    incomingFiles[data.fileId] = { chunks: [], receivedSize: 0, metadata: data }; 
+                    renderFileProgress('received', data.fileId, data.filename, 0); 
+                } 
+                else if (data.type === 'file-chunk') { 
+                    const fileData = incomingFiles[data.fileId]; 
+                    if (!fileData) return; // 🛡️ Abaikan chunk sampah jika file-start sebelumnya sudah ditolak
+                    
+                    fileData.chunks.push(data.data); 
+                    fileData.receivedSize += data.data.byteLength; 
+                    updateFileProgress(data.fileId, Math.round((fileData.receivedSize / fileData.metadata.filesize) * 100)); 
+                } 
+                else if (data.type === 'file-end') { 
+                    const fileData = incomingFiles[data.fileId]; 
+                    if (!fileData) return;
+                    
+                    finalizeFileMessage('received', data.fileId, fileData.metadata.filename, fileData.metadata.filetype, new Blob(fileData.chunks, { type: fileData.metadata.filetype })); 
+                    delete incomingFiles[data.fileId]; 
+                    conn.send({ type: 'ack', msgId: data.fileId }); 
+                    playNotification(); 
+                    hideTyping(); 
+                }
             });
             conn.on('close', () => { 
                 logDebug('Connection closed.', 'error'); 
@@ -1367,6 +1439,9 @@
             let offset = 0; const reader = new FileReader();
             
             function readNextChunk() { 
+                // PATCH: Hentikan paksa membaca file jika tiba-tiba koneksi mati/diputus
+                if (!conn || !conn.open) return; 
+
                 if (conn.dataChannel && conn.dataChannel.bufferedAmount > 2 * 1024 * 1024) { 
                     setTimeout(readNextChunk, 50); 
                     return;
@@ -1376,6 +1451,9 @@
             }
 
             reader.onload = function(e) {
+                // PATCH: Jangan coba kirim data jika koneksi sudah keburu mati
+                if (!conn || !conn.open) return;
+
                 conn.send({ type: 'file-chunk', fileId: fileId, data: e.target.result }); offset += e.target.result.byteLength;
                 updateFileProgress(fileId, Math.round((offset / file.size) * 100));
                 if (offset < file.size) { 
