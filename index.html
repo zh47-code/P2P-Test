@@ -892,6 +892,13 @@
             document.getElementById('image-viewer-modal').classList.remove('show');
         });
 
+        document.getElementById('img-viewer-content').addEventListener('click', (e) => {
+            // Menutup modal hanya jika area selain gambar atau tombol ditekan
+            if (e.target === document.getElementById('img-viewer-content')) {
+                document.getElementById('image-viewer-modal').classList.remove('show');
+            }
+        });
+
         // === SISTEM LOG & AUDIO NOTIFIKASI ===
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
         let audioUnlocked = false;
@@ -935,13 +942,13 @@
             const div = document.createElement('div');
             div.className = `log-entry ${type}`;
             const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
-            div.innerHTML = `[${time}] ${message}`;
+            div.innerText = `[${time}] ${message}`; // Ubah ke innerText
             container.appendChild(div); container.scrollTop = container.scrollHeight;
-
+        
             const receiverStatus = document.getElementById('receiver-status-text');
             if (receiverStatus && document.getElementById('receiver-ui').style.display !== 'none') {
                 receiverStatus.removeAttribute('data-i18n');
-                receiverStatus.innerHTML = message;
+                receiverStatus.innerText = message; // Ubah ke innerText
             }
         }
 
@@ -1067,7 +1074,7 @@
                 if(connection && connection.peerConnection) {
                     connection.peerConnection.addEventListener('iceconnectionstatechange', () => {
                         const state = connection.peerConnection.iceConnectionState;
-                        logDebug(`WebRTC ICE: <b>${state.toUpperCase()}</b>`);
+                        logDebug(WebRTC ICE: ${state.toUpperCase()}</b>`);
                         
                         if(state === 'failed' || state === 'disconnected' || state === 'closed') {
                             logDebug('WebRTC layer disconnected.', 'error');
@@ -1196,7 +1203,20 @@
         }
 
         // === PENGIRIMAN PESAN ===
-        messageInput.addEventListener('input', () => { if (conn && conn.open) { conn.send({ type: 'typing', isTyping: true }); clearTimeout(typingTimeout); typingTimeout = setTimeout(() => { conn.send({ type: 'typing', isTyping: false }); }, 1500); } });
+        let isTypingActive = false;
+            messageInput.addEventListener('input', () => { 
+                if (conn && conn.open) { 
+                    if (!isTypingActive) {
+                        conn.send({ type: 'typing', isTyping: true }); 
+                        isTypingActive = true;
+                    }
+                    clearTimeout(typingTimeout); 
+                    typingTimeout = setTimeout(() => { 
+                        conn.send({ type: 'typing', isTyping: false }); 
+                        isTypingActive = false;
+                    }, 1500); 
+                } 
+            });
 
         function sendMessage() {
             const msg = messageInput.value.trim();
@@ -1250,7 +1270,21 @@
         
         function appendMessage(type, dataObj, id = null) { 
             const text = dataObj.text || ""; const replyTo = dataObj.replyTo || null; const div = document.createElement('div'); div.className = `msg ${type}`; if (id) div.id = id; 
-            if (replyTo && type !== 'system') { const replyDiv = document.createElement('div'); replyDiv.className = 'replied-snippet'; replyDiv.innerHTML = `<strong>${replyTo.sender}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${replyTo.text}</span>`; div.appendChild(replyDiv); } 
+             if (replyTo && type !== 'system') { 
+                const replyDiv = document.createElement('div'); 
+                replyDiv.className = 'replied-snippet'; 
+    
+                const senderStrong = document.createElement('strong');
+                senderStrong.innerText = replyTo.sender;
+    
+                const textSpan = document.createElement('span');
+                textSpan.style.cssText = "white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;";
+                textSpan.innerText = replyTo.text;
+                
+                replyDiv.appendChild(senderStrong);
+                replyDiv.appendChild(textSpan);
+                div.appendChild(replyDiv); 
+            }
             const content = document.createElement('div'); content.className = 'msg-content'; content.innerText = text; div.appendChild(content); 
             if (type !== 'system') { appendMeta(div, type); setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || t('you')) : remoteName, isMedia: false }); } 
             chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; 
