@@ -10,7 +10,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
     
         :root {
-            /* Material Design 3 Dark Theme Colors */
             --bg-deep: #1c1b1f; 
             --bg-panel: #282a2d; 
             --text-main: #e3e2e6;
@@ -33,7 +32,6 @@
         }
         
         body.light-theme {
-            /* Material Design 3 Light Theme Colors */
             --bg-deep: #fffbff; 
             --bg-panel: #f3f3f9; 
             --text-main: #1c1b1f;
@@ -57,16 +55,13 @@
     
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { height: 100%; background-color: var(--bg-deep); color: var(--text-main); font-family: 'Roboto', sans-serif; overflow: hidden; transition: background-color 0.3s; overscroll-behavior: none; }
-        
         button { font-family: 'Roboto', sans-serif; }
     
-        /* Logger */
         .log-entry { margin-bottom: 8px; padding: 10px 12px; border-radius: 8px; border-left: 4px solid var(--text-dim); background: rgba(0,0,0,0.2); font-family: monospace; font-size: 12px; color: var(--text-main); word-wrap: break-word; }
         .log-entry.error { border-left-color: var(--danger); background: rgba(255, 180, 171, 0.1); }
         .log-entry.success { border-left-color: var(--accent); background: rgba(168, 199, 250, 0.1); }
         .log-container { height: 300px; overflow-y: auto; background: var(--bg-deep); padding: 12px; border-radius: 16px; text-align: left; margin-bottom: 15px; border: 1px solid rgba(134, 150, 160, 0.1); }
     
-        /* Menus & Dropdowns */
         .menu-btn { background: none; border: none; color: var(--text-main); font-size: 24px; font-weight: 500; cursor: pointer; padding: 5px 10px; border-radius: 50%; transition: background 0.2s; }
         .menu-btn:hover { background: var(--dropdown-hover); }
         .dropdown { position: absolute; top: 45px; right: 0; background: var(--bg-panel); border: none; border-radius: 16px; box-shadow: 0 4px 20px var(--shadow); display: none; flex-direction: column; min-width: 200px; overflow: hidden; z-index: 1000; padding: 8px 0; }
@@ -75,14 +70,12 @@
         .dropdown button svg { width: 18px; height: 18px; flex-shrink: 0; }
         .dropdown button:hover { background: var(--dropdown-hover); }
     
-        /* Modals */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); display: none; align-items: center; justify-content: center; z-index: 2000; opacity: 0; transition: opacity 0.2s; backdrop-filter: blur(2px); }
         .modal-overlay.show { display: flex; opacity: 1; }
         .modal-content { background: var(--bg-panel); padding: 28px; border-radius: 28px; width: 90%; max-width: 340px; box-shadow: 0 10px 30px var(--shadow); text-align: center; transform: scale(0.9); transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1); }
         .modal-overlay.show .modal-content { transform: scale(1); }
         .modal-content h3 { margin-bottom: 24px; font-size: 20px; font-weight: 500; color: var(--text-main); }
         
-        /* Avatars */
         .avatar-edit-container { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 24px; }
         .avatar-preview-large { width: 96px; height: 96px; border-radius: 50%; background: var(--avatar-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 8px var(--shadow); cursor: pointer; transition: opacity 0.2s; }
         .avatar-preview-large:hover { opacity: 0.8; }
@@ -90,7 +83,6 @@
         .avatar-preview-large svg { width: 50%; height: 50%; fill: var(--avatar-color); }
         body.light-theme .avatar-preview-large svg { fill: var(--avatar-color); }
     
-        /* Inputs */
         .modal-input-group { text-align: left; margin-bottom: 20px; }
         .modal-input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; font-weight: 500; padding-left: 12px; }
         .modal-input-group input { width: 100%; padding: 16px; border-radius: 28px; border: 2px solid transparent; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; transition: 0.2s; }
@@ -106,26 +98,22 @@
         #close-modal-btn { background: var(--input-bg); color: var(--text-main); }
         #save-account-btn { background: var(--accent); color: var(--md-on-primary); }
     
-        /* Long Press Menu */
         .msg-menu-content { background: var(--bg-panel); border-radius: 28px; width: 90%; max-width: 300px; overflow: hidden; display: flex; flex-direction: column; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); transition: 0.2s; box-shadow: 0 10px 30px var(--shadow); }
         .modal-overlay.show .msg-menu-content { transform: translateX(-50%) translateY(0); }
         .msg-menu-content button { background: transparent; border: none; color: var(--text-main); padding: 18px; font-size: 16px; font-weight: 500; cursor: pointer; transition: 0.2s; }
         .msg-menu-content button:last-child { color: var(--danger); }
         .msg-menu-content button:hover { background: var(--dropdown-hover); }
     
-        /* Image Viewer Layout */
         .img-modal-btn { background: var(--bg-panel); color: var(--text-main); border: none; padding: 12px 20px; border-radius: 100px; font-weight: 500; cursor: pointer; transition: 0.2s; flex: 1; text-align: center; font-size: 14px; }
         .img-modal-btn:hover { background: var(--dropdown-hover); }
         
         #img-viewer-content { background: transparent; box-shadow: none; max-width: 100vw; max-height: 100vh; padding: 0; overflow: visible; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         
-        /* FIX BUG 4: Posisi X di Modal, bukan di gambar */
         .img-close-icon { position: absolute; top: 20px; right: 20px; background: var(--bg-panel); color: var(--text-main); border: 2px solid var(--bg-deep); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px var(--shadow); z-index: 3000; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .img-close-icon:hover { background: var(--input-bg); transform: scale(1.1); }
         
         #enlarged-img { max-width: 100%; max-height: 75vh; border-radius: 8px; object-fit: contain; background: rgba(0,0,0,0.5); box-shadow: 0 4px 20px rgba(0,0,0,0.5); touch-action: manipulation; transform-origin: center center; }
 
-        /* Login Screen */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; position: relative; }
         .top-right-menu { position: absolute; top: 15px; right: 15px; z-index: 1000; display: flex; align-items: center; gap: 8px; }
         
@@ -149,7 +137,6 @@
         
         #refresh-network-btn { width: 100%; padding: 14px; margin-top: 20px; background: var(--danger); color: white; border: none; border-radius: 100px; font-weight: 500; cursor: pointer; display: none; }
     
-        /* Chat Screen */
         #chat-screen { display: none; flex-direction: column; height: 100%; position: relative; }
         header { flex-shrink: 0; background-color: var(--bg-panel); padding: 12px 16px; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px var(--shadow); }
         .header-left { display: flex; align-items: center; gap: 12px; overflow: hidden; }
@@ -164,7 +151,6 @@
         
         #chat-window { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background-color: var(--bg-deep); }
         
-        /* Messages Structure */
         .msg { display: inline-block; max-width: 85%; padding: 10px 14px; border-radius: 20px; font-size: 15px; position: relative; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; line-height: 1.4; }
         .msg::after { content: ""; display: table; clear: both; } 
         .msg.sent { align-self: flex-end; background: var(--bubble-me); color: var(--md-on-primary-container); border-bottom-right-radius: 4px; }
@@ -187,7 +173,6 @@
         body.light-theme .replied-snippet { background: rgba(0,0,0,0.05); }
         .replied-snippet strong { color: var(--accent); display: block; margin-bottom: 4px; font-size: 13px; }
         
-        /* Footer Structure */
         footer { flex-shrink: 0; background: var(--bg-panel); padding: 12px 16px; display: flex; gap: 8px; align-items: center; padding-bottom: calc(12px + env(safe-area-inset-bottom)); position: relative; z-index: 10; }
         #reply-preview-container { display: none; position: absolute; bottom: 100%; left: 0; width: 100%; background: var(--bg-panel); padding: 12px 16px; z-index: 5; border-radius: 20px 20px 0 0; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); }
         .reply-box { background: var(--input-bg); border-left: 4px solid var(--accent); border-radius: 12px; padding: 12px 16px; position: relative; font-size: 13px; }
@@ -486,7 +471,7 @@
         let isMuted = false;
         let peerInstanceReady = false;
 
-        // === CUSTOM MODAL SYSTEM (MENGGANTIKAN ALERT/CONFIRM/PROMPT) ===
+        // === CUSTOM MODAL SYSTEM ===
         const customAlertModal = document.getElementById('custom-alert-modal');
         const customAlertMsg = document.getElementById('custom-alert-msg');
         const customAlertInput = document.getElementById('custom-alert-input');
@@ -597,10 +582,7 @@
             }
         });
 
-        document.getElementById('chat-back-btn').addEventListener('click', () => {
-            window.history.back(); 
-        });
-
+        document.getElementById('chat-back-btn').addEventListener('click', () => { window.history.back(); });
         document.getElementById('return-chat-btn').addEventListener('click', () => {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('chat-screen').style.display = 'flex';
@@ -615,7 +597,7 @@
         const accountModal = document.getElementById('account-modal');
         const modalNameInput = document.getElementById('modal-name-input');
         const modalAvatarPreview = document.getElementById('modal-avatar-preview');
-        const defaultSvgAvatar = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>`;
+        const defaultSvgAvatar = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>`;
 
         let myName = localStorage.getItem('my-chat-name') || '';
         let myAvatarBase64 = localStorage.getItem('my-chat-avatar') || '';
@@ -758,8 +740,8 @@
         
         document.getElementById('msg-reply-btn').addEventListener('click', () => { 
             activeReply = selectedMsgObj; 
-            document.getElementById('reply-preview-name').innerText = activeReply.sender; // innerText aman XSS
-            document.getElementById('reply-preview-text').innerText = activeReply.text;   // innerText aman XSS
+            document.getElementById('reply-preview-name').innerText = activeReply.sender; 
+            document.getElementById('reply-preview-text').innerText = activeReply.text;   
             document.getElementById('reply-preview-container').style.display = 'block'; 
             document.getElementById('message-input').focus(); 
             msgActionOverlay.classList.remove('show'); 
@@ -787,7 +769,7 @@
         
         function cancelReply() { activeReply = null; document.getElementById('reply-preview-container').style.display = 'none'; }
 
-        // === MODAL IMAGE VIEWER, PAN & ZOOM ===
+        // === MODAL IMAGE VIEWER ===
         let currentEnlargedFile = null;
         const enlargedImg = document.getElementById('enlarged-img');
         const imgCloseBtn = document.getElementById('img-close-icon');
@@ -903,6 +885,7 @@
         // === SISTEM LOG & AUDIO NOTIFIKASI ===
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
         let audioUnlocked = false;
+        let lastAudioPlayTime = 0; // Fix Bug 4: Debounce Suara
         
         function unlockAudio() {
             if (!audioUnlocked) {
@@ -919,9 +902,11 @@
         document.addEventListener('touchstart', unlockAudio, {passive: true});
 
         function playNotification() { 
-            if (!isMuted && audioUnlocked) {
+            const now = Date.now();
+            if (!isMuted && audioUnlocked && (now - lastAudioPlayTime > 300)) { // Debounce 300ms mencegah overlapping glitch
                 notificationSound.currentTime = 0;
                 notificationSound.play().catch(() => {}); 
+                lastAudioPlayTime = now;
             } 
         }
 
@@ -938,21 +923,20 @@
             logDebug(t('logCleared'), "system");
         });
 
-        // FIX BUG 2: Proteksi XSS pada Logger (Menggunakan innerText/textContent)
         function logDebug(message, type = 'system') {
             const container = document.getElementById('log-container');
             const div = document.createElement('div');
             div.className = `log-entry ${type}`;
             const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
             
-            div.innerText = `[${time}] ${message}`; // Menggunakan innerText untuk mencegah eksekusi tag HTML
+            div.innerText = `[${time}] ${message}`; 
             container.appendChild(div); 
             container.scrollTop = container.scrollHeight;
 
             const receiverStatus = document.getElementById('receiver-status-text');
             if (receiverStatus && document.getElementById('receiver-ui').style.display !== 'none') {
                 receiverStatus.removeAttribute('data-i18n');
-                receiverStatus.innerText = message; // Proteksi XSS
+                receiverStatus.innerText = message; 
             }
         }
 
@@ -1018,7 +1002,8 @@
             lastPongTime = Date.now();
             pingInterval = setInterval(() => {
                 if (conn && conn.open) {
-                    if (Date.now() - lastPongTime > 15000) {
+                    // FIX BUG 1: Toleransi 65 detik untuk selamat dari background tab throttling
+                    if (Date.now() - lastPongTime > 65000) {
                         logDebug('Koneksi terputus (Ping Timeout).', 'error');
                         customAlert(t('errOffline'));
                         disconnectPeer();
@@ -1026,7 +1011,7 @@
                     }
                     conn.send({ type: 'ping' });
                 }
-            }, 5000);
+            }, 15000); // Ping setiap 15 detik (lebih efisien)
         }
 
         peer.on('open', id => { 
@@ -1074,7 +1059,7 @@
                 if(connection && connection.peerConnection) {
                     connection.peerConnection.addEventListener('iceconnectionstatechange', () => {
                         const state = connection.peerConnection.iceConnectionState;
-                        logDebug(`WebRTC ICE: ${state.toUpperCase()}`); // Hapus <b> untuk fix XSS
+                        logDebug(`WebRTC ICE: ${state.toUpperCase()}`);
                         
                         if(state === 'failed' || state === 'disconnected' || state === 'closed') {
                             logDebug('WebRTC layer disconnected.', 'error');
@@ -1157,6 +1142,7 @@
             conn.on('close', () => { 
                 logDebug('Connection closed.', 'error'); 
                 clearInterval(pingInterval);
+                incomingFiles = {}; // FIX BUG 3: Bersihkan Memori
                 setTimeout(resetUI, 1000); 
             });
         }
@@ -1178,6 +1164,7 @@
         
         function disconnectPeer() { 
             clearInterval(pingInterval);
+            incomingFiles = {}; // Bersihkan Memori
             if(conn) conn.close(); 
             document.getElementById('dropdown-menu-chat').classList.remove('show'); 
             resetUI(); 
@@ -1198,7 +1185,6 @@
             remoteName = t('friend'); chatTitle.innerText = remoteName; chatHeaderAvatar.innerHTML = defaultSvgAvatar; hideTyping(); cancelReply();
         }
 
-        // FIX BUG 3: Spam Data Channel "Sedang Mengetik..."
         let typingTimeout;
         let isTypingSent = false;
 
@@ -1245,12 +1231,26 @@
             const fileId = 'file-' + Date.now(); renderFileProgress('sent', fileId, file.name, 0);
             conn.send({ type: 'file-start', fileId: fileId, filename: file.name, filetype: file.type, filesize: file.size });
             let offset = 0; const reader = new FileReader();
+            
+            function readNextChunk() { 
+                // FIX BUG 2: Proteksi DataChannel Buffer Overflow (Backpressure)
+                if (conn.dataChannel && conn.dataChannel.bufferedAmount > 2 * 1024 * 1024) { // Jika buffer jaringan > 2MB
+                    setTimeout(readNextChunk, 50); // Berhenti sejenak, biarkan jaringan bernapas
+                    return;
+                }
+                const slice = file.slice(offset, offset + CHUNK_SIZE); 
+                reader.readAsArrayBuffer(slice); 
+            }
+
             reader.onload = function(e) {
                 conn.send({ type: 'file-chunk', fileId: fileId, data: e.target.result }); offset += e.target.result.byteLength;
                 updateFileProgress(fileId, Math.round((offset / file.size) * 100));
-                if (offset < file.size) { setTimeout(readNextChunk, 5); } else { conn.send({ type: 'file-end', fileId: fileId }); finalizeFileMessage('sent', fileId, file.name, file.type, file); }
+                if (offset < file.size) { 
+                    setTimeout(readNextChunk, 5); 
+                } else { 
+                    conn.send({ type: 'file-end', fileId: fileId }); finalizeFileMessage('sent', fileId, file.name, file.type, file); 
+                }
             };
-            function readNextChunk() { const slice = file.slice(offset, offset + CHUNK_SIZE); reader.readAsArrayBuffer(slice); }
             readNextChunk();
         }
 
@@ -1260,7 +1260,7 @@
             const div = document.createElement('div'); 
             div.className = `msg ${senderType}`; 
             div.id = fileId; 
-            const safeFilename = escapeHTML(filename); // FIX BUG 1: XSS File name
+            const safeFilename = escapeHTML(filename); 
             div.innerHTML = `<div class="msg-content"><div style="font-weight:bold; font-size:13px; margin-bottom:5px;">📄 ${safeFilename}</div><div class="progress-wrapper"><div class="progress-bar" id="pb-${fileId}" style="width: ${progress}%"></div></div><div class="progress-text" id="pt-${fileId}">${progress}% ${t('process')}</div></div>`; 
             chatWindow.appendChild(div); 
             chatWindow.scrollTop = chatWindow.scrollHeight; 
@@ -1278,7 +1278,7 @@
         function finalizeFileMessage(senderType, fileId, filename, filetype, blob) { 
             const div = document.getElementById(fileId); if (!div) return; 
             const url = URL.createObjectURL(blob); let contentHTML = ''; 
-            const safeFilename = escapeHTML(filename); // FIX BUG 1: XSS Proteksi Nama File
+            const safeFilename = escapeHTML(filename); 
             
             const msgObj = { 
                 text: filetype.startsWith('image/') ? t('photo') : `📄 ${filename}`, 
@@ -1316,14 +1316,13 @@
             if (replyTo && type !== 'system') { 
                 const replyDiv = document.createElement('div'); 
                 replyDiv.className = 'replied-snippet'; 
-                // FIX BUG 1: XSS Di Fitur Reply (Menggunakan escapeHTML)
                 replyDiv.innerHTML = `<strong>${escapeHTML(replyTo.sender)}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${escapeHTML(replyTo.text)}</span>`; 
                 div.appendChild(replyDiv); 
             } 
             
             const content = document.createElement('div'); 
             content.className = 'msg-content'; 
-            content.innerText = text; // Fix XSS dari pesan biasa (menggunakan innerText)
+            content.innerText = text; 
             div.appendChild(content); 
             
             if (type !== 'system') { 
@@ -1337,7 +1336,6 @@
         function appendMeta(parentDiv, type) { const meta = document.createElement('div'); meta.className = 'msg-meta'; const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); const timeSpan = document.createElement('span'); timeSpan.innerText = timeStr; meta.appendChild(timeSpan); if (type === 'sent') { const tickSpan = document.createElement('span'); tickSpan.className = 'tick'; tickSpan.innerText = '✓'; meta.appendChild(tickSpan); } parentDiv.appendChild(meta); }
         const updateHeight = () => { document.body.style.height = window.visualViewport.height + 'px'; if(document.getElementById('chat-screen').style.display === 'flex') chatWindow.scrollTop = chatWindow.scrollHeight; }; window.visualViewport.addEventListener('resize', updateHeight); window.visualViewport.addEventListener('scroll', updateHeight);
         
-        // Initialize Language & Theme Texts
         updateUIText();
         remoteName = t('friend');
         document.getElementById('connected-friend-name').innerText = remoteName;
