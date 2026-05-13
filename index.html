@@ -665,8 +665,16 @@
         
         document.getElementById('save-account-btn').addEventListener('click', () => { 
             myName = modalNameInput.value.trim(); 
-            localStorage.setItem('my-chat-name', myName); 
-            localStorage.setItem('my-chat-avatar', myAvatarBase64); 
+            
+            // 🛡️ PATCH: Penanganan Error jika Storage Browser penuh
+            try {
+                localStorage.setItem('my-chat-name', myName); 
+                localStorage.setItem('my-chat-avatar', myAvatarBase64); 
+            } catch (e) {
+                logDebug('Storage penuh! Gagal menyimpan avatar secara permanen.', 'error');
+                // Tetap biarkan berjalan di RAM (sesi ini saja) meskipun gagal disimpan permanen
+            }
+            
             accountModal.classList.remove('show'); 
             if (conn && conn.open) conn.send({ type: 'profile', name: myName || t('anon'), avatar: myAvatarBase64 }); 
         });
@@ -1032,6 +1040,8 @@
             navigator.clipboard.writeText(this.innerText).then(() => {
                 const original = this.innerText; this.innerText = t('copied'); this.style.color = '#53bdeb';
                 setTimeout(() => { this.innerText = original; this.style.color = 'inherit'; }, 2000);
+            }).catch(err => {
+                logDebug('Gagal menyalin: ' + err, 'error'); 
             });
         });
 
@@ -1173,6 +1183,9 @@
             navigator.clipboard.writeText(this.innerText).then(() => { 
                 this.innerText = t('copied'); this.style.color = '#53bdeb'; 
                 setTimeout(() => { this.innerText = peer.id; this.style.color = 'var(--accent)'; }, 2000); 
+            }).catch(err => {
+                // 🛡️ PATCH: Cegah sistem crash jika clipboard diblokir browser
+                logDebug('Gagal menyalin: ' + err, 'error'); 
             }); 
         });
         
@@ -1470,7 +1483,7 @@ conn.on('data', data => {
             }
 
             if(msg && conn && conn.open) {
-                const msgId = 'msg-' + Date.now(); 
+                const msgId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5); 
                 const msgData = { 
                     type: 'text', 
                     id: msgId, 
@@ -1493,7 +1506,8 @@ conn.on('data', data => {
         function processFile(file) {
             if (!file || !conn || !conn.open) return;
             if (file.size > 15 * 1024 * 1024) return customAlert(t('fileTooLarge'));
-            const fileId = 'file-' + Date.now(); renderFileProgress('sent', fileId, file.name, 0);
+            const fileId = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+            renderFileProgress('sent', fileId, file.name, 0);
             conn.send({ type: 'file-start', fileId: fileId, filename: file.name, filetype: file.type, filesize: file.size });
             let offset = 0; const reader = new FileReader();
             
