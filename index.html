@@ -974,6 +974,8 @@
         
         function resetRole() {
             activeRole = null; 
+            isCheckingId = false; // PATCH: Matikan proses cek ID jika pengguna menekan "Kembali"
+            
             document.getElementById('sender-ui').style.display = 'none';
             document.getElementById('receiver-ui').style.display = 'none';
             document.getElementById('connected-ui').style.display = 'none';
@@ -1306,6 +1308,10 @@
             document.getElementById('login-screen').style.display = 'flex'; 
             document.getElementById('remote-id').value = ''; 
             document.getElementById('connect-btn').innerText = t('startChat'); 
+            
+            // PATCH: Paksa tombol "Mulai Chat" kembali mati (disable) setelah putus koneksi
+            document.getElementById('connect-btn').disabled = true; 
+            document.getElementById('connect-btn').style.opacity = '0.5';
             
             document.getElementById('refresh-network-btn').style.display = 'none';
             
