@@ -576,13 +576,22 @@
             updateUIText();
         });
 
-        // === ANTI-SWIPE BACK ===
+        // === ANTI-SWIPE BACK & SMART MODAL CLOSER ===
         window.history.pushState({ page: 'login' }, '', window.location.href);
         window.history.pushState({ page: 'login' }, '', window.location.href);
 
         window.addEventListener('popstate', (e) => {
             window.history.pushState({ page: 'login' }, '', window.location.href);
 
+            // 🛡️ PATCH: Cek apakah ada Modal/Gambar yang sedang terbuka
+            const openModals = document.querySelectorAll('.modal-overlay.show');
+            if (openModals.length > 0) {
+                // Jika ada, tutup semua modal/gambar, JANGAN keluar dari chat
+                openModals.forEach(m => m.classList.remove('show'));
+                return; 
+            }
+
+            // Jika tidak ada modal yang terbuka dan pengguna ada di layar Chat, baru kembali ke menu
             if (document.getElementById('chat-screen').style.display === 'flex') {
                 document.getElementById('chat-screen').style.display = 'none';
                 document.getElementById('login-screen').style.display = 'flex';
@@ -1320,21 +1329,28 @@ conn.on('data', data => {
                     if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } } 
                 } 
                 else if (data.type === 'text') { 
-                    // 🛡️ PATCH ANTI-SPAM (Rate Limiting)
+                    // PATCH ANTI-SPAM (Rate Limiting)
                     const now = Date.now();
-                    if (now - lastMsgTime < 500) { // Kurang dari 0.5 detik
+                    if (now - lastMsgTime < 500) { 
                         spamCount++;
-                        if (spamCount > 4) return; // Abaikan pesan jika terdeteksi spamming (Drop packet)
+                        if (spamCount > 4) return; 
                     } else {
-                        spamCount = 0; // Reset counter jika jeda normal
+                        spamCount = 0; 
                     }
                     lastMsgTime = now;
+
+                    // 🛡️ PATCH DOM FREEZE: Batasi panjang teks maksimal (misal 5000 karakter)
+                    // Jika teks lebih dari 5000 karakter, potong paksa!
+                    if (data.text && data.text.length > 5000) {
+                        data.text = data.text.substring(0, 5000) + "\n\n...[PESAN DIPOTONG OLEH SISTEM KARENA TERLALU PANJANG]";
+                        logDebug('Memotong pesan masuk yang terlalu panjang.', 'system');
+                    }
 
                     conn.send({ type: 'ack', msgId: data.id }); 
                     playNotification(); 
                     hideTyping(); 
                     appendMessage('received', data, data.id); 
-                } 
+                }
                 else if (data.type === 'typing') { 
                     data.isTyping ? showTyping() : hideTyping(); 
                 } 
@@ -1445,7 +1461,14 @@ conn.on('data', data => {
         });
 
         function sendMessage() {
-            const msg = messageInput.value.trim();
+            let msg = messageInput.value.trim();
+            
+            // 🛡️ PATCH: Batasi input pengiriman di sisi kita juga
+            if (msg.length > 5000) {
+                customAlert("Pesan terlalu panjang! Maksimal 5000 karakter.");
+                return;
+            }
+
             if(msg && conn && conn.open) {
                 const msgId = 'msg-' + Date.now(); 
                 const msgData = { 
