@@ -118,7 +118,7 @@
         .img-close-icon { position: absolute; top: -12px; right: -12px; background: var(--bg-panel); color: var(--text-main); border: 2px solid var(--bg-deep); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px var(--shadow); z-index: 10; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         .img-close-icon:hover { background: var(--input-bg); transform: scale(1.1); }
         
-        #enlarged-img { max-width: 100%; max-height: 75vh; border-radius: 8px; object-fit: contain; background: rgba(0,0,0,0.5); box-shadow: 0 4px 20px rgba(0,0,0,0.5); touch-action: none; transition: transform 0.05s linear; transform-origin: center center; }
+        #enlarged-img { max-width: 100%; max-height: 75vh; border-radius: 8px; object-fit: contain; background: rgba(0,0,0,0.5); box-shadow: 0 4px 20px rgba(0,0,0,0.5); touch-action: manipulation; transition: transform 0.3s ease; transform-origin: center center; }
 
         /* Login Screen */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 20px; text-align: center; position: relative; }
@@ -218,7 +218,7 @@
 
             <div class="my-id-box">
                 <p data-i18n="yourNetworkId">ID JARINGAN ANDA (KLIK UNTUK COPY)</p>
-                <span id="my-id" class="id-badge" data-i18n="connectingStatus">Connecting...</span>
+                <span id="my-id" class="id-badge">Connecting...</span> <!-- data-i18n dihapus agar teks asli PeerID tidak keriset -->
             </div>
 
             <div class="modal-actions">
@@ -239,6 +239,7 @@
         </div>
     </div>
 
+    <!-- Image Viewer Modal (Balas dihapus) -->
     <div id="image-viewer-modal" class="modal-overlay">
         <div class="modal-content" style="background: transparent; box-shadow: none; max-width: 100vw; max-height: 100vh; padding: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;">
             <div style="position: relative; display: inline-block;">
@@ -247,16 +248,17 @@
             </div>
             <div style="display: flex; gap: 8px; margin-top: 15px; justify-content: center; flex-wrap: wrap;">
                 <button id="img-save-btn" class="img-modal-btn" data-i18n="saveImg">Simpan</button>
-                <button id="img-reply-btn" class="img-modal-btn" data-i18n="reply">Balas</button>
                 <button id="img-delete-btn" class="img-modal-btn" style="color: var(--danger);" data-i18n="delete">Hapus</button>
             </div>
         </div>
     </div>
 
+    <!-- Long Press Action Overlay -->
     <div id="msg-action-overlay" class="modal-overlay">
         <div class="msg-menu-content">
             <button id="msg-reply-btn" data-i18n="reply">Balas</button>
             <button id="msg-copy-btn" data-i18n="copy">Salin</button>
+            <button id="msg-save-btn" data-i18n="saveImg" style="display: none;">Simpan</button>
             <button id="msg-delete-btn" data-i18n="deleteMe">Hapus di saya</button>
         </div>
     </div>
@@ -293,7 +295,7 @@
                     <label for="remote-id" data-i18n="inputReceiverID">MASUKKAN ID PENERIMA</label>
                     <input type="text" id="remote-id" data-i18n-placeholder="pasteIdPlaceholder" placeholder="Tempel ID Teman di sini">
                 </div>
-                <button id="connect-btn" onclick="connectToPeer()" data-i18n="startChat">Mulai Chat</button>
+                <button id="connect-btn">Mulai Chat</button> <!-- data-i18n dihapus untuk modifikasi dinamis via JS -->
                 <button class="back-btn" onclick="resetRole()" data-i18n="backBtn">Kembali</button>
             </div>
 
@@ -301,7 +303,7 @@
                 <div style="background: var(--input-bg); padding: 20px; border-radius: 8px; margin-bottom: 15px;">
                     <p style="font-weight: bold; color: var(--accent); margin-bottom: 10px;" data-i18n="waitingConn">⏳ Menunggu Koneksi Masuk...</p>
                     <p style="font-size: 12px; color: var(--text-dim);" data-i18n="giveIdText">Berikan ID Anda ke Pengirim:</p>
-                    <div id="my-id-display" class="id-badge" style="margin-top: 5px; background: rgba(0, 168, 132, 0.1); cursor: pointer;" data-i18n="loading">Loading...</div>
+                    <div id="my-id-display" class="id-badge" style="margin-top: 5px; background: rgba(0, 168, 132, 0.1); cursor: pointer;">Loading...</div>
                 </div>
                 <div id="receiver-log" class="log-container" style="height: 120px; margin-bottom: 5px; font-size: 11px;"></div>
                 <button class="back-btn" onclick="resetRole()" data-i18n="backBtn">Kembali</button>
@@ -392,7 +394,8 @@
                 promptSearch: "Masukkan kata kunci pencarian:", confirmClearChat: "Bersihkan layar percakapan?",
                 errNoId: "Masukkan ID!", errSelf: "Tidak bisa dengan diri sendiri!", errTimeout: "Waktu habis! Pastikan IPv6 aktif.",
                 errActiveTab: "ID aktif di tab lain. Refresh...", errOffline: "ID Teman offline.", fileTooLarge: "Maksimal 15MB.",
-                process: "Memproses...", sending: "Mengirim...", finishing: "Menyelesaikan...", you: "Anda", logCleared: "Log diagnostik telah dibersihkan."
+                process: "Memproses...", sending: "Mengirim...", finishing: "Menyelesaikan...", you: "Anda", logCleared: "Log diagnostik telah dibersihkan.",
+                friend: "Teman", anon: "Anonim"
             },
             en: {
                 accountMenu: "Account", theme: "Change Theme", syslog: "System Log", clearcache: "Clear Cache", langToggle: "ID",
@@ -410,18 +413,46 @@
                 promptSearch: "Enter search keyword:", confirmClearChat: "Clear conversation screen?",
                 errNoId: "Enter an ID!", errSelf: "Cannot connect to yourself!", errTimeout: "Timeout! Ensure IPv6 is active.",
                 errActiveTab: "ID active in another tab. Refresh...", errOffline: "Friend is offline.", fileTooLarge: "Max 15MB.",
-                process: "Processing...", sending: "Sending...", finishing: "Finishing...", you: "You", logCleared: "Diagnostic log cleared."
+                process: "Processing...", sending: "Sending...", finishing: "Finishing...", you: "You", logCleared: "Diagnostic log cleared.",
+                friend: "Friend", anon: "Anonymous"
             }
         };
 
         let currentLang = localStorage.getItem('app-lang') || 'id';
         function t(key) { return i18n[currentLang][key] || key; }
 
+        let isMuted = false;
+        let peerInstanceReady = false;
+
         function updateUIText() {
+            // Update elemen dengan atribut terjemahan statis
             document.querySelectorAll('[data-i18n]').forEach(el => el.innerText = t(el.getAttribute('data-i18n')));
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = t(el.getAttribute('data-i18n-placeholder')));
+            
+            // Update teks status dinamis yang diatur via JS
             document.getElementById('lang-toggle-btn').innerText = t('langToggle');
-            if (isMuted) document.getElementById('mute-btn').innerText = t('unmute');
+            document.getElementById('mute-btn').innerText = isMuted ? t('unmute') : t('mute');
+            
+            // Perbaikan agar ID tidak keriset jadi "Connecting..."
+            document.getElementById('my-id').innerText = peerInstanceReady ? peer.id : t('connectingStatus');
+            document.getElementById('my-id-display').innerText = peerInstanceReady ? peer.id : t('loading');
+            
+            // Update tombol connect
+            if(conn && conn.open) {
+                document.getElementById('connect-btn').innerText = t('connectedStatus');
+            } else if (document.getElementById('connect-btn').disabled) {
+                document.getElementById('connect-btn').innerText = t('connecting');
+            } else {
+                document.getElementById('connect-btn').innerText = t('startChat');
+            }
+
+            // Update placeholder nama (seandainya masih tertulis "Teman" / "Friend")
+            if (remoteName === i18n['id'].friend || remoteName === i18n['en'].friend) {
+                remoteName = t('friend');
+                document.getElementById('chat-title').innerText = remoteName;
+                document.getElementById('typer-name').innerText = remoteName;
+                document.getElementById('connected-friend-name').innerText = remoteName;
+            }
         }
 
         document.getElementById('lang-toggle-btn').addEventListener('click', () => {
@@ -498,11 +529,10 @@
             localStorage.setItem('my-chat-name', myName); 
             localStorage.setItem('my-chat-avatar', myAvatarBase64); 
             accountModal.classList.remove('show'); 
-            if (conn && conn.open) conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 }); 
+            if (conn && conn.open) conn.send({ type: 'profile', name: myName || t('anon'), avatar: myAvatarBase64 }); 
         });
 
         // === MANAJEMEN UI UMUM & TEMA ===
-        let isMuted = false;
         document.getElementById('menu-toggle-btn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('dropdown-menu').classList.toggle('show'); });
         document.getElementById('menu-toggle-chat-btn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('dropdown-menu-chat').classList.toggle('show'); });
         document.addEventListener('click', (e) => { 
@@ -548,7 +578,7 @@
             document.getElementById('dropdown-menu-chat').classList.remove('show'); 
         });
 
-        // === SISTEM TINDAKAN PESAN ===
+        // === SISTEM TINDAKAN PESAN (SIMPAN/BALAS/HAPUS) ===
         const msgActionOverlay = document.getElementById('msg-action-overlay');
         let activeReply = null; let selectedMsgDiv = null; let selectedMsgObj = null;
 
@@ -573,6 +603,16 @@
             selectedMsgDiv = element; 
             selectedMsgObj = obj; 
             if (navigator.vibrate) navigator.vibrate(50); 
+            
+            // Atur Tampilan Menu berdasarkan jenis file/teks
+            if (obj.isMedia) {
+                document.getElementById('msg-save-btn').style.display = 'block';
+                document.getElementById('msg-copy-btn').style.display = 'none';
+            } else {
+                document.getElementById('msg-save-btn').style.display = 'none';
+                document.getElementById('msg-copy-btn').style.display = 'block';
+            }
+            
             msgActionOverlay.classList.add('show'); 
         }
         msgActionOverlay.addEventListener('click', function(e) { if(e.target === this) this.classList.remove('show'); });
@@ -590,6 +630,16 @@
             navigator.clipboard.writeText(selectedMsgObj.text).catch(e => console.log('Copy failed', e)); 
             msgActionOverlay.classList.remove('show'); 
         });
+
+        document.getElementById('msg-save-btn').addEventListener('click', () => {
+            const a = document.createElement('a'); 
+            a.href = selectedMsgObj.fileUrl; 
+            a.download = selectedMsgObj.fileName || 'download';
+            document.body.appendChild(a); 
+            a.click(); 
+            document.body.removeChild(a);
+            msgActionOverlay.classList.remove('show');
+        });
         
         document.getElementById('msg-delete-btn').addEventListener('click', () => { 
             if (selectedMsgDiv) selectedMsgDiv.remove(); 
@@ -598,67 +648,54 @@
         
         function cancelReply() { activeReply = null; document.getElementById('reply-preview-container').style.display = 'none'; }
 
-        // === MODAL IMAGE VIEWER & PINCH TO ZOOM ===
+        // === MODAL IMAGE VIEWER & DOUBLE TAP TO ZOOM ===
         let currentEnlargedFile = null;
         const enlargedImg = document.getElementById('enlarged-img');
+        let zoomLevel = 1;
+        let lastTapTime = 0;
         
         function openImageViewer(imgSrc, msgDiv, msgObj, filename) {
             enlargedImg.src = imgSrc;
-            enlargedImg.style.transform = `translate(0px, 0px) scale(1)`; // reset transform
+            zoomLevel = 1;
+            enlargedImg.style.transform = `scale(${zoomLevel})`; // reset transform
             selectedMsgDiv = msgDiv;
             selectedMsgObj = msgObj;
             currentEnlargedFile = { src: imgSrc, name: filename };
             document.getElementById('image-viewer-modal').classList.add('show');
         }
 
-        // Zoom Logic
-        let initialDistance = null, currentScale = 1, startX = 0, startY = 0, translateX = 0, translateY = 0, lastTranslateX = 0, lastTranslateY = 0;
-
-        enlargedImg.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 2) {
-                initialDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-            } else if (e.touches.length === 1 && currentScale > 1) {
-                startX = e.touches[0].pageX - lastTranslateX;
-                startY = e.touches[0].pageY - lastTranslateY;
+        // Event Double Tap untuk Smartphone
+        enlargedImg.addEventListener('touchend', (e) => {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTapTime;
+            
+            if (tapLength < 300 && tapLength > 0) {
+                e.preventDefault();
+                // Urutan Zoom: 100% -> 125% -> 150% -> 100%
+                if (zoomLevel === 1) zoomLevel = 1.25;
+                else if (zoomLevel === 1.25) zoomLevel = 1.5;
+                else zoomLevel = 1;
+                
+                enlargedImg.style.transform = `scale(${zoomLevel})`;
             }
+            lastTapTime = currentTime;
         });
 
-        enlargedImg.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 2 && initialDistance) {
-                e.preventDefault();
-                const currentDistance = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                currentScale = Math.max(1, Math.min((currentDistance / initialDistance) * currentScale, 5));
-                enlargedImg.style.transform = `translate(${lastTranslateX}px, ${lastTranslateY}px) scale(${currentScale})`;
-            } else if (e.touches.length === 1 && currentScale > 1) {
-                e.preventDefault();
-                translateX = e.touches[0].pageX - startX;
-                translateY = e.touches[0].pageY - startY;
-                enlargedImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-            }
-        }, { passive: false });
-
-        enlargedImg.addEventListener('touchend', (e) => {
-            initialDistance = null;
-            if (e.touches.length < 2) { lastTranslateX = translateX; lastTranslateY = translateY; }
-            if (currentScale <= 1.05) { 
-                currentScale = 1; translateX = 0; translateY = 0; lastTranslateX = 0; lastTranslateY = 0;
-                enlargedImg.style.transform = `translate(0px, 0px) scale(1)`;
-            }
+        // Event Double Click untuk Desktop Mouse
+        enlargedImg.addEventListener('dblclick', (e) => {
+            if (zoomLevel === 1) zoomLevel = 1.25;
+            else if (zoomLevel === 1.25) zoomLevel = 1.5;
+            else zoomLevel = 1;
+            enlargedImg.style.transform = `scale(${zoomLevel})`;
         });
 
         document.getElementById('img-close-icon').addEventListener('click', () => { document.getElementById('image-viewer-modal').classList.remove('show'); });
+        
         document.getElementById('img-save-btn').addEventListener('click', () => {
             const a = document.createElement('a'); a.href = currentEnlargedFile.src; a.download = currentEnlargedFile.name || 'image.png';
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
         });
-        document.getElementById('img-reply-btn').addEventListener('click', () => {
-            activeReply = selectedMsgObj; 
-            document.getElementById('reply-preview-name').innerText = activeReply.sender; 
-            document.getElementById('reply-preview-text').innerText = t('photo'); 
-            document.getElementById('reply-preview-container').style.display = 'block'; 
-            document.getElementById('message-input').focus(); 
-            document.getElementById('image-viewer-modal').classList.remove('show');
-        });
+        
         document.getElementById('img-delete-btn').addEventListener('click', () => {
             if (selectedMsgDiv) selectedMsgDiv.remove(); 
             document.getElementById('image-viewer-modal').classList.remove('show');
@@ -746,6 +783,7 @@
         let remoteName = "Friend";
 
         peer.on('open', id => { 
+            peerInstanceReady = true;
             if (!savedPeerId) { localStorage.setItem('my-peer-id', id); savedPeerId = id; }
             document.getElementById('my-id').innerText = id;
             document.getElementById('my-id-display').innerText = id;
@@ -812,10 +850,17 @@
             conn.on('open', () => {
                 clearTimeout(connectTimeout); document.getElementById('login-screen').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex';
                 logDebug('Handshake success!', 'success');
-                conn.send({ type: 'profile', name: myName || "Anonim", avatar: myAvatarBase64 });
+                conn.send({ type: 'profile', name: myName || t('anon'), avatar: myAvatarBase64 });
+                updateUIText();
             });
             conn.on('data', data => {
-                if (data && data.type === 'profile') { remoteName = data.name || t('friend'); chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = data.avatar ? `<img src="${data.avatar}" alt="Avatar">` : defaultSvgAvatar; } 
+                if (data && data.type === 'profile') { 
+                    remoteName = data.name || t('anon'); 
+                    chatTitle.innerText = remoteName; 
+                    typerNameSpan.innerText = remoteName; 
+                    document.getElementById('connected-friend-name').innerText = remoteName; // Otomatis mengisi nama teman yang tersambung
+                    chatHeaderAvatar.innerHTML = data.avatar ? `<img src="${data.avatar}" alt="Avatar">` : defaultSvgAvatar; 
+                } 
                 else if (data && data.type === 'ack') { const msgElement = document.getElementById(data.msgId); if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } } } 
                 else if (data && data.type === 'text') { conn.send({ type: 'ack', msgId: data.id }); playNotification(); hideTyping(); appendMessage('received', data, data.id); } 
                 else if (data && data.type === 'typing') { data.isTyping ? showTyping() : hideTyping(); } 
@@ -880,7 +925,17 @@
         
         function finalizeFileMessage(senderType, fileId, filename, filetype, blob) { 
             const div = document.getElementById(fileId); if (!div) return; 
-            const url = URL.createObjectURL(blob); let contentHTML = ''; const msgObj = { text: filetype.startsWith('image/') ? t('photo') : `📄 ${filename}`, sender: senderType === 'sent' ? (myName || t('you')) : remoteName };
+            const url = URL.createObjectURL(blob); let contentHTML = ''; 
+            
+            // Tambahkan flag media agar action menu memunculkan tombol 'Simpan'
+            const msgObj = { 
+                text: filetype.startsWith('image/') ? t('photo') : `📄 ${filename}`, 
+                sender: senderType === 'sent' ? (myName || t('you')) : remoteName,
+                isMedia: true,
+                fileUrl: url,
+                fileName: filename
+            };
+            
             if (filetype.startsWith('image/')) { contentHTML = `<img src="${url}" alt="${filename}" id="img-${fileId}" style="cursor: zoom-in;">`; } else { contentHTML = `<a href="${url}" download="${filename}" class="file-link">📄 ${filename}</a>`; } 
             div.innerHTML = `<div class="msg-content">${contentHTML}</div>`; appendMeta(div, senderType); setupLongPress(div, msgObj); 
             if (filetype.startsWith('image/')) {
@@ -894,7 +949,7 @@
             const text = dataObj.text || ""; const replyTo = dataObj.replyTo || null; const div = document.createElement('div'); div.className = `msg ${type}`; if (id) div.id = id; 
             if (replyTo && type !== 'system') { const replyDiv = document.createElement('div'); replyDiv.className = 'replied-snippet'; replyDiv.innerHTML = `<strong>${replyTo.sender}</strong><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:200px;">${replyTo.text}</span>`; div.appendChild(replyDiv); } 
             const content = document.createElement('div'); content.className = 'msg-content'; content.innerText = text; div.appendChild(content); 
-            if (type !== 'system') { appendMeta(div, type); setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || t('you')) : remoteName }); } 
+            if (type !== 'system') { appendMeta(div, type); setupLongPress(div, { text: text, sender: type === 'sent' ? (myName || t('you')) : remoteName, isMedia: false }); } 
             chatWindow.appendChild(div); chatWindow.scrollTop = chatWindow.scrollHeight; 
         }
         
@@ -903,6 +958,8 @@
         
         // Initialize Language
         updateUIText();
+        remoteName = t('friend');
+        document.getElementById('connected-friend-name').innerText = remoteName;
     </script>
 </body>
 </html>
