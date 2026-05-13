@@ -417,7 +417,14 @@
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             </button>
             <div class="input-wrapper">
-                <input type="text" id="message-input" data-i18n-placeholder="typeMessage" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
+                <!-- 🛡️ PATCH UX 2: Mencegah Keyboard HP merekam/menyimpan riwayat ketikan rahasia -->
+                <input type="text" id="message-input" data-i18n-placeholder="typeMessage" 
+                       placeholder="Ketik pesan..." 
+                       onkeypress="if(event.key==='Enter') sendMessage()" 
+                       autocomplete="off" 
+                       autocorrect="off" 
+                       autocapitalize="off" 
+                       spellcheck="false">
             </div>
             <button id="send-btn" onclick="sendMessage()">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
@@ -1625,6 +1632,16 @@ conn.on('data', data => {
         updateUIText();
         remoteName = t('friend');
         document.getElementById('connected-friend-name').innerText = remoteName;
+
+        // 🛡️ PATCH UX 1: Penahan Refresh / Tutup Tab Tanpa Sengaja
+        // Mencegah riwayat chat hilang karena tidak sengaja kepencet tombol back/refresh
+        window.addEventListener('beforeunload', (e) => {
+            if (conn && conn.open) {
+                // Standar modern untuk memunculkan dialog "Leave site? Changes you made may not be saved."
+                e.preventDefault(); 
+                e.returnValue = ''; 
+            }
+        });
     </script>
 </body>
 </html>
