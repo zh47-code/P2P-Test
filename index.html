@@ -444,7 +444,7 @@
         // === TRANSLATION & I18N SYSTEM ===
         const i18n = {
             id: {
-                accountMenu: "Akun", themeLight: "Tema Terang", themeDark: "Tema Gelap", syslog: "Log Sistem", clearcache: "Hapus Cache", langToggle: "EN",
+                errMsgLong: "Pesan terlalu panjang! Maksimal 5000 karakter.", accountMenu: "Akun", themeLight: "Tema Terang", themeDark: "Tema Gelap", syslog: "Log Sistem", clearcache: "Hapus Cache", langToggle: "EN",
                 chooseRole: "Pilih peran Anda untuk memulai:", roleSender: "Pengirim", roleReceiver: "Penerima",
                 inputReceiverID: "MASUKKAN ID PENERIMA", pasteIdPlaceholder: "Tempel ID Teman di sini", startChat: "Mulai Chat", backBtn: "Kembali",
                 waitingConn: "⏳ Menunggu Koneksi Masuk...", giveIdText: "Berikan ID Anda ke Pengirim:", loading: "Loading...",
@@ -464,7 +464,7 @@
                 checkId: "Cek ID", checkWait: "⏳ Mengecek ketersediaan...", checkOnline: "✅ ID Aktif & Tersedia! Silakan Mulai.", checkOffline: "❌ ID Offline / Tidak Ditemukan.", checkSelf: "❌ Tidak bisa gunakan ID sendiri!", checkEmpty: "❌ Masukkan ID!", checkTimeout: "❌ Waktu cek habis."
             },
             en: {
-                accountMenu: "Account", themeLight: "Light Theme", themeDark: "Dark Theme", syslog: "System Log", clearcache: "Clear Cache", langToggle: "ID",
+                errMsgLong: "Message is too long! Max 5000 characters.", accountMenu: "Account", themeLight: "Light Theme", themeDark: "Dark Theme", syslog: "System Log", clearcache: "Clear Cache", langToggle: "ID",
                 chooseRole: "Select your role to start:", roleSender: "Sender", roleReceiver: "Receiver",
                 inputReceiverID: "ENTER RECEIVER ID", pasteIdPlaceholder: "Paste Friend's ID here", startChat: "Start Chat", backBtn: "Back",
                 waitingConn: "⏳ Waiting for Connection...", giveIdText: "Give your ID to the Sender:", loading: "Loading...",
@@ -583,22 +583,21 @@
             updateUIText();
         });
 
-        // === ANTI-SWIPE BACK & SMART MODAL CLOSER ===
+// === ANTI-SWIPE BACK & SMART NAVIGATION ===
         window.history.pushState({ page: 'login' }, '', window.location.href);
         window.history.pushState({ page: 'login' }, '', window.location.href);
 
         window.addEventListener('popstate', (e) => {
             window.history.pushState({ page: 'login' }, '', window.location.href);
 
-            // 🛡️ PATCH: Cek apakah ada Modal/Gambar yang sedang terbuka
+            // 1. Tutup Modal/Gambar jika ada yang terbuka
             const openModals = document.querySelectorAll('.modal-overlay.show');
             if (openModals.length > 0) {
-                // Jika ada, tutup semua modal/gambar, JANGAN keluar dari chat
                 openModals.forEach(m => m.classList.remove('show'));
                 return; 
             }
 
-            // Jika tidak ada modal yang terbuka dan pengguna ada di layar Chat, baru kembali ke menu
+            // 2. Jika di layar Chat, sembunyikan chat dan tampilkan layar "Terhubung"
             if (document.getElementById('chat-screen').style.display === 'flex') {
                 document.getElementById('chat-screen').style.display = 'none';
                 document.getElementById('login-screen').style.display = 'flex';
@@ -607,8 +606,14 @@
                 document.getElementById('receiver-ui').style.display = 'none';
                 
                 document.getElementById('connected-ui').style.display = 'block';
-                document.getElementById('login-status').style.display = 'none';
-                document.getElementById('refresh-network-btn').style.display = 'none';
+                return;
+            }
+
+            // 3. Jika di layar Pengirim/Penerima, fungsikan tombol back HP sebagai tombol "Kembali"
+            if (document.getElementById('sender-ui').style.display === 'block' || 
+                document.getElementById('receiver-ui').style.display === 'block') {
+                resetRole();
+                return;
             }
         });
 
@@ -1010,6 +1015,12 @@
             activeRole = null; 
             isCheckingId = false; 
             
+            // 🛡️ PATCH PING LEAK: Bunuh koneksi pencari jika pengguna membatalkan
+            if (typeof activeCheckConn !== 'undefined' && activeCheckConn) {
+                activeCheckConn.close();
+                activeCheckConn = null;
+            }
+            
             // PATCH: Bersihkan sisa upaya koneksi/timer jika pengguna klik "Kembali" di tengah jalan
             clearTimeout(connectTimeout);
             if (conn && !conn.open) { 
@@ -1075,7 +1086,7 @@
             isCheckingId = true;
             
             // Lakukan PING koneksi siluman
-            const checkConn = peer.connect(rId, { reliable: false, metadata: { isCheckPing: true } });
+            activeCheckConn = peer.connect(rId, { reliable: false, metadata: { isCheckPing: true } });
             
             let checkTimeout = setTimeout(() => {
                 if (isCheckingId) {
@@ -1083,15 +1094,15 @@
                     document.getElementById('check-id-btn').disabled = false;
                     statusText.style.color = 'var(--danger)';
                     statusText.innerText = t('checkTimeout');
-                    checkConn.close();
+                    activeCheckConn.close();
                 }
             }, 25000); // 🕒 PATCH: Waktu tunggu diperpanjang menjadi 25 detik untuk memaklumi delay TURN Server
             
-            checkConn.on('open', () => {
+            activeCheckConn.on('open', () => {
                 // PATCH ZOMBIE PING: Jika user sudah klik "Kembali" (isCheckingId menjadi false), 
                 // batalkan semua update UI dan langsung tutup koneksi.
                 if (!isCheckingId) {
-                    checkConn.close();
+                    activeCheckConn.close();
                     return;
                 }
 
@@ -1105,7 +1116,7 @@
                 connectBtn.disabled = false;
                 connectBtn.style.opacity = '1';
                 
-                setTimeout(() => checkConn.close(), 1000);
+                setTimeout(() => activeCheckConn.close(), 1000);
             });
         }
 
