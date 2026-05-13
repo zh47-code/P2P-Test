@@ -1231,30 +1231,52 @@
             } 
         });
 
-        function monitorICE(connection) {
+    function monitorICE(connection) {
             setTimeout(() => {
                 if(connection && connection.peerConnection) {
                     connection.peerConnection.addEventListener('iceconnectionstatechange', () => {
                         const state = connection.peerConnection.iceConnectionState;
                         logDebug(`WebRTC ICE: ${state.toUpperCase()}`);
                         
-                        if(state === 'failed' || state === 'disconnected' || state === 'closed') {
-                            logDebug('WebRTC layer disconnected.', 'error');
+                        const statusEl = document.getElementById('chat-header-status');
+
+                        if (state === 'disconnected') {
+                            logDebug('Koneksi tidak stabil, WebRTC mencoba memulihkan...', 'system');
+                            
+                            // Kunci input dan beritahu alasannya
+                            const msgInput = document.getElementById('message-input');
+                            msgInput.disabled = true;
+                            msgInput.placeholder = "Menunggu jaringan...";
+                            
+                            statusEl.innerText = "⏳ Menyambung ulang...";
+                            statusEl.style.color = "var(--danger)";
+                            statusEl.style.fontStyle = "italic";
+
+                        } else if (state === 'failed' || state === 'closed') {
+                            // Jika sudah failed, berarti benar-benar mati dan tidak bisa diselamatkan
+                            logDebug('WebRTC layer failed/closed.', 'error');
                             document.getElementById('message-input').disabled = true;
                             
-                            if(document.getElementById('chat-screen').style.display === 'flex') {
-                                customAlert(t('errOffline'));
-                                disconnectPeer();
+                            if (document.getElementById('chat-screen').style.display === 'flex') {
+                                customAlert("Koneksi terputus secara permanen karena jaringan tidak stabil.", () => {
+                                    disconnectPeer();
+                                });
                             }
                         } else if (state === 'connected' || state === 'completed') {
-                            logDebug('P2P Path Secured!', 'success');
-                            document.getElementById('message-input').disabled = false;
+                            logDebug('P2P Path Secured / Recovered!', 'success');
+                            
+                            // Buka kunci input saat jaringan stabil kembali
+                            const msgInput = document.getElementById('message-input');
+                            msgInput.disabled = false;
+                            msgInput.placeholder = t('typeMessage');
+                            
+                            hideTyping(); 
                         }
                     });
                 }
             }, 1000);
         }
-
+        
         peer.on('connection', connection => { 
             // 1. SATPAM PERAN: Tolak SEMUA koneksi jika belum standby di layar Penerima
             if (activeRole !== 'receiver') {
@@ -1312,12 +1334,19 @@
                 document.getElementById('chat-screen').style.display = 'flex'; 
                 chatWindow.innerHTML = '';
                 logDebug('Handshake success!', 'success');
+                
+                // 🛡️ PATCH: Buka kunci kolom ketik setiap kali obrolan baru berhasil dimulai!
+                const msgInput = document.getElementById('message-input');
+                msgInput.disabled = false;
+                msgInput.placeholder = t('typeMessage');
+                
                 conn.send({ type: 'profile', name: myName || t('anon'), avatar: myAvatarBase64 });
                 updateUIText();
                 
                 startPingPong();
             });
-conn.on('data', data => {
+            
+            conn.on('data', data => {
                 if (!data) return;
                 
                 if (data.type === 'ping') {
@@ -1442,9 +1471,11 @@ conn.on('data', data => {
         }
         
         function resetUI() {
-            // 🛡️ PATCH: Bersihkan semua file dari RAM HP saat putus koneksi!
-            activeObjectUrls.forEach(url => URL.revokeObjectURL(url));
-            activeObjectUrls = []; 
+            // Bersihkan RAM saat putus koneksi
+            if (typeof activeObjectUrls !== 'undefined') {
+                activeObjectUrls.forEach(url => URL.revokeObjectURL(url));
+                activeObjectUrls = []; 
+            }
 
             clearInterval(pingInterval);
             clearTimeout(connectTimeout); conn = null; 
@@ -1453,9 +1484,15 @@ conn.on('data', data => {
             document.getElementById('remote-id').value = ''; 
             document.getElementById('connect-btn').innerText = t('startChat'); 
             
-            // PATCH: Paksa tombol "Mulai Chat" kembali mati (disable) setelah putus koneksi
+            // Paksa tombol "Mulai Chat" mati
             document.getElementById('connect-btn').disabled = true; 
             document.getElementById('connect-btn').style.opacity = '0.5';
+            
+            // 🛡️ PATCH: Kembalikan kondisi kolom ketik seperti semula (Unlock dan bersihkan)
+            const msgInput = document.getElementById('message-input');
+            msgInput.disabled = false;
+            msgInput.value = '';
+            msgInput.placeholder = t('typeMessage');
             
             document.getElementById('refresh-network-btn').style.display = 'none';
             
