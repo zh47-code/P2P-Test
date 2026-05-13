@@ -597,7 +597,7 @@
         const accountModal = document.getElementById('account-modal');
         const modalNameInput = document.getElementById('modal-name-input');
         const modalAvatarPreview = document.getElementById('modal-avatar-preview');
-        const defaultSvgAvatar = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>`;
+        const defaultSvgAvatar = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>`;
 
         let myName = localStorage.getItem('my-chat-name') || '';
         let myAvatarBase64 = localStorage.getItem('my-chat-avatar') || '';
@@ -885,7 +885,7 @@
         // === SISTEM LOG & AUDIO NOTIFIKASI ===
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/water/droplet_1.ogg');
         let audioUnlocked = false;
-        let lastAudioPlayTime = 0; // Fix Bug 4: Debounce Suara
+        let lastAudioPlayTime = 0; 
         
         function unlockAudio() {
             if (!audioUnlocked) {
@@ -903,7 +903,7 @@
 
         function playNotification() { 
             const now = Date.now();
-            if (!isMuted && audioUnlocked && (now - lastAudioPlayTime > 300)) { // Debounce 300ms mencegah overlapping glitch
+            if (!isMuted && audioUnlocked && (now - lastAudioPlayTime > 300)) { 
                 notificationSound.currentTime = 0;
                 notificationSound.play().catch(() => {}); 
                 lastAudioPlayTime = now;
@@ -940,13 +940,25 @@
             }
         }
 
+        // === VARIABEL GLOBAL KONEKSI ===
+        let conn;
+        const chatWindow = document.getElementById('chat-window');
+        const messageInput = document.getElementById('message-input');
+        const chatTitle = document.getElementById('chat-title');
+        const chatHeaderAvatar = document.getElementById('chat-header-avatar');
+        let remoteName = "Friend";
+        
+        let activeRole = null; // PATCH: Kunci penentu peran aktif untuk keamanan blokir koneksi
+
         function selectRole(role) {
+            activeRole = role; // Set peran aktif
             document.getElementById('role-selection').style.display = 'none';
             if (role === 'sender') { document.getElementById('sender-ui').style.display = 'block'; } 
             else { document.getElementById('receiver-ui').style.display = 'block'; document.getElementById('my-id-display').innerText = peer.id || t('loading'); }
         }
         
         function resetRole() {
+            activeRole = null; // Kosongkan peran
             document.getElementById('sender-ui').style.display = 'none';
             document.getElementById('receiver-ui').style.display = 'none';
             document.getElementById('connected-ui').style.display = 'none';
@@ -982,18 +994,11 @@
                 ],
                 iceCandidatePoolSize: 10
             },
-            pingInterval: 5000, // Menjaga ID tetap hidup di server PeerJS
-            debug: 1 // Mengurangi beban log di konsol
+            pingInterval: 5000, // PATCH: Mencegah terputus dari server PeerJS
+            debug: 1 // PATCH: Mengurangi beban log konsol browser
         };
 
         const peer = savedPeerId ? new Peer(savedPeerId, peerConfig) : new Peer(peerConfig);
-        
-        let conn;
-        const chatWindow = document.getElementById('chat-window');
-        const messageInput = document.getElementById('message-input');
-        const chatTitle = document.getElementById('chat-title');
-        const chatHeaderAvatar = document.getElementById('chat-header-avatar');
-        let remoteName = "Friend";
 
         let pingInterval;
         let lastPongTime = Date.now();
@@ -1003,7 +1008,6 @@
             lastPongTime = Date.now();
             pingInterval = setInterval(() => {
                 if (conn && conn.open) {
-                    // FIX BUG 1: Toleransi 65 detik untuk selamat dari background tab throttling
                     if (Date.now() - lastPongTime > 65000) {
                         logDebug('Koneksi terputus (Ping Timeout).', 'error');
                         customAlert(t('errOffline'));
@@ -1012,7 +1016,7 @@
                     }
                     conn.send({ type: 'ping' });
                 }
-            }, 15000); // Ping setiap 15 detik (lebih efisien)
+            }, 15000);
         }
 
         peer.on('open', id => { 
@@ -1080,35 +1084,36 @@
         }
 
         peer.on('connection', connection => { 
+            // PATCH: Tolak koneksi jika pengguna belum standby di layar Penerima
+            if (activeRole !== 'receiver') {
+                logDebug('Menolak koneksi masuk: Anda belum standby di menu Penerima.', 'error');
+                connection.close();
+                return;
+            }
+
             if(conn) conn.close(); conn = connection; 
             logDebug('Incoming connection...', 'success'); monitorICE(conn); setupConn(); 
         });
 
         function connectToPeer() {
-                    const rId = document.getElementById('remote-id').value.trim();
-                    if(!rId || rId === peer.id) return customAlert(!rId ? t('errNoId') : t('errSelf'));
-                    
-                    document.getElementById('connect-btn').innerText = t('connecting'); 
-                    document.getElementById('connect-btn').disabled = true;
-                    logDebug(`Connecting to: ${rId}`);
-                    
-                    conn = peer.connect(rId, { reliable: true }); 
-                    monitorICE(conn); 
-                    setupConn();
-                    
-                    // PATCH: Memperpanjang waktu tunggu menjadi 30 detik (30000 ms)
-                    // Karena negosiasi STUN di jaringan seluler Indonesia terkadang butuh waktu lebih lama
-                    clearTimeout(connectTimeout);
-                    connectTimeout = setTimeout(() => {
-                        if (conn && !conn.open) { 
-                            logDebug('Koneksi gagal terhubung dalam 30 detik.', 'error');
-                            customAlert(t('errTimeout'), () => { 
-                                if(conn) conn.close(); 
-                                resetUI(); 
-                            }); 
-                        }
-                    }, 30000); 
+            const rId = document.getElementById('remote-id').value.trim();
+            if(!rId || rId === peer.id) return customAlert(!rId ? t('errNoId') : t('errSelf'));
+            
+            document.getElementById('connect-btn').innerText = t('connecting'); document.getElementById('connect-btn').disabled = true;
+            logDebug(`Connecting to: ${rId}`);
+            
+            conn = peer.connect(rId, { reliable: true }); 
+            monitorICE(conn); setupConn();
+            
+            clearTimeout(connectTimeout);
+            // PATCH: Timeout diperpanjang jadi 30 detik untuk mengakomodasi jaringan lambat
+            connectTimeout = setTimeout(() => {
+                if (conn && !conn.open) { 
+                    logDebug('Koneksi gagal terhubung dalam 30 detik.', 'error');
+                    customAlert(t('errTimeout'), () => { if(conn) conn.close(); resetUI(); }); 
                 }
+            }, 30000); 
+        }
 
         function setupConn() {
             conn.on('open', () => {
@@ -1151,7 +1156,7 @@
             conn.on('close', () => { 
                 logDebug('Connection closed.', 'error'); 
                 clearInterval(pingInterval);
-                incomingFiles = {}; // FIX BUG 3: Bersihkan Memori
+                incomingFiles = {}; 
                 setTimeout(resetUI, 1000); 
             });
         }
@@ -1173,7 +1178,7 @@
         
         function disconnectPeer() { 
             clearInterval(pingInterval);
-            incomingFiles = {}; // Bersihkan Memori
+            incomingFiles = {}; 
             if(conn) conn.close(); 
             document.getElementById('dropdown-menu-chat').classList.remove('show'); 
             resetUI(); 
@@ -1242,9 +1247,8 @@
             let offset = 0; const reader = new FileReader();
             
             function readNextChunk() { 
-                // FIX BUG 2: Proteksi DataChannel Buffer Overflow (Backpressure)
-                if (conn.dataChannel && conn.dataChannel.bufferedAmount > 2 * 1024 * 1024) { // Jika buffer jaringan > 2MB
-                    setTimeout(readNextChunk, 50); // Berhenti sejenak, biarkan jaringan bernapas
+                if (conn.dataChannel && conn.dataChannel.bufferedAmount > 2 * 1024 * 1024) { 
+                    setTimeout(readNextChunk, 50); 
                     return;
                 }
                 const slice = file.slice(offset, offset + CHUNK_SIZE); 
