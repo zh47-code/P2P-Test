@@ -130,7 +130,6 @@
         
         .login-card { background: var(--bg-panel); padding: 40px 24px; border-radius: 28px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px var(--shadow); display: flex; flex-direction: column; align-items: center; }
         
-        /* Aplikasi Transparan */
         .app-icon-login { width: 72px; height: 72px; margin-bottom: 12px; object-fit: contain; background: transparent; }
         .login-card h1 { font-size: 18px; margin-bottom: 30px; font-weight: 700; letter-spacing: 0.5px; color: var(--text-main); }
         
@@ -446,8 +445,8 @@
                 connecting: "Mencari...", connectingStatus: "Connecting...", connectedStatus: "Terhubung",
                 alertLargeProfile: "Ukuran foto profil terlalu besar! Maksimal 2MB.", alertCache: "Hapus semua cache dan mulai ulang? (Ini juga akan mereset ID Jaringan Anda)",
                 promptSearch: "Masukkan kata kunci pencarian:", confirmClearChat: "Bersihkan layar percakapan?",
-                errNoId: "Masukkan ID!", errSelf: "Tidak bisa dengan diri sendiri!", errTimeout: "Waktu habis! Pastikan IPv6 aktif.",
-                errActiveTab: "ID aktif di tab lain. Refresh...", errOffline: "ID Teman offline.", fileTooLarge: "Maksimal 15MB.",
+                errNoId: "Masukkan ID!", errSelf: "Tidak bisa dengan diri sendiri!", errTimeout: "Waktu habis atau koneksi gagal. Pastikan ID aktif.",
+                errActiveTab: "ID aktif di tab lain. Refresh...", errOffline: "Teman sedang offline atau jaringan terputus.", fileTooLarge: "Maksimal 15MB.",
                 process: "Memproses...", sending: "Mengirim...", finishing: "Menyelesaikan...", you: "Anda", logCleared: "Log diagnostik telah dibersihkan.",
                 friend: "Teman", anon: "Anonim", callDev: "Fitur panggilan suara/video dalam pengembangan."
             },
@@ -465,8 +464,8 @@
                 connecting: "Connecting...", connectingStatus: "Connecting...", connectedStatus: "Connected",
                 alertLargeProfile: "Profile photo too large! Max 2MB.", alertCache: "Clear all cache and restart? (This resets Network ID)",
                 promptSearch: "Enter search keyword:", confirmClearChat: "Clear conversation screen?",
-                errNoId: "Enter an ID!", errSelf: "Cannot connect to yourself!", errTimeout: "Timeout! Ensure IPv6 is active.",
-                errActiveTab: "ID active in another tab. Refresh...", errOffline: "Friend is offline.", fileTooLarge: "Max 15MB.",
+                errNoId: "Enter an ID!", errSelf: "Cannot connect to yourself!", errTimeout: "Timeout or connection failed. Ensure ID is active.",
+                errActiveTab: "ID active in another tab. Refresh...", errOffline: "Friend is offline or connection lost.", fileTooLarge: "Max 15MB.",
                 process: "Processing...", sending: "Sending...", finishing: "Finishing...", you: "You", logCleared: "Diagnostic log cleared.",
                 friend: "Friend", anon: "Anonymous", callDev: "Voice/Video calling feature is currently in development."
             }
@@ -780,7 +779,7 @@
         
         function cancelReply() { activeReply = null; document.getElementById('reply-preview-container').style.display = 'none'; }
 
-        // === MODAL IMAGE VIEWER, PAN & ZOOM (100-200-400-100) ===
+        // === MODAL IMAGE VIEWER, PAN & ZOOM ===
         let currentEnlargedFile = null;
         const enlargedImg = document.getElementById('enlarged-img');
         const imgCloseBtn = document.getElementById('img-close-icon');
@@ -794,7 +793,6 @@
             enlargedImg.style.transform = `translate(${transX}px, ${transY}px) scale(${zoomLevel})`;
             enlargedImg.style.cursor = zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default';
             
-            // Sembunyikan tombol (X) saat zoom lebih dari 100%
             if (zoomLevel === 1) {
                 imgCloseBtn.style.display = 'flex';
             } else {
@@ -819,11 +817,9 @@
             
             if (tapLength < 300 && tapLength > 0) {
                 e.preventDefault();
-                // 100% -> 200% -> 400% -> 100%
                 if (zoomLevel === 1) zoomLevel = 2;
                 else if (zoomLevel === 2) zoomLevel = 4;
                 else { zoomLevel = 1; transX = 0; transY = 0; lastTransX = 0; lastTransY = 0; }
-                
                 updateTransform(true);
             } else {
                 if (isDragging) {
@@ -976,19 +972,23 @@
             });
         });
 
-        // === KONEKSI PEERJS ===
+        // === KONEKSI PEERJS & WEBRTC (OPTIMIZED) ===
         let savedPeerId = localStorage.getItem('my-peer-id');
         
+        // OPTIMASI 1: Perluasan STUN Servers dan Candidate Pooling
         const peerConfig = { 
             config: { 
                 'iceServers': [
                     { urls: 'stun:stun.l.google.com:19302' }, 
                     { urls: 'stun:stun1.l.google.com:19302' },
                     { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun3.l.google.com:19302' },
+                    { urls: 'stun:stun4.l.google.com:19302' },
                     { urls: 'stun:stun.cloudflare.com:3478' }
-                ] 
+                ],
+                iceCandidatePoolSize: 10 // Prapengambilan kandidat ICE untuk koneksi lebih cepat
             },
-            debug: 3 
+            debug: 2 // Kurangi level debug untuk performa produksi
         };
 
         const peer = savedPeerId ? new Peer(savedPeerId, peerConfig) : new Peer(peerConfig);
@@ -999,6 +999,27 @@
         const chatTitle = document.getElementById('chat-title');
         const chatHeaderAvatar = document.getElementById('chat-header-avatar');
         let remoteName = "Friend";
+
+        // OPTIMASI 2: Sistem Keep-Alive (Ping/Pong)
+        let pingInterval;
+        let lastPongTime = Date.now();
+
+        function startPingPong() {
+            clearInterval(pingInterval);
+            lastPongTime = Date.now();
+            pingInterval = setInterval(() => {
+                if (conn && conn.open) {
+                    if (Date.now() - lastPongTime > 15000) {
+                        // Jika 15 detik tidak ada pong, putuskan koneksi
+                        logDebug('Koneksi terputus (Ping Timeout).', 'error');
+                        customAlert(t('errOffline'));
+                        disconnectPeer();
+                        return;
+                    }
+                    conn.send({ type: 'ping' });
+                }
+            }, 5000); // Ping setiap 5 detik
+        }
 
         peer.on('open', id => { 
             peerInstanceReady = true;
@@ -1040,15 +1061,23 @@
             } 
         });
 
+        // OPTIMASI 3: Monitor ICE State lebih ketat
         function monitorICE(connection) {
             setTimeout(() => {
                 if(connection && connection.peerConnection) {
                     connection.peerConnection.addEventListener('iceconnectionstatechange', () => {
                         const state = connection.peerConnection.iceConnectionState;
                         logDebug(`WebRTC ICE: <b>${state.toUpperCase()}</b>`);
-                        if(state === 'failed' || state === 'disconnected') {
-                            logDebug('Connection failed.', 'error');
+                        
+                        if(state === 'failed' || state === 'disconnected' || state === 'closed') {
+                            logDebug('WebRTC layer disconnected.', 'error');
                             document.getElementById('message-input').disabled = true;
+                            
+                            // Auto disconnect & cleanup jika WebRTC level mati
+                            if(document.getElementById('chat-screen').style.display === 'flex') {
+                                customAlert(t('errOffline'));
+                                disconnectPeer();
+                            }
                         } else if (state === 'connected' || state === 'completed') {
                             logDebug('P2P Path Secured!', 'success');
                             document.getElementById('message-input').disabled = false;
@@ -1069,7 +1098,11 @@
             
             document.getElementById('connect-btn').innerText = t('connecting'); document.getElementById('connect-btn').disabled = true;
             logDebug(`Connecting to: ${rId}`);
-            conn = peer.connect(rId); monitorICE(conn); setupConn();
+            
+            // OPTIMASI 4: Pastikan koneksi dikonfigurasi reliable untuk Chat Text/File
+            conn = peer.connect(rId, { reliable: true }); 
+            monitorICE(conn); setupConn();
+            
             clearTimeout(connectTimeout);
             connectTimeout = setTimeout(() => {
                 if (conn && !conn.open) { 
@@ -1087,23 +1120,42 @@
                 logDebug('Handshake success!', 'success');
                 conn.send({ type: 'profile', name: myName || t('anon'), avatar: myAvatarBase64 });
                 updateUIText();
+                
+                // Mulai Interval Ping Pong setelah koneksi terbuka
+                startPingPong();
             });
             conn.on('data', data => {
-                if (data && data.type === 'profile') { 
+                if (!data) return;
+                
+                // Handle Ping/Pong
+                if (data.type === 'ping') {
+                    conn.send({ type: 'pong' });
+                    return;
+                }
+                if (data.type === 'pong') {
+                    lastPongTime = Date.now();
+                    return;
+                }
+
+                if (data.type === 'profile') { 
                     remoteName = data.name || t('anon'); 
                     chatTitle.innerText = remoteName; 
                     document.getElementById('modal-connected-name').innerText = remoteName; 
                     document.getElementById('connected-friend-name').innerText = remoteName; 
                     chatHeaderAvatar.innerHTML = data.avatar ? `<img src="${data.avatar}" alt="Avatar">` : defaultSvgAvatar; 
                 } 
-                else if (data && data.type === 'ack') { const msgElement = document.getElementById(data.msgId); if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } } } 
-                else if (data && data.type === 'text') { conn.send({ type: 'ack', msgId: data.id }); playNotification(); hideTyping(); appendMessage('received', data, data.id); } 
-                else if (data && data.type === 'typing') { data.isTyping ? showTyping() : hideTyping(); } 
-                else if (data && data.type === 'file-start') { incomingFiles[data.fileId] = { chunks: [], receivedSize: 0, metadata: data }; renderFileProgress('received', data.fileId, data.filename, 0); } 
-                else if (data && data.type === 'file-chunk') { const fileData = incomingFiles[data.fileId]; if (fileData) { fileData.chunks.push(data.data); fileData.receivedSize += data.data.byteLength; updateFileProgress(data.fileId, Math.round((fileData.receivedSize / fileData.metadata.filesize) * 100)); } } 
-                else if (data && data.type === 'file-end') { const fileData = incomingFiles[data.fileId]; if (fileData) { finalizeFileMessage('received', data.fileId, fileData.metadata.filename, fileData.metadata.filetype, new Blob(fileData.chunks, { type: fileData.metadata.filetype })); delete incomingFiles[data.fileId]; conn.send({ type: 'ack', msgId: data.fileId }); playNotification(); hideTyping(); } }
+                else if (data.type === 'ack') { const msgElement = document.getElementById(data.msgId); if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } } } 
+                else if (data.type === 'text') { conn.send({ type: 'ack', msgId: data.id }); playNotification(); hideTyping(); appendMessage('received', data, data.id); } 
+                else if (data.type === 'typing') { data.isTyping ? showTyping() : hideTyping(); } 
+                else if (data.type === 'file-start') { incomingFiles[data.fileId] = { chunks: [], receivedSize: 0, metadata: data }; renderFileProgress('received', data.fileId, data.filename, 0); } 
+                else if (data.type === 'file-chunk') { const fileData = incomingFiles[data.fileId]; if (fileData) { fileData.chunks.push(data.data); fileData.receivedSize += data.data.byteLength; updateFileProgress(data.fileId, Math.round((fileData.receivedSize / fileData.metadata.filesize) * 100)); } } 
+                else if (data.type === 'file-end') { const fileData = incomingFiles[data.fileId]; if (fileData) { finalizeFileMessage('received', data.fileId, fileData.metadata.filename, fileData.metadata.filetype, new Blob(fileData.chunks, { type: fileData.metadata.filetype })); delete incomingFiles[data.fileId]; conn.send({ type: 'ack', msgId: data.fileId }); playNotification(); hideTyping(); } }
             });
-            conn.on('close', () => { logDebug('Connection closed.', 'error'); setTimeout(resetUI, 1000); });
+            conn.on('close', () => { 
+                logDebug('Connection closed.', 'error'); 
+                clearInterval(pingInterval);
+                setTimeout(resetUI, 1000); 
+            });
         }
 
         function showTyping() { 
@@ -1122,12 +1174,14 @@
         }
         
         function disconnectPeer() { 
+            clearInterval(pingInterval);
             if(conn) conn.close(); 
             document.getElementById('dropdown-menu-chat').classList.remove('show'); 
             resetUI(); 
         }
         
         function resetUI() {
+            clearInterval(pingInterval);
             clearTimeout(connectTimeout); conn = null; 
             document.getElementById('chat-screen').style.display = 'none'; 
             document.getElementById('login-screen').style.display = 'flex'; 
