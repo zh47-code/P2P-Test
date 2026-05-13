@@ -126,13 +126,18 @@
         .role-btn:hover { background: var(--input-bg); border-color: var(--accent); }
         .back-btn { background: none; border: none; color: var(--text-dim); text-decoration: none; cursor: pointer; margin-top: 20px; font-size: 14px; font-weight: 500; width: 100%; }
         
+        /* CSS Khusus Fitur Cek ID */
         .input-group { text-align: left; margin-bottom: 20px; width: 100%; }
         .input-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 8px; padding-left: 12px; font-weight: 500; }
-        .login-card input { width: 100%; padding: 16px; border-radius: 28px; border: 2px solid transparent; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; text-align: center; transition: 0.2s; }
-        .login-card input:focus { background: var(--bg-panel); border-color: var(--accent); }
+        .check-id-wrapper { display: flex; gap: 8px; width: 100%; margin-bottom: 0; }
+        .check-id-wrapper input { flex: 1; padding: 16px; border-radius: 28px; border: 2px solid transparent; background: var(--input-bg); color: var(--text-main); font-size: 16px; outline: none; text-align: center; transition: 0.2s; margin-bottom: 0 !important; }
+        .check-id-wrapper input:focus { background: var(--bg-panel); border-color: var(--accent); }
+        .check-id-btn { background: var(--input-bg); color: var(--text-main); border: 2px solid transparent; border-radius: 28px; padding: 0 20px; font-weight: bold; cursor: pointer; transition: 0.2s; white-space: nowrap; font-size: 14px; }
+        .check-id-btn:hover { border-color: var(--accent); }
+        .check-id-btn:disabled { opacity: 0.5; cursor: not-allowed; hover: none; border-color: transparent;}
         
         .login-card button#connect-btn { width: 100%; padding: 16px; border-radius: 100px; border: none; font-weight: 500; font-size: 16px; background: var(--accent); color: var(--md-on-primary); cursor: pointer; transition: 0.2s; margin-top: 10px; }
-        .login-card button#connect-btn:disabled { background: var(--input-bg); color: var(--text-dim); cursor: not-allowed; }
+        .login-card button#connect-btn:disabled { background: var(--input-bg); color: var(--text-dim); cursor: not-allowed; opacity: 0.6; }
         .status-text { margin-top: 20px; font-size: 14px; font-weight: 500; color: var(--text-dim); }
         
         #refresh-network-btn { width: 100%; padding: 14px; margin-top: 20px; background: var(--danger); color: white; border: none; border-radius: 100px; font-weight: 500; cursor: pointer; display: none; }
@@ -309,12 +314,18 @@
                 </button>
             </div>
 
+            <!-- UI PENGIRIM YANG DIPERBARUI DENGAN TOMBOL CEK ID -->
             <div id="sender-ui" style="display: none; width: 100%;">
                 <div class="input-group">
                     <label for="remote-id" data-i18n="inputReceiverID">MASUKKAN ID PENERIMA</label>
-                    <input type="text" id="remote-id" data-i18n-placeholder="pasteIdPlaceholder" placeholder="Tempel ID Teman di sini">
+                    <div class="check-id-wrapper">
+                        <input type="text" id="remote-id" data-i18n-placeholder="pasteIdPlaceholder" placeholder="Tempel ID Teman di sini" oninput="resetCheckStatus()">
+                        <button id="check-id-btn" class="check-id-btn" onclick="checkReceiverId()" data-i18n="checkId">Cek ID</button>
+                    </div>
+                    <div id="check-status-text" style="font-size: 13px; margin-top: 10px; font-weight: bold; display: none;"></div>
                 </div>
-                <button id="connect-btn" onclick="connectToPeer()">Mulai Chat</button> 
+                <!-- Tombol Mulai default disable sampai Cek Ketersediaan berhasil -->
+                <button id="connect-btn" onclick="connectToPeer()" disabled>Mulai Chat</button> 
                 <button class="back-btn" onclick="resetRole()" data-i18n="backBtn">Kembali</button>
             </div>
 
@@ -415,7 +426,7 @@
     </div>
 
     <script>
-        // === FUNGSI PROTEKSI XSS (ANTI SCRIPT INJECTION) ===
+        // === FUNGSI PROTEKSI XSS ===
         function escapeHTML(str) {
             if (!str) return "";
             return str.toString().replace(/[&<>'"]/g, tag => ({
@@ -442,7 +453,8 @@
                 errNoId: "Masukkan ID!", errSelf: "Tidak bisa dengan diri sendiri!", errTimeout: "Waktu habis atau koneksi gagal. Pastikan ID aktif.",
                 errActiveTab: "ID aktif di tab lain. Refresh...", errOffline: "Teman sedang offline atau jaringan terputus.", fileTooLarge: "Maksimal 15MB.",
                 process: "Memproses...", sending: "Mengirim...", finishing: "Menyelesaikan...", you: "Anda", logCleared: "Log diagnostik telah dibersihkan.",
-                friend: "Teman", anon: "Anonim", callDev: "Fitur panggilan suara/video dalam pengembangan."
+                friend: "Teman", anon: "Anonim", callDev: "Fitur panggilan suara/video dalam pengembangan.",
+                checkId: "Cek ID", checkWait: "⏳ Mengecek ketersediaan...", checkOnline: "✅ ID Aktif & Tersedia! Silakan Mulai.", checkOffline: "❌ ID Offline / Tidak Ditemukan.", checkSelf: "❌ Tidak bisa gunakan ID sendiri!", checkEmpty: "❌ Masukkan ID!", checkTimeout: "❌ Waktu cek habis."
             },
             en: {
                 accountMenu: "Account", themeLight: "Light Theme", themeDark: "Dark Theme", syslog: "System Log", clearcache: "Clear Cache", langToggle: "ID",
@@ -461,7 +473,8 @@
                 errNoId: "Enter an ID!", errSelf: "Cannot connect to yourself!", errTimeout: "Timeout or connection failed. Ensure ID is active.",
                 errActiveTab: "ID active in another tab. Refresh...", errOffline: "Friend is offline or connection lost.", fileTooLarge: "Max 15MB.",
                 process: "Processing...", sending: "Sending...", finishing: "Finishing...", you: "You", logCleared: "Diagnostic log cleared.",
-                friend: "Friend", anon: "Anonymous", callDev: "Voice/Video calling feature is currently in development."
+                friend: "Friend", anon: "Anonymous", callDev: "Voice/Video calling feature is currently in development.",
+                checkId: "Check ID", checkWait: "⏳ Checking availability...", checkOnline: "✅ ID is Active! You can Start Chat.", checkOffline: "❌ ID is Offline / Not Found.", checkSelf: "❌ Cannot use your own ID!", checkEmpty: "❌ Enter an ID!", checkTimeout: "❌ Check timeout."
             }
         };
 
@@ -527,8 +540,8 @@
             
             if(conn && conn.open) {
                 document.getElementById('connect-btn').innerText = t('connectedStatus');
-            } else if (document.getElementById('connect-btn').disabled) {
-                document.getElementById('connect-btn').innerText = t('connecting');
+            } else if (document.getElementById('connect-btn').disabled && !document.getElementById('check-id-btn').disabled && document.getElementById('check-status-text').style.color !== 'var(--danger)') {
+                // Diabaikan, text dikontrol oleh fitur cek ID
             } else {
                 document.getElementById('connect-btn').innerText = t('startChat');
             }
@@ -541,6 +554,7 @@
             }
             
             updateThemeText();
+            resetCheckStatus();
         }
         
         function updateThemeText() {
@@ -700,7 +714,7 @@
             document.getElementById('dropdown-menu-chat').classList.remove('show'); 
         });
 
-        // === SISTEM TINDAKAN PESAN (SIMPAN/BALAS/HAPUS) ===
+        // === SISTEM TINDAKAN PESAN ===
         const msgActionOverlay = document.getElementById('msg-action-overlay');
         let activeReply = null; let selectedMsgDiv = null; let selectedMsgObj = null;
 
@@ -948,17 +962,18 @@
         const chatHeaderAvatar = document.getElementById('chat-header-avatar');
         let remoteName = "Friend";
         
-        let activeRole = null; // PATCH: Kunci penentu peran aktif untuk keamanan blokir koneksi
+        let activeRole = null; 
+        let isCheckingId = false; // FLAG CEK KETERSEDIAAN
 
         function selectRole(role) {
-            activeRole = role; // Set peran aktif
+            activeRole = role; 
             document.getElementById('role-selection').style.display = 'none';
             if (role === 'sender') { document.getElementById('sender-ui').style.display = 'block'; } 
             else { document.getElementById('receiver-ui').style.display = 'block'; document.getElementById('my-id-display').innerText = peer.id || t('loading'); }
         }
         
         function resetRole() {
-            activeRole = null; // Kosongkan peran
+            activeRole = null; 
             document.getElementById('sender-ui').style.display = 'none';
             document.getElementById('receiver-ui').style.display = 'none';
             document.getElementById('connected-ui').style.display = 'none';
@@ -969,6 +984,19 @@
             recStatus.innerText = t('waitingConn');
 
             document.getElementById('login-status').style.display = 'block';
+            document.getElementById('remote-id').value = '';
+            resetCheckStatus();
+        }
+
+        // Fungsi me-reset status tombol saat pengguna mengetik ulang ID
+        function resetCheckStatus() {
+            const statusText = document.getElementById('check-status-text');
+            statusText.style.display = 'none';
+            
+            const connectBtn = document.getElementById('connect-btn');
+            connectBtn.disabled = true;
+            connectBtn.style.opacity = '0.5';
+            document.getElementById('check-id-btn').disabled = false;
         }
 
         document.getElementById('my-id-display').addEventListener('click', function() {
@@ -978,6 +1006,59 @@
                 setTimeout(() => { this.innerText = original; this.style.color = 'inherit'; }, 2000);
             });
         });
+
+        // === LOGIKA "PRE-FLIGHT" CEK ID ===
+        function checkReceiverId() {
+            const rId = document.getElementById('remote-id').value.trim();
+            const statusText = document.getElementById('check-status-text');
+            const connectBtn = document.getElementById('connect-btn');
+            
+            if (!rId) {
+                statusText.style.display = 'block'; statusText.style.color = 'var(--danger)'; statusText.innerText = t('checkEmpty');
+                connectBtn.disabled = true; return;
+            }
+            if (rId === peer.id) {
+                statusText.style.display = 'block'; statusText.style.color = 'var(--danger)'; statusText.innerText = t('checkSelf');
+                connectBtn.disabled = true; return;
+            }
+
+            statusText.style.display = 'block';
+            statusText.style.color = 'var(--text-dim)';
+            statusText.innerText = t('checkWait');
+            document.getElementById('check-id-btn').disabled = true;
+            
+            isCheckingId = true;
+            
+            // Lakukan PING koneksi siluman dengan metadata khusus
+            const checkConn = peer.connect(rId, { reliable: false, metadata: { isCheckPing: true } });
+            
+            let checkTimeout = setTimeout(() => {
+                if (isCheckingId) {
+                    isCheckingId = false;
+                    document.getElementById('check-id-btn').disabled = false;
+                    statusText.style.color = 'var(--danger)';
+                    statusText.innerText = t('checkTimeout');
+                    checkConn.close();
+                }
+            }, 10000); // Tunggu 10 detik untuk Cek Status
+            
+            // Jika terbuka berarti berhasil dan penerima online
+            checkConn.on('open', () => {
+                clearTimeout(checkTimeout);
+                isCheckingId = false;
+                document.getElementById('check-id-btn').disabled = false;
+                statusText.style.color = '#00a884'; // Hijau Sukses
+                statusText.innerText = t('checkOnline');
+                
+                // Aktifkan Tombol Mulai Chat
+                connectBtn.disabled = false;
+                connectBtn.style.opacity = '1';
+                
+                // Tutup jalur PING segera setelah sukses
+                setTimeout(() => checkConn.close(), 500);
+            });
+        }
+
 
         // === KONEKSI PEERJS & WEBRTC ===
         let savedPeerId = localStorage.getItem('my-peer-id');
@@ -994,8 +1075,8 @@
                 ],
                 iceCandidatePoolSize: 10
             },
-            pingInterval: 5000, // PATCH: Mencegah terputus dari server PeerJS
-            debug: 1 // PATCH: Mengurangi beban log konsol browser
+            pingInterval: 5000, 
+            debug: 1 
         };
 
         const peer = savedPeerId ? new Peer(savedPeerId, peerConfig) : new Peer(peerConfig);
@@ -1041,6 +1122,20 @@
         
         peer.on('error', (err) => { 
             clearTimeout(connectTimeout); 
+            
+            // Pencegatan (Interception) jika error terjadi akibat menekan tombol Cek ID
+            if (isCheckingId && err.type === 'peer-unavailable') {
+                isCheckingId = false;
+                document.getElementById('check-id-btn').disabled = false;
+                
+                const statusText = document.getElementById('check-status-text');
+                statusText.style.color = 'var(--danger)';
+                statusText.innerText = t('checkOffline');
+                
+                document.getElementById('connect-btn').disabled = true;
+                return; // Setop disini, tidak perlu memunculkan alert layar penuh
+            }
+
             document.getElementById('login-status').removeAttribute('data-i18n');
             document.getElementById('login-status').innerText = '⚠ ERROR: ' + err.type; 
             document.getElementById('login-status').style.color = "var(--danger)"; 
@@ -1054,7 +1149,7 @@
             else if(err.type === 'peer-unavailable') { 
                 customAlert(t('errOffline'), () => { 
                     document.getElementById('connect-btn').innerText = t('startChat'); 
-                    document.getElementById('connect-btn').disabled = false; 
+                    resetCheckStatus();
                 }); 
             } 
         });
@@ -1084,7 +1179,14 @@
         }
 
         peer.on('connection', connection => { 
-            // PATCH: Tolak koneksi jika pengguna belum standby di layar Penerima
+            // FITUR CEK KETERSEDIAAN: Abaikan secara visual jika ini hanya "ping check"
+            if (connection.metadata && connection.metadata.isCheckPing) {
+                // Biarkan koneksi terbuka sebentar agar pengirim mendapat event 'open', lalu tutup.
+                setTimeout(() => connection.close(), 500);
+                return; // Berhenti di sini, jangan ubah UI Receiver
+            }
+
+            // Tolak koneksi utama jika belum standby di layar Penerima
             if (activeRole !== 'receiver') {
                 logDebug('Menolak koneksi masuk: Anda belum standby di menu Penerima.', 'error');
                 connection.close();
@@ -1106,7 +1208,6 @@
             monitorICE(conn); setupConn();
             
             clearTimeout(connectTimeout);
-            // PATCH: Timeout diperpanjang jadi 30 detik untuk mengakomodasi jaringan lambat
             connectTimeout = setTimeout(() => {
                 if (conn && !conn.open) { 
                     logDebug('Koneksi gagal terhubung dalam 30 detik.', 'error');
@@ -1191,7 +1292,6 @@
             document.getElementById('login-screen').style.display = 'flex'; 
             document.getElementById('remote-id').value = ''; 
             document.getElementById('connect-btn').innerText = t('startChat'); 
-            document.getElementById('connect-btn').disabled = false; 
             
             document.getElementById('refresh-network-btn').style.display = 'none';
             
