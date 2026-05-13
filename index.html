@@ -218,7 +218,7 @@
 
             <div class="my-id-box">
                 <p data-i18n="yourNetworkId">ID JARINGAN ANDA (KLIK UNTUK COPY)</p>
-                <span id="my-id" class="id-badge">Connecting...</span> <!-- data-i18n dihapus agar teks asli PeerID tidak keriset -->
+                <span id="my-id" class="id-badge">Connecting...</span> 
             </div>
 
             <div class="modal-actions">
@@ -295,7 +295,8 @@
                     <label for="remote-id" data-i18n="inputReceiverID">MASUKKAN ID PENERIMA</label>
                     <input type="text" id="remote-id" data-i18n-placeholder="pasteIdPlaceholder" placeholder="Tempel ID Teman di sini">
                 </div>
-                <button id="connect-btn">Mulai Chat</button> <!-- data-i18n dihapus untuk modifikasi dinamis via JS -->
+                <!-- ONCLICK DITAMBAHKAN KEMBALI DI SINI -->
+                <button id="connect-btn" onclick="connectToPeer()">Mulai Chat</button> 
                 <button class="back-btn" onclick="resetRole()" data-i18n="backBtn">Kembali</button>
             </div>
 
@@ -475,7 +476,11 @@
                 document.getElementById('role-selection').style.display = 'none';
                 document.getElementById('sender-ui').style.display = 'none';
                 document.getElementById('receiver-ui').style.display = 'none';
+                
+                // Tampilkan halaman Connected, sembunyikan status jaringan & refresh
                 document.getElementById('connected-ui').style.display = 'block';
+                document.getElementById('login-status').style.display = 'none';
+                document.getElementById('refresh-network-btn').style.display = 'none';
             }
         });
 
@@ -746,6 +751,8 @@
             document.getElementById('receiver-ui').style.display = 'none';
             document.getElementById('connected-ui').style.display = 'none';
             document.getElementById('role-selection').style.display = 'block';
+            
+            // Tampilkan kembali status jaringan saat role direset ke awal
             document.getElementById('login-status').style.display = 'block';
         }
 
@@ -787,6 +794,9 @@
             if (!savedPeerId) { localStorage.setItem('my-peer-id', id); savedPeerId = id; }
             document.getElementById('my-id').innerText = id;
             document.getElementById('my-id-display').innerText = id;
+            
+            // Update teks dan set attribute i18n agar terjemahan berfungsi dinamis
+            document.getElementById('login-status').setAttribute('data-i18n', 'sysReady');
             document.getElementById('login-status').innerText = t('sysReady'); 
             document.getElementById('login-status').style.color = "var(--accent)"; 
             logDebug(`System Ready. ID: ${id}`, 'success');
@@ -802,6 +812,8 @@
         
         peer.on('error', (err) => { 
             clearTimeout(connectTimeout); 
+            // Hapus atribut i18n agar teks error tidak tertimpa saat berganti bahasa
+            document.getElementById('login-status').removeAttribute('data-i18n');
             document.getElementById('login-status').innerText = '⚠ ERROR: ' + err.type; 
             document.getElementById('login-status').style.color = "var(--danger)"; 
             document.getElementById('refresh-network-btn').style.display = 'block'; 
@@ -858,7 +870,7 @@
                     remoteName = data.name || t('anon'); 
                     chatTitle.innerText = remoteName; 
                     typerNameSpan.innerText = remoteName; 
-                    document.getElementById('connected-friend-name').innerText = remoteName; // Otomatis mengisi nama teman yang tersambung
+                    document.getElementById('connected-friend-name').innerText = remoteName; 
                     chatHeaderAvatar.innerHTML = data.avatar ? `<img src="${data.avatar}" alt="Avatar">` : defaultSvgAvatar; 
                 } 
                 else if (data && data.type === 'ack') { const msgElement = document.getElementById(data.msgId); if (msgElement) { const tick = msgElement.querySelector('.tick'); if (tick) { tick.innerText = '✓✓'; tick.classList.add('read'); } } } 
@@ -887,6 +899,10 @@
             document.getElementById('remote-id').value = ''; 
             document.getElementById('connect-btn').innerText = t('startChat'); 
             document.getElementById('connect-btn').disabled = false; 
+            
+            // Sembunyikan refresh jaringan jika UI direset
+            document.getElementById('refresh-network-btn').style.display = 'none';
+            
             resetRole();
             remoteName = t('friend'); chatTitle.innerText = remoteName; typerNameSpan.innerText = remoteName; chatHeaderAvatar.innerHTML = defaultSvgAvatar; hideTyping(); cancelReply();
         }
@@ -927,7 +943,6 @@
             const div = document.getElementById(fileId); if (!div) return; 
             const url = URL.createObjectURL(blob); let contentHTML = ''; 
             
-            // Tambahkan flag media agar action menu memunculkan tombol 'Simpan'
             const msgObj = { 
                 text: filetype.startsWith('image/') ? t('photo') : `📄 ${filename}`, 
                 sender: senderType === 'sent' ? (myName || t('you')) : remoteName,
