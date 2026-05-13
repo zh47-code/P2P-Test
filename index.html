@@ -1029,7 +1029,7 @@
             
             isCheckingId = true;
             
-            // Lakukan PING koneksi siluman dengan metadata khusus
+            // Lakukan PING koneksi siluman
             const checkConn = peer.connect(rId, { reliable: false, metadata: { isCheckPing: true } });
             
             let checkTimeout = setTimeout(() => {
@@ -1040,9 +1040,8 @@
                     statusText.innerText = t('checkTimeout');
                     checkConn.close();
                 }
-            }, 10000); // Tunggu 10 detik untuk Cek Status
+            }, 25000); // 🕒 PATCH: Waktu tunggu diperpanjang menjadi 25 detik untuk memaklumi delay TURN Server
             
-            // Jika terbuka berarti berhasil dan penerima online
             checkConn.on('open', () => {
                 clearTimeout(checkTimeout);
                 isCheckingId = false;
@@ -1054,11 +1053,10 @@
                 connectBtn.disabled = false;
                 connectBtn.style.opacity = '1';
                 
-                // Tutup jalur PING segera setelah sukses
-                setTimeout(() => checkConn.close(), 500);
+                // 🕒 PATCH: Biarkan Pengirim yang menutup koneksi setelah jeda 1 detik agar aman
+                setTimeout(() => checkConn.close(), 1000);
             });
         }
-
 
         // === KONEKSI PEERJS & WEBRTC DENGAN TURN SERVER ===
         let savedPeerId = localStorage.getItem('my-peer-id');
@@ -1195,9 +1193,11 @@
         peer.on('connection', connection => { 
             // FITUR CEK KETERSEDIAAN: Abaikan secara visual jika ini hanya "ping check"
             if (connection.metadata && connection.metadata.isCheckPing) {
-                // Biarkan koneksi terbuka sebentar agar pengirim mendapat event 'open', lalu tutup.
-                setTimeout(() => connection.close(), 500);
-                return; // Berhenti di sini, jangan ubah UI Receiver
+                // 🕒 PATCH: Biarkan koneksi terbuka 3 detik agar Pengirim (Sender) punya waktu mendeteksi event 'open'
+                setTimeout(() => {
+                    if(connection.open) connection.close();
+                }, 3000);
+                return; // Berhenti di sini, UI Penerima tidak akan melompat
             }
 
             // Tolak koneksi utama jika belum standby di layar Penerima
