@@ -1120,33 +1120,30 @@
             });
         }
 
-        // === KONEKSI PEERJS & WEBRTC DENGAN TURN SERVER ===
+        // === KONEKSI PEERJS & WEBRTC (DENGAN BYPASS FIREWALL WI-FI) ===
         let savedPeerId = localStorage.getItem('my-peer-id');
         
         const peerConfig = { 
             config: { 
                 'iceServers': [
-                    // 1. STUN Servers (Untuk mencoba koneksi langsung lebih dulu - lebih cepat)
-                    { urls: 'stun:stun.l.google.com:19302' }, 
+                    // 1. Jalur Normal (STUN) - Cepat, tapi sering diblokir Wi-Fi ketat
+                    { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }, 
                     { urls: 'stun:stun.cloudflare.com:3478' },
                     
-                    // 2. TURN Servers (Jalan pintas jika koneksi langsung diblokir Provider/Beda Jaringan)
+                    // 2. Jalur Bypass (TURN UDP & TCP) - Menembus Firewall/CGNAT
                     {
-                        urls: "turn:openrelay.metered.ca:80",
-                        username: "openrelayproject",
-                        credential: "openrelayproject"
-                    },
-                    {
-                        urls: "turn:openrelay.metered.ca:443",
-                        username: "openrelayproject",
-                        credential: "openrelayproject"
-                    },
-                    {
-                        urls: "turn:openrelay.metered.ca:443?transport=tcp",
+                        // Array URLs: Browser akan mencoba dari atas ke bawah.
+                        // transport=tcp di port 443 akan terlihat seperti trafik website HTTPS biasa!
+                        urls: [
+                            "turn:openrelay.metered.ca:443?transport=tcp", 
+                            "turn:openrelay.metered.ca:443?transport=udp",
+                            "turn:openrelay.metered.ca:80?transport=udp"
+                        ],
                         username: "openrelayproject",
                         credential: "openrelayproject"
                     }
                 ],
+                // Tingkatkan jumlah kandidat ICE agar browser lebih ngotot mencari celah
                 iceCandidatePoolSize: 10
             },
             pingInterval: 5000, 
