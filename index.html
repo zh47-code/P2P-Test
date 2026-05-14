@@ -444,6 +444,9 @@
         // === TRANSLATION & I18N SYSTEM ===
         const i18n = {
             id: {
+                errMsgLong: "Pesan terlalu panjang! Maksimal 5000 karakter.",
+                errFileLarge: "Ukuran file terlalu besar! Maksimal pengiriman adalah 15MB.",
+                search: "Cari", clearChat: "Hapus Chat", photo: "📷 Foto", video: "🎥 Video", document: "📄 Dokumen",
                 errMsgLong: "Pesan terlalu panjang! Maksimal 5000 karakter.", accountMenu: "Akun", themeLight: "Tema Terang", themeDark: "Tema Gelap", syslog: "Log Sistem", clearcache: "Hapus Cache", langToggle: "EN",
                 chooseRole: "Pilih peran Anda untuk memulai:", roleSender: "Pengirim", roleReceiver: "Penerima",
                 inputReceiverID: "MASUKKAN ID PENERIMA", pasteIdPlaceholder: "Tempel ID Teman di sini", startChat: "Mulai Chat", backBtn: "Kembali",
@@ -464,6 +467,9 @@
                 checkId: "Cek ID", checkWait: "⏳ Mengecek ketersediaan...", checkOnline: "✅ ID Aktif & Tersedia! Silakan Mulai.", checkOffline: "❌ ID Offline / Tidak Ditemukan.", checkSelf: "❌ Tidak bisa gunakan ID sendiri!", checkEmpty: "❌ Masukkan ID!", checkTimeout: "❌ Waktu cek habis."
             },
             en: {
+                errMsgLong: "Message is too long! Max 5000 characters.",
+                errFileLarge: "File size is too large! Maximum limit is 15MB.",
+                search: "Search", clearChat: "Clear Chat", photo: "📷 Photo", video: "🎥 Video", document: "📄 Document",
                 errMsgLong: "Message is too long! Max 5000 characters.", accountMenu: "Account", themeLight: "Light Theme", themeDark: "Dark Theme", syslog: "System Log", clearcache: "Clear Cache", langToggle: "ID",
                 chooseRole: "Select your role to start:", roleSender: "Sender", roleReceiver: "Receiver",
                 inputReceiverID: "ENTER RECEIVER ID", pasteIdPlaceholder: "Paste Friend's ID here", startChat: "Start Chat", backBtn: "Back",
@@ -1557,8 +1563,13 @@
 
         function processFile(file) {
             if (!file || !conn || !conn.open) return;
-            if (file.size > 15 * 1024 * 1024) return customAlert(t('fileTooLarge'));
-            const fileId = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+            
+            // 🛡️ PENJAGA GERBANG: Tolak semua file (termasuk video) di atas 15MB menggunakan i18n
+            if (file.size > 15 * 1024 * 1024) {
+                return customAlert(t('errFileLarge'));
+            }
+            
+            const fileId = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5); 
             renderFileProgress('sent', fileId, file.name, 0);
             conn.send({ type: 'file-start', fileId: fileId, filename: file.name, filetype: file.type, filesize: file.size });
             let offset = 0; const reader = new FileReader();
@@ -1614,21 +1625,38 @@
         function finalizeFileMessage(senderType, fileId, filename, filetype, blob) { 
             const div = document.getElementById(fileId); if (!div) return; 
             const url = URL.createObjectURL(blob); 
-            activeObjectUrls.push(url); // 🛡️ PATCH: Catat URL ini ke daftar RAM 
+            
+            // 🛡️ PATCH MEMORI: Catat URL video/foto/file ke daftar RAM agar bisa dihapus nanti
+            if (typeof activeObjectUrls !== 'undefined') {
+                activeObjectUrls.push(url);
+            }
+
             let contentHTML = ''; 
             const safeFilename = escapeHTML(filename); 
             
+            // Tentukan label di menu balas/salin berdasarkan tipe file
+            let msgLabel = `📄 ${filename}`;
+            if (filetype.startsWith('image/')) msgLabel = t('photo');
+            else if (filetype.startsWith('video/')) msgLabel = t('video');
+
             const msgObj = { 
-                text: filetype.startsWith('image/') ? t('photo') : `📄 ${filename}`, 
+                text: msgLabel, 
                 sender: senderType === 'sent' ? (myName || t('you')) : remoteName,
                 isMedia: true,
                 fileUrl: url,
                 fileName: filename
             };
             
+            // 🎬 RENDER MEDIA SESUAI TIPE
             if (filetype.startsWith('image/')) { 
                 contentHTML = `<img src="${url}" alt="${safeFilename}" id="img-${fileId}" style="cursor: zoom-in;">`; 
-            } else { 
+            } 
+            else if (filetype.startsWith('video/')) {
+                // FITUR BARU: Pemutar Video Langsung (Inline Video Player)
+                contentHTML = `<video src="${url}" controls preload="metadata" controlsList="nodownload" style="max-width: 100%; max-height: 300px; border-radius: 12px; background: #000; margin-top: 8px;"></video>
+                               <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px; text-align: center;">${safeFilename}</div>`;
+            } 
+            else { 
                 contentHTML = `<a href="${url}" download="${safeFilename}" class="file-link">📄 ${safeFilename}</a>`; 
             } 
             
@@ -1636,11 +1664,16 @@
             appendMeta(div, senderType); 
             setupLongPress(div, msgObj); 
             
+            // Fungsi khusus untuk memperbesar gambar (diabaikan jika video/dokumen)
             if (filetype.startsWith('image/')) {
                 const imgElement = div.querySelector(`#img-${fileId}`); 
                 imgElement.onload = () => { chatWindow.scrollTop = chatWindow.scrollHeight; };
                 imgElement.addEventListener('click', (e) => { e.stopPropagation(); openImageViewer(url, div, msgObj, filename); });
+            } else if (filetype.startsWith('video/')) {
+                const vidElement = div.querySelector(`video`);
+                vidElement.onloadedmetadata = () => { chatWindow.scrollTop = chatWindow.scrollHeight; };
             }
+            
             chatWindow.scrollTop = chatWindow.scrollHeight; 
         }
         
